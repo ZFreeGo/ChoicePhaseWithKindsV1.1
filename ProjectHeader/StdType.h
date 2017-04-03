@@ -24,4 +24,27 @@ typedef long double     float64_t;
 #define FALSE 0
 #define TRUE 0xFF
 
+
+/**
+ *数据指针结构
+ */
+
+typedef struct TagPointUint8
+{
+    uint8_t* pData; //数据指针
+    uint8_t len; //指向数据长度
+}PointUint8;
+
+/**
+ *动作相角与弧度归一化值
+ */
+typedef struct TagActionRad
+{
+	uint8_t enable; //使能标志，0-禁止，非零使能
+    uint8_t phase; //相A-1,B-2,C-3
+    uint16_t  actionRad; //设定弧度归一化值r = M/65536 *2*PI
+
+}ActionRad;
+
+
 #endif /* PROJECTHEADER_STDTYPE_H_ */

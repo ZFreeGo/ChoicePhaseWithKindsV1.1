@@ -16,7 +16,7 @@
 #include "Timer.h"
 #include "DSP28x_Project.h"
 #include "CAN.h"
-
+#include "Action.h"
 
 //DeviceNet 工作模式
 #define  MODE_REPEAT_MAC  0xA1  //重复MAC检测
@@ -1060,29 +1060,23 @@ void VisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* p
 *********************************************************************************/
 static void  CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 {
-	
-    out_Data[0] = pReciveFrame->pBuffer[0];
-    out_Data[1] = pReciveFrame->pBuffer[1];
-    out_Data[2] = pReciveFrame->pBuffer[2];
-    out_Data[3] = pReciveFrame->pBuffer[3];          //保存主站设置的数据
-    pReciveFrame->complteFlag = 0;
+	uint8_t result = 0;
+
     if(CycleInquireConnedctionObj.state != STATE_LINKED )	//轮询I/O连接没建立
 		return ;
-
-  //   FrameServer( pReciveFrame,  pSendFrame);
-    
-    
+    result = FrameServer(pReciveFrame,  pSendFrame);
+    if (result !=0)
+    {
+    	   pSendFrame->pBuffer[0] = 0x14;
+    	   pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[0];
+    	   pSendFrame->pBuffer[2] = result;
+    	   pSendFrame->pBuffer[3] = 0xFF;
+    	   pSendFrame->len = 4;
+    }
+    pReciveFrame->complteFlag = 0;
     
     pSendFrame->ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);   
-    pSendFrame->pBuffer[0] = 0x1A;
-    pSendFrame->pBuffer[1] = 0x2A;
-    pSendFrame->pBuffer[2] = 0x3A;
-    pSendFrame->pBuffer[3] = 0x4A;
-    pSendFrame->pBuffer[4] = 0x5A;
-    pSendFrame->pBuffer[5] = 0x6A;
-    pSendFrame->pBuffer[6] = 0x7A;
-    pSendFrame->pBuffer[7] = 0x8A;
-    pSendFrame->len = 8;
+
   	SendData(pSendFrame);
 	return ;
 }

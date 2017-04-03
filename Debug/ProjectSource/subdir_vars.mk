@@ -7,6 +7,7 @@ C_UPPER_SRCS += \
 ../ProjectSource/DeviceIO.C 
 
 C_SRCS += \
+../ProjectSource/Action.c \
 ../ProjectSource/BasicModule.c \
 ../ProjectSource/CAN.c \
 ../ProjectSource/ConfigADC.c \
@@ -17,6 +18,7 @@ C_SRCS += \
 ../ProjectSource/Timer.c 
 
 OBJS += \
+./ProjectSource/Action.obj \
 ./ProjectSource/BasicModule.obj \
 ./ProjectSource/CAN.obj \
 ./ProjectSource/ConfigADC.obj \
@@ -28,6 +30,7 @@ OBJS += \
 ./ProjectSource/Timer.obj 
 
 C_DEPS += \
+./ProjectSource/Action.d \
 ./ProjectSource/BasicModule.d \
 ./ProjectSource/CAN.d \
 ./ProjectSource/ConfigADC.d \
@@ -41,6 +44,7 @@ C_UPPER_DEPS += \
 ./ProjectSource/DeviceIO.d 
 
 C_DEPS__QUOTED += \
+"ProjectSource\Action.d" \
 "ProjectSource\BasicModule.d" \
 "ProjectSource\CAN.d" \
 "ProjectSource\ConfigADC.d" \
@@ -54,6 +58,7 @@ C_UPPER_DEPS__QUOTED += \
 "ProjectSource\DeviceIO.d" 
 
 OBJS__QUOTED += \
+"ProjectSource\Action.obj" \
 "ProjectSource\BasicModule.obj" \
 "ProjectSource\CAN.obj" \
 "ProjectSource\ConfigADC.obj" \
@@ -65,6 +70,7 @@ OBJS__QUOTED += \
 "ProjectSource\Timer.obj" 
 
 C_SRCS__QUOTED += \
+"../ProjectSource/Action.c" \
 "../ProjectSource/BasicModule.c" \
 "../ProjectSource/CAN.c" \
 "../ProjectSource/ConfigADC.c" \
