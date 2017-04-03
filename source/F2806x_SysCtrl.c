@@ -347,7 +347,7 @@ void InitPeripheralClocks(void)
    SysCtrlRegs.PCLKCR0.bit.SCIAENCLK = 1;     // SCI-A
    SysCtrlRegs.PCLKCR0.bit.SCIBENCLK = 1;     // SCI-B
    SysCtrlRegs.PCLKCR0.bit.MCBSPAENCLK = 0;   // McBSP-A
-   SysCtrlRegs.PCLKCR0.bit.ECANAENCLK=0;      // eCAN-A
+   SysCtrlRegs.PCLKCR0.bit.ECANAENCLK=1;      // eCAN-A
    
    SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;     // Enable TBCLK within the ePWM
 

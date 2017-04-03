@@ -43,7 +43,7 @@ void ConfigADC_Monitor(float priod)
     AdcRegs.INTSEL1N2.bit.INT1CONT      = 0;	// Disable ADCINT1 Continuous mode
     AdcRegs.INTSEL1N2.bit.INT1SEL 	= 0;    // setup EOC0 to trigger ADCINT1 to fire
 
-    AdcRegs.ADCSOC0CTL.bit.CHSEL 	= 0;    // set SOC0 channel select to ADCINA0
+    AdcRegs.ADCSOC0CTL.bit.CHSEL 	= 5;    // set SOC0 channel select to ADCINA5
 
 
     AdcRegs.ADCSOC0CTL.bit.TRIGSEL 	= 5;    // set SOC0 start trigger on EPWM1A, due to round-robin SOC0 converts first then SOC1

@@ -68,7 +68,8 @@ void FFT_Cal(float ADsample[]);
 
 void GetOVD(float* pData);
 
-__interrupt void cpu_timer0_isr(void);
+
+
 
 #ifdef	__cplusplus
 }

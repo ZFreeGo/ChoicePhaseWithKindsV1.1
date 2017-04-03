@@ -33,7 +33,7 @@
 
 
 
-#define FLASH   1
+//#define FLASH   1
 #ifdef FLASH
 extern Uint16 RamfuncsLoadStart;
 extern Uint16 RamfuncsLoadEnd;
@@ -65,7 +65,7 @@ int main(void)
 
 	InitSysCtrl();            //20*4 = 80M
 	InitDeviceIO();
-
+	//InitECanGpio();
 	// Step 3. Clear all interrupts and initialize PIE vector table:
 	DINT;
 
@@ -75,7 +75,7 @@ int main(void)
 	InitPieVectTable();
 	EALLOW;
 	// This is needed to write to EALLOW protected registers
-	PieVectTable.TINT0 = &cpu_timer0_isr;
+	PieVectTable.TINT0 = &Cpu_timer0_isr;
 	PieVectTable.ADCINT1 = &ADC_INT1_ISR;
 	//PieVectTable.ADCINT2 = &ADC_INT2_Potect_ISR;
 	//PieVectTable.SCIRXINTB = &ScibRX_ISR;
@@ -83,6 +83,8 @@ int main(void)
 	//PieVectTable.SCIRXINTA = &SciaRX_ISR;
 	//PieVectTable.SCITXINTA = &SciaTX_ISR;
 	PieVectTable.EPWM4_INT = &epwm4_timer_isr;
+	 PieVectTable.ECAN0INTA = &Can0Recive_ISR;
+
 	EDIS;
 	// This is needed to disable write to EALLOW protected registers
 
@@ -95,25 +97,28 @@ int main(void)
 	//Step 4. Initialize the Device Peripheral.
 	//EPwm4TimerInit();
 
+
+	//InitECana(); // Initialize eCAN-A module
+
+	InitStandardCAN(0, 0);
 	InitAdc(); //初始化ADC
 	InitCpuTimers(); //初始化CPU寄存器
-	ConfigCpuTimer(&CpuTimer0, 80, 1000000); //配置CPU在80M工作频率下，中断周期1000000us
+	ConfigCpuTimer(&CpuTimer0, 80, 1000); //配置CPU在80M工作频率下，中断周期1000us
 	CpuTimer0Regs.TCR.all = 0x4000; // Use write-only instruction to set TSS bit = 0 启动定时器
 
 	//使能外PIE中断向量
 	PieCtrlRegs.PIECTRL.bit.ENPIE = 1;
 	PieCtrlRegs.PIEIER1.bit.INTx7 = 1; //TIMER0 	// Enable TINT0 in the PIE: Group 1 interrupt 7
-	PieCtrlRegs.PIEIER9.bit.INTx1 = 1; //SCIA -RX
-	PieCtrlRegs.PIEIER9.bit.INTx2 = 1; //SCIA -TX
-	//PieCtrlRegs.PIEIER9.bit.INTx3 = 1; //SCIB -RX
-	PieCtrlRegs.PIEIER9.bit.INTx4 = 1; //SCIB -TX
 
 	PieCtrlRegs.PIEIER1.bit.INTx1 = 1; //ADCINT1
 	//PieCtrlRegs.PIEIER1.bit.INTx2 = 1;//ADCINT2  Group 1 interrupt 2
 	PieCtrlRegs.PIEIER3.bit.INTx4 = PWM4_INT_ENABLE;
+	PieCtrlRegs.PIEIER9.bit.INTx5 = 1; //ECAN0bits
 
 	IER |= M_INT1;		//TIMER0 ADCINT1 ADCINT2
 	IER |= M_INT3;        // Enable CPU INT3 which is connected to EPWM1-6 INT:
+	IER |= M_INT9;
+
 	EINT;
 	// Enable Global interrupt INTM
 	ERTM;
@@ -123,11 +128,12 @@ int main(void)
 	InitMonitorCalData(); //监控数据计算初始化
 	ConfigADC_Monitor(12500);  //ADC 采样初始化 设定采样周期 12500属于定时器计数长度
 
-//  GenRTUFrame(0x01, 0x02, sendData, 16,SendFrameData, &len);
-//  SendFrame(SendFrameData, len);
+	InitDeviceNet();
 	//调试使用
-	// StartSample();
-	while (1) {
+	StartSample();
+
+	while (1)
+	{
 		//测频模块处理
 		//理论上将是20ms一个循环
 		if (SampleDataSavefloat[SAMPLE_LEN] == SAMPLE_COMPLTE) //采样完成
@@ -135,10 +141,12 @@ int main(void)
 			CalFreq(SampleDataSavefloat);
 
 			if (freqLen < 7) //计数长度 每7求取平均值计算周期
-					{
+			{
 				freqArray[freqLen++] = FreqMonitor.FreqReal;
 
-			} else {
+			}
+			else
+			{
 				freqLen = 0;
 				FreqMonitor.FreqMean = MidMeanFilter(freqArray, 7); //
 			}

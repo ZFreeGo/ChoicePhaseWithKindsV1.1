@@ -340,17 +340,5 @@ void GetOVD(float* pData)
 }
 
 
-__interrupt void cpu_timer0_isr(void)
-{
-   CpuTimer0.InterruptCount++;
-   TOGGLE_LED2;
-   TOGGLE_LED1;
-   TOGGLE_LED3;
-   if (FirstTrig)
-   {
-	   FirstTrig = 0;
-	  // RESET_YONGCI_ACTION();
-   }
-   // Acknowledge this interrupt to receive more interrupts from group 1
-   PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
-}
+
+

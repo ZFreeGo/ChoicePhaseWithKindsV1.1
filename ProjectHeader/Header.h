@@ -51,6 +51,12 @@
 #include "SampleProcess.h"
 
 #include "PwmTimer.h"
+
+#include "Timer.h"
+
+#include "CAN.h"
+#include "DeviceNet.h"
+
 //#include"CLAmath.h"
 #define NOP()   __asm(" NOP")
 //#define Reset() {__asm(" NOP");}
@@ -59,8 +65,6 @@
 
 
 
-#define FALSE 0UL
-#define TRUE 0xff
 
 #define LOCAL_ADDRESS  0xA1 //本机地址
 #define MAIN_LOCAL     0xBA //主机地址
