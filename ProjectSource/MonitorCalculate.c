@@ -16,7 +16,7 @@
 
 #include "F2806x_Examples.h"   // F2806x Examples Include File
 #include "Header.h"
-
+#include "RefParameter.h"
 
 /*=============================全局变量定义 Start=============================*/
 //#define RFFT_STAGES 6
@@ -43,8 +43,8 @@ RFFT_F32_STRUCT rfft; //FFT 变换数据结构体
 //float TwoDivideN = 0; //2/N
 
 
-struct  FreqCollect FreqMonitor; //监控频率
-struct  FreqCollect* pFreqMonitor;//指向监控频率指针
+struct  FreqCollect g_FreqMonitor; //监控频率
+
 
 volatile struct  TimeParameteCall CalTimeMonitor; //计算时间过程
 volatile struct  TimeParameteCall* pCalTimeMonitor;
@@ -76,8 +76,8 @@ volatile Uint8 FirstTrig = 0;// 首次触发标志 0--不需要触发 非0--需要触发
        RFFphaseBuff[i], RFFTmagBuff[i],RFFTF32Coef[i],
        RFFToutBuff[i], RFFTin1Buff[i]
        Cos1step, Sin1step
-       FreqMonitor, pFreqMonitor
-       CalTimeMonitor, pFreqMonitor
+       g_FreqMonitor, pg_FreqMonitor
+       CalTimeMonitor, pg_FreqMonitor
        SetParam
 ****************************************************/
 void InitMonitorCalData(void)
@@ -97,11 +97,11 @@ void InitMonitorCalData(void)
   //TwoDivideN = 1;//TwoDivideN = 2.0 / (float)RFFT_SIZE; 消去
   FFT_Init();
 
-  FreqMonitor.FreqInit = 50.0f;
-  FreqMonitor.FreqReal = 50.0f;
-  FreqMonitor.FreqMean = 50.0f;
-  FreqMonitor.FreqCal = 50.0f;
-  pFreqMonitor = &FreqMonitor;
+  g_FreqMonitor.FreqInit = 50.0f;
+  g_FreqMonitor.FreqReal = 50.0f;
+  g_FreqMonitor.FreqMean = 50.0f;
+  g_FreqMonitor.FreqCal = 50.0f;
+  //pg_FreqMonitor = &g_FreqMonitor;
 
   CalTimeMonitor.CalTimeDiff = 0;
   CalTimeMonitor.CalTp = 0;
@@ -115,6 +115,8 @@ void InitMonitorCalData(void)
   SetParam.SetPhase = 0; //此处以COS标准 弧度
   SetParam.SetPhaseTime = 20000 * 0.75f;
   SetParam.HeFenFlag = 0;//合闸
+
+  RefParameterInit();
 }
 /**************************************************
  *函数名：FFT_Init()
@@ -191,7 +193,7 @@ Uint16 count = 0;
 void GetOVD(float* pData)
 {
 
-	FFT_Cal(pData);
+	FFT_Cal(pData);   //傅里叶变化计算相角 每个点间隔为312.5us
 	a = RFFToutBuff[1]; //实部
 	b = RFFToutBuff[RFFT_SIZE - 1]; //虚部
 	phase = atan( b/a ); //求取相位
@@ -243,7 +245,7 @@ void GetOVD(float* pData)
 	}
 	}
 	//超阈值处理
-	tp = 1e6 / FreqMonitor.FreqReal; //真实周期
+	tp = 1e6 / g_FreqMonitor.FreqReal; //真实周期
 	tph = tp * 0.5f;  //半个周期
 
 
@@ -336,6 +338,112 @@ void GetOVD(float* pData)
 	CalTimeMonitor.CalT0 = t0;
 	CalTimeMonitor.CalPhase = phase;
 	pData[SAMPLE_LEN] = SAMPLE_NOT_FULL; //置为非满标志
+
+}
+
+/**
+ * 同步触发器，利用采样数据计算同步触发动作时刻，发出触发命令,以A相为例
+ *
+ * @param  *pData   指向采样数据的指针
+ * @brief  计算触发时刻，发布触发命令
+ */
+void SynchronizTrigger(float* pData)
+{
+	float time = 0, difftime = 0;
+	FFT_Cal(pData);   //傅里叶变化计算相角 每个点间隔
+	a = RFFToutBuff[1]; //实部
+	b = RFFToutBuff[RFFT_SIZE - 1]; //虚部
+	phase = atan( b/a ); //求取相位
+
+	//相位判断
+		if (phase >= -0.00001 ) //认为在第1,3象限   浮点数与零判断问题,是否需要特殊处理？
+		{
+			if (a >= -0.00001)
+			{
+				xiang = 1; //在第一象限
+
+			}
+			else
+			{
+				xiang = 3; //在第三象限
+			}
+		}
+		else
+		{
+			if (a >= 0)
+			{
+				xiang = 4; //在第四象限
+			}
+			else
+			{
+				xiang = 2; //在第二象限
+			}
+		}
+		//象限变换
+		switch (xiang)
+		{
+		case 1:
+		{
+			phase = phase;
+			break;
+		}
+		case 2:
+		{
+			phase += PI;
+			break;
+		}
+		case 3:
+		{
+			phase += PI;
+			break;
+		}
+		case 4:
+		{
+			phase += 2*PI;
+		}
+		}
+		//计算开始时间
+	    g_PhaseActionRad[0].startTime = g_SystemVoltageParameter.period* phase* D2PI;
+	    //此处相乘，为了保证使用最新的周期
+	    g_PhaseActionRad[0].realTime =  g_SystemVoltageParameter.period * g_PhaseActionRad[0].realRatio;
+	    //总的时间和
+	    time =  g_ProcessDelayTime[PHASE_A].sumDelay +
+	    		g_PhaseActionRad[0].startTime - g_PhaseActionRad[0].realTime;
+
+	    count = 1;
+	    do
+	    {
+	    	difftime = count *  g_SystemVoltageParameter.period - time;
+	    	//判断时间差是否大于0，若大于则跳出
+	    	if(difftime > 0)
+	    	{
+	    		break;
+	    	}
+	    	count++;
+
+	    }while(count < 100); //TODO:添加异常判断
+
+		if (difftime > 0)
+		{
+
+			//若时间之和大于等于0，则正常补偿；否则添加一个周期的延时
+			if (difftime + g_ProcessDelayTime[PHASE_A].compensationTime >= 0 )
+			{
+				g_ProcessDelayTime[PHASE_A].calDelay =
+						difftime + g_ProcessDelayTime[PHASE_A].compensationTime;
+			}
+			else
+			{
+				g_ProcessDelayTime[PHASE_A].calDelay =  g_SystemVoltageParameter.period +
+									difftime + g_ProcessDelayTime[PHASE_A].compensationTime;
+			}
+			DELAY_US(g_ProcessDelayTime[PHASE_A].calDelay);
+			//输出动作
+			//
+		}
+
+
+
 
 }
 

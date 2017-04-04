@@ -37,6 +37,23 @@ ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceNet.h
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/RefParameter.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Header.h
+ProjectSource/Action.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/math.h
+ProjectSource/Action.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/linkage.h
+ProjectSource/Action.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/_defs.h
+ProjectSource/Action.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdio.h
+ProjectSource/Action.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdarg.h
+ProjectSource/Action.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/string.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/fpu.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/C28x_FPU_FastRTS.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceIO.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/ConfigADC.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/MonitorCalculate.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/AlgorithmInclude/FrequrncyCaluate.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/PwmTimer.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/CAN.h
 
 ../ProjectSource/Action.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/stdType.h: 
@@ -75,3 +92,20 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/F2806x_DefaultISR.
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceNet.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/RefParameter.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Header.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/math.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/linkage.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/_defs.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdio.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdarg.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/string.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/fpu.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/C28x_FPU_FastRTS.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceIO.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/ConfigADC.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/MonitorCalculate.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/AlgorithmInclude/FrequrncyCaluate.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/PwmTimer.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/CAN.h: 

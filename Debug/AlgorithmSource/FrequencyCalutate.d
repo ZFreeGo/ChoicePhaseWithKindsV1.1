@@ -46,11 +46,13 @@ AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseW
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/ConfigADC.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/MonitorCalculate.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h
+AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Header.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/PwmTimer.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/stdType.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/CAN.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceNet.h
+AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/RefParameter.h
 
 ../AlgorithmSource/FrequencyCalutate.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/AlgorithmInclude/FrequrncyCaluate.h: 
@@ -98,8 +100,10 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceIO.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/ConfigADC.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/MonitorCalculate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Header.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/PwmTimer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/stdType.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/CAN.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceNet.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/RefParameter.h: 

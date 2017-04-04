@@ -47,6 +47,7 @@ ProjectSource/ConfigADC.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1
 ProjectSource/ConfigADC.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/MonitorCalculate.h
 ProjectSource/ConfigADC.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/AlgorithmInclude/FrequrncyCaluate.h
 ProjectSource/ConfigADC.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h
+ProjectSource/ConfigADC.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Header.h
 ProjectSource/ConfigADC.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/PwmTimer.h
 ProjectSource/ConfigADC.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h
 ProjectSource/ConfigADC.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/stdType.h
@@ -100,6 +101,7 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceIO.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/MonitorCalculate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/AlgorithmInclude/FrequrncyCaluate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Header.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/PwmTimer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/stdType.h: 

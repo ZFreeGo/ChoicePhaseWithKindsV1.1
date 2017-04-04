@@ -14,7 +14,7 @@
 ************************************************************/
 
 #include "SampleProcess.h"
-#include "Header.h"
+#include "MonitorCalculate.h"
 #include "DSP28x_Project.h"
 
 
@@ -34,9 +34,11 @@ float SamplePriod = 0;
 
 /*=============================引用变量 Start=============================*/
 
-extern struct FreqCollect FreqMonitor;
 
 
+/**
+ * 开始同步触发计算标志
+ */
 volatile Uint8  ZVDFlag = 0;
 /*=============================引用变量 End=============================*/
 
@@ -69,7 +71,7 @@ void InitSampleProcessData(void)
 
   SampleLen = SAMPLE_LEN;
 #if WITH_FFT == 1
-  SamplePriod =  	15625.0f /  FreqMonitor.FreqMean; //设置新频率  50hz
+  SamplePriod =  	15625.0f /  g_FreqMonitor.FreqMean; //设置新频率  50hz
 #elif  WITH_ZVD == 1
   SamplePriod = 156.25;//7812.5/50 恢复原有周期
 
@@ -126,7 +128,8 @@ __interrupt void  ADC_INT1_ISR(void)
 #if WITH_FFT == 1
         	   ZVDFlag = 0; //首先清空标志，防止重复进入
 
-        	   GetOVD(SampleDataSavefloat); //7825 7803cyc 80 10us
+        	   //GetOVD(SampleDataSavefloat); //7825 7803cyc 80 10us
+        	   SynchronizTrigger(SampleDataSavefloat);
         	   SampleLen = SAMPLE_LEN; //原始
         	   //最后恢复状态
         	  // StartSample();

@@ -48,6 +48,7 @@ ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/inc
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/F2806x_DefaultISR.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/AlgorithmInclude/FrequrncyCaluate.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h
+ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Header.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/PwmTimer.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceNet.h
@@ -101,6 +102,7 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/F2806x_Cla_defines
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/F2806x_DefaultISR.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/AlgorithmInclude/FrequrncyCaluate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/SampleProcess.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Header.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/PwmTimer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceNet.h: 

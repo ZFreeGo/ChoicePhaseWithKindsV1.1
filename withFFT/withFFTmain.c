@@ -48,13 +48,7 @@ extern Uint16 RamfuncsLoadSize;
 //float FS = 3200; //采样率
 /*=============================全局变量定义 End=============================*/
 
-/*=============================引用变量 Start=============================*/
 
-extern Uint16 SampleDataSave[SAMPLE_LEN + 1]; //采样数据存储 转存 (SAMPLE_LEN + 1)长度  from SampProcess.c
-extern float SampleDataSavefloat[SAMPLE_LEN + 1]; //Uint16 到 float 变换，后期可以考虑重用空间，减少ram使用  from SampProcess.c
-extern struct FreqCollect FreqMonitor;            //监控频率 from MonitorCalculate.c
-
-/*=============================引用变量 End=============================*/
 
 
 int main(void)
@@ -126,32 +120,34 @@ int main(void)
 
 	InitSampleProcessData(); //采样数据初始化
 	InitMonitorCalData(); //监控数据计算初始化
-	ConfigADC_Monitor(12500);  //ADC 采样初始化 设定采样周期 12500属于定时器计数长度
+	ConfigADC_Monitor(12500);  //ADC 采样初始化 设定采样周期 12500属于定时器计数长度，每周波64点
 
 	InitDeviceNet();
 	//调试使用
-	StartSample();
+	StartSample();//用于启动采样
 
 	while (1)
 	{
 		//测频模块处理
 		//理论上将是20ms一个循环
+		//Todo:浮点数等于比较是个隐患
 		if (SampleDataSavefloat[SAMPLE_LEN] == SAMPLE_COMPLTE) //采样完成
 		{
+			//计算频率
 			CalFreq(SampleDataSavefloat);
 
 			if (freqLen < 7) //计数长度 每7求取平均值计算周期
 			{
-				freqArray[freqLen++] = FreqMonitor.FreqReal;
+				freqArray[freqLen++] = g_FreqMonitor.FreqReal;
 
 			}
 			else
 			{
 				freqLen = 0;
-				FreqMonitor.FreqMean = MidMeanFilter(freqArray, 7); //
+				g_FreqMonitor.FreqMean = MidMeanFilter(freqArray, 7); //
 			}
-			FreqMonitor.FreqReal = FreqMonitor.FreqMean;
-			samplePriod = 15625.0f / FreqMonitor.FreqMean; //计算实时采样周期 1e6/64
+			g_FreqMonitor.FreqReal = g_FreqMonitor.FreqMean;
+			samplePriod = 15625.0f / g_FreqMonitor.FreqMean; //计算实时采样周期 1e6/64
 			SetSamplePriod(samplePriod);
 			StartSample(); //继续开始采样，再次测频
 		}

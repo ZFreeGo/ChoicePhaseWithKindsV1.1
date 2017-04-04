@@ -67,9 +67,10 @@ void FFT_Cal(float ADsample[]);
 
 
 void GetOVD(float* pData);
+extern void SynchronizTrigger(float* pData);
 
-
-
+extern struct  FreqCollect g_FreqMonitor; //¼à¿ØÆµÂÊ
+extern float32 RFFToutBuff[RFFT_SIZE]; //from MonitorCalculate.c
 
 #ifdef	__cplusplus
 }

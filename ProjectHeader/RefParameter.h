@@ -25,10 +25,13 @@
 typedef struct TagProcessDelayTime
 {
 	float sampleDelay; //采样延时时间 us
-	float innerDelay; //内部延时 us
+	float innerDelay; //内部计算延时 us
+	float calDelay;    //内部计算得出的进行的延时 us
 	float transmitDelay;//传输延时 us
 	float actionDelay;//动作延时--合闸 us
+	float sumDelay;   //总延时= sampleDelay + innerDelay + transmitDelay + actionDelay
 	float compensationTime;// 补偿时间 us
+
 
 }RefProcessTime;
 
@@ -80,6 +83,12 @@ typedef struct TagActionParameter
     uint8_t phase; //相A-1,B-2,C-3
     uint16_t  actionRad; //设定弧度归一化值r = M/65536 *2*PI
     float realRad;
+    float realRatio;//以周期为对应时间COS，如PI/6 为1/12
+    float realTime; //realRatio * 周期
+
+    float startTime;//进行同步采样计算的 开始时间
+
+
 
 }ActionRad;
 
@@ -91,5 +100,5 @@ extern SystemCalibrationCoefficient g_SystemCalibrationCoefficient;
 extern SystemVoltageParameter g_SystemVoltageParameter;
 extern ActionRad g_PhaseActionRad[3];
 
-
+extern void RefParameterInit(void);
 #endif /* PROJECTHEADER_REFPARAMETER_H_ */

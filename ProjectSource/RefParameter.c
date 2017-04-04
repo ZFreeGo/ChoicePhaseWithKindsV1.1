@@ -46,18 +46,24 @@ void RefParameterInit(void)
 	g_ProcessDelayTime[PHASE_A].innerDelay =0 ;
 	g_ProcessDelayTime[PHASE_A].sampleDelay = 0;
 	g_ProcessDelayTime[PHASE_A].transmitDelay = 0;
+	g_ProcessDelayTime[PHASE_A].sumDelay = 0;
+	g_ProcessDelayTime[PHASE_A].calDelay = 0;
 	//B相
 	g_ProcessDelayTime[PHASE_B].actionDelay = 0;
 	g_ProcessDelayTime[PHASE_B].compensationTime = 0;
 	g_ProcessDelayTime[PHASE_B].innerDelay =0 ;
 	g_ProcessDelayTime[PHASE_B].sampleDelay = 0;
 	g_ProcessDelayTime[PHASE_B].transmitDelay = 0;
+	g_ProcessDelayTime[PHASE_B].sumDelay = 0;
+	g_ProcessDelayTime[PHASE_B].calDelay = 0;
 	//C相
 	g_ProcessDelayTime[PHASE_C].actionDelay = 0;
 	g_ProcessDelayTime[PHASE_C].compensationTime = 0;
 	g_ProcessDelayTime[PHASE_C].innerDelay =0 ;
 	g_ProcessDelayTime[PHASE_C].sampleDelay = 0;
 	g_ProcessDelayTime[PHASE_C].transmitDelay = 0;
+	g_ProcessDelayTime[PHASE_C].sumDelay = 0;
+	g_ProcessDelayTime[PHASE_C].calDelay = 0;
 
 	//校准参数初始化
 	g_SystemCalibrationCoefficient.frequencyCoefficient = 1;
@@ -77,16 +83,27 @@ void RefParameterInit(void)
 	 g_SystemVoltageParameter.voltageA = 0;
 	 g_SystemVoltageParameter.voltageB = 0;
 
-	 //三相预制参数
+	 //三相预制参数 realRatio
 	 g_PhaseActionRad[0].phase = PHASE_A;
 	 g_PhaseActionRad[0].actionRad = 0;
 	 g_PhaseActionRad[0].enable = 0xff;
+	 g_PhaseActionRad[0].realRatio = 0;
+	 g_PhaseActionRad[0].startTime = 0;
+	 g_PhaseActionRad[0].realTime = 0;
+
 	 g_PhaseActionRad[1].phase = PHASE_B;
 	 g_PhaseActionRad[1].actionRad = 0;
 	 g_PhaseActionRad[1].enable = 0xff;
+	 g_PhaseActionRad[1].realRatio = 0;
+	 g_PhaseActionRad[1].startTime = 0;
+	 g_PhaseActionRad[1].realTime = 0;
+
 	 g_PhaseActionRad[2].phase = PHASE_C;
 	 g_PhaseActionRad[2].actionRad = 0;
 	 g_PhaseActionRad[2].enable = 0xff;
+	 g_PhaseActionRad[2].realRatio = 0;
+	 g_PhaseActionRad[2].startTime = 0;
+	 g_PhaseActionRad[0].realTime = 0;
 
 }
 

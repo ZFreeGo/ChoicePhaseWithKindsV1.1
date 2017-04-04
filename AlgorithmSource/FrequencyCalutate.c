@@ -14,7 +14,7 @@
 *******************************************************/
 #include "FrequrncyCaluate.h"
 #include "Header.h"
-
+#include "RefParameter.h"
 
 /*=============================全局变量定义 Start=============================*/
 //正弦余弦系数
@@ -22,9 +22,9 @@ float Cos1step = 0;  //cos(2*PI*step/RFFT_SIZE)
 float Sin1step = 0;  //sin(2*PI*step/RFFT_SIZE)
 float TwoDivideN = 0; //2/N
 /*=============================全局变量定义 End=============================*/
-extern float32 RFFToutBuff[RFFT_SIZE]; //from MonitorCalculate.c
-extern struct  FreqCollect FreqMonitor; //from MonitorCalculate.c
-/*=============================引用变量 extern Start=============================*/
+
+
+
 
 /**************************************************
  *函数名：CaliAB_Base()
@@ -98,14 +98,15 @@ void CaliAB_Base(float yangben[],AngleElement* pBase)
       }
 }
 
-/**************************************************
- *函数名：GetNewFreq()
- *功能：计算修正后的频率
- *形参：float yangben[] 两个周期的样本值, float f0 当前频率, float* pFq 修正后的频率
- *返回值：void
- *调用函数：
- *引用外部变量：
-****************************************************/
+
+/**
+ * 计算修正后的频率
+ *
+ * @param  yangben   两个周期的样本值
+ * @param  f0        当前频率
+ * @param  *pFq      修正后的频率指针
+ * @brief  利用历史数据校正频率
+ */
 void GetNewFreq(float yangben[], float f0, float* pFq)
 {
 	float df1 = 0, r = 0, dA = 0;
@@ -142,42 +143,44 @@ void GetNewFreq(float yangben[], float f0, float* pFq)
 
 
 
-/********************************************************************
- * 函数名：CalFreq()
- * 参数：Uint16* pData -- 需要的2*N个数据，可以是直接数据或处理后的数据
- * 返回值：NULL
- * 功能：计算频率模块，根据数据计算频率
- *调用函数：
- *引用外部变量：
- ********************************************************************/
+
+/**
+ * 计算频率模块，根据数据计算频率
+ *
+ * @param  pData   指向处理数据的指针，需要的2*N个数据，可以是直接数据或处理后的数据
+ *
+ * @brief   利用历史数据校正频率
+ */
 void CalFreq(float* pData)
 {
   if (pData[SAMPLE_LEN] == SAMPLE_COMPLTE) //已经完成采样
     {
 
-      GetNewFreq(pData, FreqMonitor.FreqReal, &FreqMonitor.FreqCal); //求取新频率
+      GetNewFreq(pData, g_FreqMonitor.FreqReal, &g_FreqMonitor.FreqCal); //求取新频率
       pData[SAMPLE_LEN] = SAMPLE_NOT_FULL; //置为非满标志
+
       //判断新求得的频率是否在阈值内，如果不在区域内，则置频率为默认频率，并报错
-      if (FreqMonitor.FreqCal >= FREQ_MIN && FreqMonitor.FreqCal <= FREQ_MAX)
+      if (g_FreqMonitor.FreqCal >= FREQ_MIN && g_FreqMonitor.FreqCal <= FREQ_MAX)
         {
-          FreqMonitor.FreqReal = FreqMonitor.FreqCal; //置新频率为默认频率  //
+          g_FreqMonitor.FreqReal = g_FreqMonitor.FreqCal; //置新频率为默认频率  //
         }
       else
         {
-          FreqMonitor.FreqReal = FreqMonitor.FreqInit; //置为默认频率
+          g_FreqMonitor.FreqReal = g_FreqMonitor.FreqInit; //置为默认频率
           //发送错误信息
         }
     }
 }
 
-/********************************************************************
- * 函数名：MidMeanFilter()
- * 参数：float *pData -- 指向数据数组, Uint8 len -- 数据长度
- * 返回值：float 中值滤波结果
- * 功能：中值平均滤波,去掉最小值与最大值求取平均值
- * 调用函数：null
- * 引用外部变量：null
- ********************************************************************/
+
+/**
+ * 中值数字滤波模块
+ *
+ * @param  pData   指向带滤波的数组
+ * @param  len     数据长度
+ * @return         平均滤波结果
+ * @brief   中值平均滤波,去掉最小值与最大值求取平均值
+ */
 float  MidMeanFilter(float *pData, Uint8 len)
 {
 	float min = 0, max = 0, sum = 0;

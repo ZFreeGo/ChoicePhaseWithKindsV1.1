@@ -12,6 +12,7 @@
 #include "Timer.h"
 #include "DeviceNet.h"
 #include "RefParameter.h"
+#include "SampleProcess.h"
 
 
 //ÔÝ´æÉÏÒ»´ÎÃüÁî×Ö
@@ -164,6 +165,8 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					 {
 						 g_PhaseActionRad[i].enable = 0;
 					 }
+					 ZVDFlag = 0xFF;
+
 					 memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 					 pSendFrame->pBuffer[0] = id| 0x80;
 					 pSendFrame->len = pReciveFrame->len;
