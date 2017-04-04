@@ -11,13 +11,15 @@
 #include "DSP28x_Project.h"
 #include "Timer.h"
 #include "DeviceNet.h"
+#include "RefParameter.h"
+
 
 //暂存上一次命令字
 uint8_t LastFlag = 0;
 uint8_t CommandData[10] = {0};
 uint8_t LastLen = 0;
 uint32_t LastTime = 0;
-ActionRad PhaseActionRad[3];//三相动作
+
 
 /**
  * 初始化使用的数据
@@ -152,15 +154,15 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					 count = (pReciveFrame->len - 2)/2;
 					 for(i = 0; i < count; i++)
 					 {
-						 PhaseActionRad[i].phase = (loopByte>>(2*i));
-						 PhaseActionRad[i].actionRad =
+						 g_PhaseActionRad[i].phase = (loopByte>>(2*i));
+						 g_PhaseActionRad[i].actionRad =
 								 pReciveFrame->pBuffer[2*i + 2] + ((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8;
-						 PhaseActionRad[i].enable = 0xFF;
+						 g_PhaseActionRad[i].enable = 0xFF;
 					 }
 					 //禁止合闸动作相角
 					 for (i = count; i < 3; i++)
 					 {
-						 PhaseActionRad[i].enable = 0;
+						 g_PhaseActionRad[i].enable = 0;
 					 }
 					 memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 					 pSendFrame->pBuffer[0] = id| 0x80;

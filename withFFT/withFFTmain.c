@@ -155,6 +155,9 @@ int main(void)
 			SetSamplePriod(samplePriod);
 			StartSample(); //继续开始采样，再次测频
 		}
+		AckMsgService();
+
+
 	}
 
 	

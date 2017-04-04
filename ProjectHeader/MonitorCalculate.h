@@ -53,7 +53,7 @@ struct OrderParamCollect
 	float SetPhaseTime; //相位折算为时间 对应Cos
 	Uint16 HeFenFlag; //合分闸标识 0-合闸  0xffff 分闸
 
-} ;
+};
 
 #ifdef	__cplusplus
 extern "C" {

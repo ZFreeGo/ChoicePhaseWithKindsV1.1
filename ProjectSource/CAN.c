@@ -104,6 +104,7 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 		 uint32_t data3 = 0;
 
 		 ECanaRegs.CANME.all = 0x00010000;
+		 ECanaMboxes.MBOX0.MSGID.bit.IDE = 0; //±ê×¼Ö¡ When AMI = 0:
 		 ECanaMboxes.MBOX0.MSGID.bit.STDMSGID = id;
 		 ECanaRegs.CANME.all = 0x00010001;
 

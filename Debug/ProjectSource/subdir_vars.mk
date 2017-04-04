@@ -14,6 +14,7 @@ C_SRCS += \
 ../ProjectSource/DeviceNet.c \
 ../ProjectSource/MonitorCalculate.c \
 ../ProjectSource/PwmTimer.c \
+../ProjectSource/RefParameter.c \
 ../ProjectSource/SampleProcess.c \
 ../ProjectSource/Timer.c 
 
@@ -26,6 +27,7 @@ OBJS += \
 ./ProjectSource/DeviceNet.obj \
 ./ProjectSource/MonitorCalculate.obj \
 ./ProjectSource/PwmTimer.obj \
+./ProjectSource/RefParameter.obj \
 ./ProjectSource/SampleProcess.obj \
 ./ProjectSource/Timer.obj 
 
@@ -37,6 +39,7 @@ C_DEPS += \
 ./ProjectSource/DeviceNet.d \
 ./ProjectSource/MonitorCalculate.d \
 ./ProjectSource/PwmTimer.d \
+./ProjectSource/RefParameter.d \
 ./ProjectSource/SampleProcess.d \
 ./ProjectSource/Timer.d 
 
@@ -51,6 +54,7 @@ C_DEPS__QUOTED += \
 "ProjectSource\DeviceNet.d" \
 "ProjectSource\MonitorCalculate.d" \
 "ProjectSource\PwmTimer.d" \
+"ProjectSource\RefParameter.d" \
 "ProjectSource\SampleProcess.d" \
 "ProjectSource\Timer.d" 
 
@@ -66,6 +70,7 @@ OBJS__QUOTED += \
 "ProjectSource\DeviceNet.obj" \
 "ProjectSource\MonitorCalculate.obj" \
 "ProjectSource\PwmTimer.obj" \
+"ProjectSource\RefParameter.obj" \
 "ProjectSource\SampleProcess.obj" \
 "ProjectSource\Timer.obj" 
 
@@ -77,6 +82,7 @@ C_SRCS__QUOTED += \
 "../ProjectSource/DeviceNet.c" \
 "../ProjectSource/MonitorCalculate.c" \
 "../ProjectSource/PwmTimer.c" \
+"../ProjectSource/RefParameter.c" \
 "../ProjectSource/SampleProcess.c" \
 "../ProjectSource/Timer.c" 
 

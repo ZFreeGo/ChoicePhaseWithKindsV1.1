@@ -212,9 +212,9 @@ struct DefFrameData
 #define GET_GROUP2_FUNCTION(id)  ((id)&0x0007 ) 
 #define GROUP2_MSG 2 //组2报文
 //生成GROUP1 ID
-#define MAKE_GROUP1_ID(function, mac_id) (int32_t)((((function) &0x1F)<<6) | ((mac_id) & 0x3F))
+#define MAKE_GROUP1_ID(function, mac_id) (int32_t)((((uint16_t)(function) &0x1F)<<6) | ((uint16_t)(mac_id) & 0x3F))
 //生成GROUP2 ID
-#define MAKE_GROUP2_ID(function, mac_id)  (int32_t)( (0x0400) | ((int32_t)((mac_id) &0x3F)<<3) | ((function) & 0x07))
+#define MAKE_GROUP2_ID(function, mac_id)  (int32_t)( (0x0400) | ((int32_t)((mac_id) &0x3F)<<3) | ((uint16_t)(function) & 0x07))
 
 
 
@@ -225,13 +225,14 @@ extern unsigned char CheckMACID(struct DefFrameData* pReciveFrame, struct DefFra
 extern void DeviceMonitorPluse(void);
 extern BOOL DeviceNetReciveCenter(UINT* pID, USINT * pbuff,USINT len);
 extern void InitDeviceNet();
+
+extern void AckMsgService(void);
 //////////////供其他模块调用的变量/////////////////
 extern struct DefDeviceNetObj  DeviceNetObj;
 extern struct DefIdentifierObject   IdentifierObj;
 extern struct DefConnectionObj  VisibleConnectionObj;
 extern struct DefConnectionObj CycleInquireConnedctionObj;
-extern BYTE  send_buf[10];
-extern BYTE  ADC_Data[8];
+
 
 
 #ifdef	__cplusplus

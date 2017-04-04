@@ -40,6 +40,7 @@ void ResponseMACID(struct DefFrameData* pSendFrame, BYTE config);
 void VisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 static void CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
+static void AckCycleInquireMsgService(void);
 
 BOOL IsTimeRemain();    //需要根据具体平台改写
 void StartOverTimer();//需要根据具体平台改写
@@ -54,18 +55,27 @@ struct DefConnectionObj  VisibleConnectionObj;   //显示连接
 struct DefDeviceNetClass  DeviceNetClass = {2}; //
 struct DefDeviceNetObj  DeviceNetObj;
 struct DefIdentifierObject  IdentifierObj; 
-/////////////////////////////////////////////////////////////////
+
+/**
+ * DeviceNet请求数据标志，如轮询请求等  bit1-0 = 11 轮询请求
+ */
+volatile uint16_t g_DeviceNetRequstData = 0;
+
+
+//////////////////////文件变量///////////////////////////////////////////
 
 BYTE  SendBufferData[10];//接收缓冲数据
 BYTE  ReciveBufferData[10];//接收缓冲数据
 struct DefFrameData  DeviceNetReciveFrame; //接收帧处理
 struct DefFrameData  DeviceNetSendFrame; //接收帧处理
 
-BYTE  out_Data[8];//从站输出数组
-
 static volatile USINT WorkMode = 0; //
 
 static volatile uint8_t StartTime = 0;
+
+
+
+
 
 /*******************************************************************************
 * 函数名:	void InitDeviceNet()
@@ -106,6 +116,7 @@ void InitDeviceNet()
     }
     
     WorkMode = MODE_NORMAL;
+    g_DeviceNetRequstData = 0;//请求标志清0
 }
 
 /*******************************************************************************
@@ -1060,26 +1071,54 @@ void VisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* p
 *********************************************************************************/
 static void  CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 {
-	uint8_t result = 0;
+
 
     if(CycleInquireConnedctionObj.state != STATE_LINKED )	//轮询I/O连接没建立
 		return ;
-    result = FrameServer(pReciveFrame,  pSendFrame);
-    if (result !=0)
-    {
-    	   pSendFrame->pBuffer[0] = 0x14;
-    	   pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[0];
-    	   pSendFrame->pBuffer[2] = result;
-    	   pSendFrame->pBuffer[3] = 0xFF;
-    	   pSendFrame->len = 4;
-    }
-    pReciveFrame->complteFlag = 0;
-    
-    pSendFrame->ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);   
 
-  	SendData(pSendFrame);
+    g_DeviceNetRequstData |= 0x0003; //置位请求标志
+   // result = FrameServer(pReciveFrame,  pSendFrame);
+    //if (result !=0)
+   // {
+    //	   pSendFrame->pBuffer[0] = 0x14;
+    //	   pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[0];
+    //	   pSendFrame->pBuffer[2] = result;
+    //	   pSendFrame->pBuffer[3] = 0xFF;
+    //	   pSendFrame->len = 4;
+    //}
+   // pReciveFrame->complteFlag = 0;
+    
+   // pSendFrame->ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
+
+  	//SendData(pSendFrame);
 	return ;
 }
+
+/**
+ * 应答循环请求服务
+ * @brief   应答循环帧处理
+ */
+static void AckCycleInquireMsgService(void)
+{
+	uint8_t result = 0;
+	//不处理完整，不接收新的帧
+	result = FrameServer(&DeviceNetReciveFrame, &DeviceNetSendFrame);
+	if (result !=0)
+	{
+		DeviceNetSendFrame.pBuffer[0] = 0x14;
+		DeviceNetSendFrame.pBuffer[1] = DeviceNetReciveFrame.pBuffer[0];
+		DeviceNetSendFrame.pBuffer[2] = result;
+		DeviceNetSendFrame.pBuffer[3] = 0xFF;
+		DeviceNetSendFrame.len = 4;
+	 }
+	DeviceNetReciveFrame.complteFlag = 0;
+
+	DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
+
+	SendData(&DeviceNetSendFrame);
+}
+
+
 /*******************************************************************************
 ** 函数名:	void DeviceMonitorPluse(void)
 ** 功能描述:	设备监测脉冲函数
@@ -1190,6 +1229,27 @@ BOOL IsTimeRemain()
 	        return FALSE;
 	    }
 	    return TRUE;
+
+
+}
+
+/**
+ * 应答请求服务--非紧急情况下
+ * @brief   应答循环帧处理
+ */
+void AckMsgService(void)
+{
+	if(g_DeviceNetRequstData == 0)
+	{
+		return;
+	}
+	if ((g_DeviceNetRequstData & 0x0003)==0x0003)//轮询消息
+	{
+		AckCycleInquireMsgService();
+		g_DeviceNetRequstData &= 0xFFFC; //清除标志位
+	}
+
+
 
 
 }
