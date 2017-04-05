@@ -438,8 +438,12 @@ void SynchronizTrigger(float* pData)
 									difftime + g_ProcessDelayTime[PHASE_A].compensationTime;
 			}
 			DELAY_US(g_ProcessDelayTime[PHASE_A].calDelay);
+
 			//Êä³ö¶¯×÷
 			//
+			SET_OUTA8_H;
+			DELAY_US(1000000);
+			SET_OUTA8_L;
 		}
 
 

@@ -1,10 +1,10 @@
 ******************************************************************************
              TMS320C2000 Linker PC v15.12.3                    
 ******************************************************************************
->> Linked Tue Apr 04 17:16:07 2017
+>> Linked Wed Apr 05 11:48:39 2017
 
 OUTPUT FILE NAME:   <ChoicePhaseWithKindsV1.1.out>
-ENTRY POINT SYMBOL: "_c_int00"  address: 00009b18
+ENTRY POINT SYMBOL: "_c_int00"  address: 00009b28
 
 
 MEMORY CONFIGURATION
@@ -14,7 +14,7 @@ MEMORY CONFIGURATION
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
   RAMM0                 00000050   000003b0  000000dc  000002d4  RWIX
-  RAML0_L3              00008000   00002000  00001e54  000001ac  RWIX
+  RAML0_L3              00008000   00002000  00001e64  0000019c  RWIX
   FPUTABLES             003fd860   000006a0  000006a0  00000000  RWIX
   IQTABLES              003fdf00   00000b50  00000000  00000b50  RWIX
   IQTABLES2             003fea50   0000008c  00000000  0000008c  RWIX
@@ -110,56 +110,57 @@ codestart
 ramfuncs   0    00000128    00000004     
                   00000128    00000004     F2806x_usDelay.obj (ramfuncs)
 
-.text      0    00008000    00001e54     
+.text      0    00008000    00001e64     
                   00008000    0000063d     DeviceNet.obj (.text)
                   0000863d    0000039b     F2806x_DefaultIsr.obj (.text:retain)
-                  000089d8    00000283     MonitorCalculate.obj (.text)
-                  00008c5b    000001bb     F2806x_Adc.obj (.text)
-                  00008e16    0000019d     FrequencyCalutate.obj (.text)
-                  00008fb3    00000186     F2806x_SysCtrl.obj (.text)
-                  00009139    00000001     rts2800_fpu32.lib : startup.obj (.text)
-                  0000913a    0000011d     C28x_FPU_Lib.lib : RFFT_f32.obj (.text)
-                  00009257    00000001     --HOLE-- [fill = 0]
-                  00009258    0000010f     Action.obj (.text)
-                  00009367    000000de     RefParameter.obj (.text)
-                  00009445    000000d8     CAN.obj (.text)
-                  0000951d    000000a8     withFFTmain.obj (.text)
-                  000095c5    0000009c     rts2800_fpu32.lib : fd_add.obj (.text)
-                  00009661    00000096     SampleProcess.obj (.text:retain)
-                  000096f7    00000093     F2806x_ECan.obj (.text)
-                  0000978a    0000008b     rts2800_fpu32.lib : fd_div.obj (.text)
-                  00009815    00000085     PwmTimer.obj (.text:retain)
-                  0000989a    00000083     rts2800_fpu32.lib : fd_mpy.obj (.text)
-                  0000991d    00000071     CAN.obj (.text:retain)
-                  0000998e    00000070     C28x_FPU_Lib.lib : RFFT_f32_sincostable.obj (.text)
-                  000099fe    00000069     ConfigADC.obj (.text)
-                  00009a67    00000059     DeviceIO.obj (.text)
-                  00009ac0    00000058     F2806x_CpuTimers.obj (.text)
-                  00009b18    00000056     rts2800_fpu32.lib : boot.obj (.text)
-                  00009b6e    0000004a     rts2800_fpu32_fast_supplement.lib : atan_f32.obj (.text)
-                  00009bb8    00000046     rts2800_fpu32.lib : cpy_tbl.obj (.text)
-                  00009bfe    0000003c     Timer.obj (.text:retain)
-                  00009c3a    00000034     rts2800_fpu32_fast_supplement.lib : cos_f32.obj (.text)
-                  00009c6e    00000034                                       : sin_f32.obj (.text)
-                  00009ca2    00000030     SampleProcess.obj (.text)
-                  00009cd2    00000029     rts2800_fpu32.lib : exit.obj (.text)
-                  00009cfb    00000028     F2806x_PieCtrl.obj (.text)
-                  00009d23    0000001e     rts2800_fpu32.lib : memcpy.obj (.text)
-                  00009d41    0000001c                       : fs_tofd.obj (.text)
-                  00009d5d    0000001b     Timer.obj (.text)
-                  00009d78    0000001b     rts2800_fpu32.lib : fd_toul.obj (.text)
-                  00009d93    0000001a                       : cpy_utils.obj (.text)
-                  00009dad    00000019                       : args_main.obj (.text)
-                  00009dc6    00000019                       : prolog.obj (.text)
-                  00009ddf    00000019     rts2800_fpu32_fast_supplement.lib : div_f32.obj (.text)
-                  00009df8    00000017     rts2800_fpu32.lib : u_tofd.obj (.text)
-                  00009e0f    00000011     F2806x_PieVect.obj (.text)
-                  00009e20    0000000e     rts2800_fpu32.lib : fd_sub.obj (.text)
-                  00009e2e    0000000c                       : epilog.obj (.text)
-                  00009e3a    00000009                       : _lock.obj (.text)
-                  00009e43    00000008     F2806x_CodeStartBranch.obj (.text)
-                  00009e4b    00000007     F2806x_DisInt.obj (.text)
-                  00009e52    00000002     rts2800_fpu32.lib : pre_init.obj (.text)
+                  000089d8    00000292     MonitorCalculate.obj (.text)
+                  00008c6a    000001bb     F2806x_Adc.obj (.text)
+                  00008e25    00000001     rts2800_fpu32.lib : startup.obj (.text)
+                  00008e26    0000019d     FrequencyCalutate.obj (.text)
+                  00008fc3    00000186     F2806x_SysCtrl.obj (.text)
+                  00009149    00000001     --HOLE-- [fill = 0]
+                  0000914a    0000011d     C28x_FPU_Lib.lib : RFFT_f32.obj (.text)
+                  00009267    00000001     --HOLE-- [fill = 0]
+                  00009268    0000010f     Action.obj (.text)
+                  00009377    000000de     RefParameter.obj (.text)
+                  00009455    000000d8     CAN.obj (.text)
+                  0000952d    000000a8     withFFTmain.obj (.text)
+                  000095d5    0000009c     rts2800_fpu32.lib : fd_add.obj (.text)
+                  00009671    00000096     SampleProcess.obj (.text:retain)
+                  00009707    00000093     F2806x_ECan.obj (.text)
+                  0000979a    0000008b     rts2800_fpu32.lib : fd_div.obj (.text)
+                  00009825    00000085     PwmTimer.obj (.text:retain)
+                  000098aa    00000083     rts2800_fpu32.lib : fd_mpy.obj (.text)
+                  0000992d    00000071     CAN.obj (.text:retain)
+                  0000999e    00000070     C28x_FPU_Lib.lib : RFFT_f32_sincostable.obj (.text)
+                  00009a0e    00000069     ConfigADC.obj (.text)
+                  00009a77    00000059     DeviceIO.obj (.text)
+                  00009ad0    00000058     F2806x_CpuTimers.obj (.text)
+                  00009b28    00000056     rts2800_fpu32.lib : boot.obj (.text)
+                  00009b7e    0000004a     rts2800_fpu32_fast_supplement.lib : atan_f32.obj (.text)
+                  00009bc8    00000046     rts2800_fpu32.lib : cpy_tbl.obj (.text)
+                  00009c0e    0000003c     Timer.obj (.text:retain)
+                  00009c4a    00000034     rts2800_fpu32_fast_supplement.lib : cos_f32.obj (.text)
+                  00009c7e    00000034                                       : sin_f32.obj (.text)
+                  00009cb2    00000030     SampleProcess.obj (.text)
+                  00009ce2    00000029     rts2800_fpu32.lib : exit.obj (.text)
+                  00009d0b    00000028     F2806x_PieCtrl.obj (.text)
+                  00009d33    0000001e     rts2800_fpu32.lib : memcpy.obj (.text)
+                  00009d51    0000001c                       : fs_tofd.obj (.text)
+                  00009d6d    0000001b     Timer.obj (.text)
+                  00009d88    0000001b     rts2800_fpu32.lib : fd_toul.obj (.text)
+                  00009da3    0000001a                       : cpy_utils.obj (.text)
+                  00009dbd    00000019                       : args_main.obj (.text)
+                  00009dd6    00000019                       : prolog.obj (.text)
+                  00009def    00000019     rts2800_fpu32_fast_supplement.lib : div_f32.obj (.text)
+                  00009e08    00000017     rts2800_fpu32.lib : u_tofd.obj (.text)
+                  00009e1f    00000011     F2806x_PieVect.obj (.text)
+                  00009e30    0000000e     rts2800_fpu32.lib : fd_sub.obj (.text)
+                  00009e3e    0000000c                       : epilog.obj (.text)
+                  00009e4a    00000009                       : _lock.obj (.text)
+                  00009e53    00000008     F2806x_CodeStartBranch.obj (.text)
+                  00009e5b    00000007     F2806x_DisInt.obj (.text)
+                  00009e62    00000002     rts2800_fpu32.lib : pre_init.obj (.text)
 
 .pinit     0    00000050    00000000     UNINITIALIZED
 
@@ -452,7 +453,7 @@ MODULE SUMMARY
                                                                
     .\ProjectSource\
        DeviceNet.obj                   1597   0         284    
-       MonitorCalculate.obj            643    0         727    
+       MonitorCalculate.obj            658    0         727    
        SampleProcess.obj               198    0         676    
        CAN.obj                         329    0         21     
        RefParameter.obj                222    0         106    
@@ -463,7 +464,7 @@ MODULE SUMMARY
        Timer.obj                       87     0         0      
        BasicModule.obj                 0      0         16     
     +--+-------------------------------+------+---------+---------+
-       Total:                          3674   0         1869   
+       Total:                          3689   0         1869   
                                                                
     .\source\
        F2806x_GlobalVariableDefs.obj   0      0         3550   
@@ -524,7 +525,7 @@ MODULE SUMMARY
                                                                
        Stack:                          0      0         1024   
     +--+-------------------------------+------+---------+---------+
-       Grand Total:                    7769   0         8488   
+       Grand Total:                    7784   0         8488   
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -745,15 +746,15 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 page  address   name                                  
 ----  -------   ----                                  
 0     00008000  .text                                 
-0     00009cd2  C$$EXIT                               
-0     000095c5  FD$$ADD                               
-0     0000978a  FD$$DIV                               
-0     0000989a  FD$$MPY                               
-0     00009e20  FD$$SUB                               
-0     00009d78  FD$$TOUL                              
-0     00009ddf  FS$$DIV                               
-0     00009d41  FS$$TOFD                              
-0     00009df8  U$$TOFD                               
+0     00009ce2  C$$EXIT                               
+0     000095d5  FD$$ADD                               
+0     0000979a  FD$$DIV                               
+0     000098aa  FD$$MPY                               
+0     00009e30  FD$$SUB                               
+0     00009d88  FD$$TOUL                              
+0     00009def  FS$$DIV                               
+0     00009d51  FS$$TOFD                              
+0     00009e08  U$$TOFD                               
 0     000089ce  _ADCINT1_ISR                          
 0     000089c4  _ADCINT2_ISR                          
 0     000089ba  _ADCINT3_ISR                          
@@ -763,16 +764,16 @@ page  address   name
 0     00008992  _ADCINT7_ISR                          
 0     00008988  _ADCINT8_ISR                          
 0     0000897e  _ADCINT9_ISR                          
-0     00009661  _ADC_INT1_ISR                         
+0     00009671  _ADC_INT1_ISR                         
 0     0000860a  _AckMsgService                        
-0     00009360  _ActionDataInit                       
-0     00008cb0  _AdcChanSelect                        
-0     00008d08  _AdcConversion                        
-0     00008df1  _AdcOffsetSelfCal                     
+0     00009370  _ActionDataInit                       
+0     00008cbf  _AdcChanSelect                        
+0     00008d17  _AdcConversion                        
+0     00008e00  _AdcOffsetSelfCal                     
 1     00007100  _AdcRegs                              
 1     00000b00  _AdcResult                            
 0     000085a1  _CANFrameFilter                       
-0     00009475  _CANSendData                          
+0     00009485  _CANSendData                          
 0     00008974  _CLA1_INT1_ISR                        
 0     0000896a  _CLA1_INT2_ISR                        
 0     00008960  _CLA1_INT3_ISR                        
@@ -781,10 +782,10 @@ page  address   name
 0     00008942  _CLA1_INT6_ISR                        
 0     00008938  _CLA1_INT7_ISR                        
 0     0000892e  _CLA1_INT8_ISR                        
-0     00008f7b  _CalFreq                              
+0     00008f8b  _CalFreq                              
 1     0000a3dc  _CalTimeMonitor                       
-0     00008ee0  _CaliAB_Base                          
-0     0000991d  _Can0Recive_ISR                       
+0     00008ef0  _CaliAB_Base                          
+0     0000992d  _Can0Recive_ISR                       
 0     00008117  _CheckAllocateCode                    
 0     00008522  _CheckMACID                           
 0     000080ce  _CheckReleaseCode                     
@@ -793,8 +794,8 @@ page  address   name
 1     00006400  _Comp1Regs                            
 1     00006420  _Comp2Regs                            
 1     00006440  _Comp3Regs                            
-0     00009a29  _ConfigADC_Monitor                    
-0     00009af5  _ConfigCpuTimer                       
+0     00009a39  _ConfigADC_Monitor                    
+0     00009b05  _ConfigCpuTimer                       
 0     000080a9  _ConnectionClassService               
 1     0000a3aa  _Cos1step                             
 1     0000a292  _CpuTimer0                            
@@ -803,10 +804,10 @@ page  address   name
 1     00000c08  _CpuTimer1Regs                        
 1     0000a28a  _CpuTimer2                            
 1     00000c10  _CpuTimer2Regs                        
-0     00009bfe  _Cpu_timer0_isr                       
+0     00009c0e  _Cpu_timer0_isr                       
 1     003f7ff8  _CsmPwl                               
 1     00000ae0  _CsmRegs                              
-0     0000910b  _CsmUnlock                            
+0     0000911b  _CsmUnlock                            
 0     0000800a  _CycInquireConnectObjService          
 1     0000a380  _CycleInquireConnedctionObj           
 0     00008924  _DATALOG_ISR                          
@@ -816,8 +817,8 @@ page  address   name
 0     000088fc  _DINTCH4_ISR                          
 0     000088f2  _DINTCH5_ISR                          
 0     000088e8  _DINTCH6_ISR                          
-0     00009e4b  _DSP28x_DisableInt                    
-0     00009e4f  _DSP28x_RestoreInt                    
+0     00009e5b  _DSP28x_DisableInt                    
+0     00009e5f  _DSP28x_RestoreInt                    
 0     00000128  _DSP28x_usDelay                       
 1     00000880  _DevEmuRegs                           
 0     00008609  _DeviceMonitorPluse                   
@@ -828,7 +829,7 @@ page  address   name
 0     000085ce  _DeviceNetReciveCenter                
 1     0000a2d4  _DeviceNetReciveFrame                 
 1     0000a2dc  _DeviceNetSendFrame                   
-0     00008ff5  _DisableDog                           
+0     00009005  _DisableDog                           
 1     00001000  _DmaRegs                              
 0     000088de  _ECAN0INTA_ISR                        
 0     000088d4  _ECAN1INTA_ISR                        
@@ -879,10 +880,10 @@ page  address   name
 1     00006b40  _EQep2Regs                            
 1     00000d01  _EmuBMode                             
 1     00000d00  _EmuKey                               
-0     00009d1a  _EnableInterrupts                     
-0     000090f3  _ExtOscSel                            
+0     00009d2a  _EnableInterrupts                     
+0     00009103  _ExtOscSel                            
 0     000089d8  _FFT_Cal                              
-0     00008ac3  _FFT_Init                             
+0     00008ad2  _FFT_Init                             
 0     003fdd62  _FPUatan2HalfPITable                  
 0     003fdd66  _FPUatan2Table                        
 0     003fdeec  _FPUatan2TableEnd                     
@@ -894,9 +895,9 @@ page  address   name
 1     00000a80  _FlashRegs                            
 1     00000d04  _Flash_CPUScaleFactor                 
 1     00000d02  _Flash_CallbackPtr                    
-0     00009258  _FrameServer                          
-0     00008e47  _GetNewFreq                           
-0     00008b3a  _GetOVD                               
+0     00009268  _FrameServer                          
+0     00008e57  _GetNewFreq                           
+0     00008b49  _GetOVD                               
 1     00006f80  _GpioCtrlRegs                         
 1     00006fc0  _GpioDataRegs                         
 1     00006fe0  _GpioIntRegs                          
@@ -917,30 +918,30 @@ page  address   name
 0     00008458  _IdentifierClassService               
 1     0000a300  _IdentifierObj                        
 0     000083b0  _IdentifierObjService                 
-0     00008c81  _InitAdc                              
-0     00008c5b  _InitAdcAio                           
-0     00009ac0  _InitCpuTimers                        
+0     00008c90  _InitAdc                              
+0     00008c6a  _InitAdcAio                           
+0     00009ad0  _InitCpuTimers                        
 0     00008194  _InitCycleInquireConnectionObj        
-0     00009a67  _InitDeviceIO                         
+0     00009a77  _InitDeviceIO                         
 0     00008559  _InitDeviceNet                        
-0     00009712  _InitECan                             
-0     000096f7  _InitECanGpio                         
-0     00009712  _InitECana                            
-0     000096f7  _InitECanaGpio                        
-0     00008adb  _InitMonitorCalData                   
-0     0000904f  _InitPeripheralClocks                 
-0     00009cfb  _InitPieCtrl                          
-0     00009e0f  _InitPieVectTable                     
-0     00008ffd  _InitPll                              
-0     000090c6  _InitPll2                             
-0     00009ca2  _InitSampleProcessData                
-0     00009445  _InitStandardCAN                      
+0     00009722  _InitECan                             
+0     00009707  _InitECanGpio                         
+0     00009722  _InitECana                            
+0     00009707  _InitECanaGpio                        
+0     00008aea  _InitMonitorCalData                   
+0     0000905f  _InitPeripheralClocks                 
+0     00009d0b  _InitPieCtrl                          
+0     00009e1f  _InitPieVectTable                     
+0     0000900d  _InitPll                              
+0     000090d6  _InitPll2                             
+0     00009cb2  _InitSampleProcessData                
+0     00009455  _InitStandardCAN                      
 0     0000817a  _InitStatusChangedConnectionObj       
-0     000090ae  _InitSysCtrl                          
+0     000090be  _InitSysCtrl                          
 0     00008160  _InitVisibleConnectionObj             
-0     00008fe5  _IntOsc1Sel                           
-0     00008fd1  _IntOsc2Sel                           
-0     00009d5d  _IsOverTime                           
+0     00008ff5  _IntOsc1Sel                           
+0     00008fe1  _IntOsc2Sel                           
+0     00009d6d  _IsOverTime                           
 0     00008512  _IsTimeRemain                         
 0     00008787  _LUF_ISR                              
 0     0000877d  _LVF_ISR                              
@@ -950,7 +951,7 @@ page  address   name
 0     00008773  _MRINTA_ISR                           
 0     00008769  _MXINTA_ISR                           
 1     00005000  _McbspaRegs                           
-0     00008e16  _MidMeanFilter                        
+0     00008e26  _MidMeanFilter                        
 0     0000875f  _NMI_ISR                              
 1     00007060  _NmiIntruptRegs                       
 0     00008755  _PIE_RESERVED                         
@@ -959,8 +960,8 @@ page  address   name
 1     00000d00  _PieVectTable                         
 1     00010000  _PieVectTableInit                     
 1     00012000  _RFFTF32Coef                          
-0     0000913a  _RFFT_f32                             
-0     0000998e  _RFFT_f32_sincostable                 
+0     0000914a  _RFFT_f32                             
+0     0000999e  _RFFT_f32_sincostable                 
 1     0000d000  _RFFTin1Buff                          
 1     00010140  _RFFTmagBuff                          
 1     0000e000  _RFFToutBuff                          
@@ -968,7 +969,7 @@ page  address   name
 0     0000874b  _RTOSINT_ISR                          
 1     0000a2aa  _ReceiveData                          
 1     0000a2e4  _ReciveBufferData                     
-0     00009367  _RefParameterInit                     
+0     00009377  _RefParameterInit                     
 0     000084e0  _ResponseMACID                        
 0     0000847d  _RountineClassObjService              
 0     00008741  _SCIRXINTA_ISR                        
@@ -989,16 +990,16 @@ page  address   name
 1     00007750  _ScibRegs                             
 1     0000a2ee  _SendBufferData                       
 0     00008000  _SendData                             
-0     00008fc7  _ServiceDog                           
+0     00008fd7  _ServiceDog                           
 1     0000a3ec  _SetParam                             
-0     00009a0b  _SetSamplePriod                       
+0     00009a1b  _SetSamplePriod                       
 1     0000a3a6  _Sin1step                             
 1     00007040  _SpiaRegs                             
 1     00007740  _SpibRegs                             
 0     000084d9  _StartOverTimer                       
-0     00009a03  _StartSample                          
+0     00009a13  _StartSample                          
 1     0000a30e  _StatusChangedConnedctionObj          
-0     000099fe  _StopSample                           
+0     00009a0e  _StopSample                           
 0     000089f0  _SynchronizTrigger                    
 1     00007010  _SysCtrlRegs                          
 1     00000985  _SysPwrCtrlRegs                       
@@ -1027,7 +1028,7 @@ page  address   name
 0     00008651  _XINT2_ISR                            
 0     00008647  _XINT3_ISR                            
 1     00007070  _XIntruptRegs                         
-0     00008fb3  _XtalOscSel                           
+0     00008fc3  _XtalOscSel                           
 1     0000a002  _ZVDFlag                              
 1     00000800  __STACK_END                           
 abs   00000400  __STACK_SIZE                          
@@ -1040,37 +1041,37 @@ abs   ffffffff  ___TI_prof_data_start
 abs   ffffffff  ___binit__                            
 abs   ffffffff  ___c_args__                           
 0     00000050  ___cinit__                            
-0     00009e54  ___etext__                            
+0     00009e64  ___etext__                            
 abs   ffffffff  ___pinit__                            
 0     00008000  ___text__                             
-0     00009dad  __args_main                           
+0     00009dbd  __args_main                           
 1     0000a2bc  __lock                                
-0     00009e42  __nop                                 
-0     00009e3e  __register_lock                       
-0     00009e3a  __register_unlock                     
+0     00009e52  __nop                                 
+0     00009e4e  __register_lock                       
+0     00009e4a  __register_unlock                     
 1     00000400  __stack                               
-0     00009139  __system_post_cinit                   
-0     00009e52  __system_pre_init                     
+0     00008e25  __system_post_cinit                   
+0     00009e62  __system_pre_init                     
 1     0000a2be  __unlock                              
 1     0000a3c8  _a                                    
-0     00009cd2  _abort                                
-0     00009b6e  _atan                                 
+0     00009ce2  _abort                                
+0     00009b7e  _atan                                 
 1     0000a3c4  _b                                    
-0     00009b18  _c_int00                              
-0     00009bb8  _copy_in                              
-0     00009c3a  _cos                                  
+0     00009b28  _c_int00                              
+0     00009bc8  _copy_in                              
+0     00009c4a  _cos                                  
 1     0000a3c2  _count                                
 1     0000a2a8  _dataError                            
-0     00009d93  _ddcopy                               
+0     00009da3  _ddcopy                               
 1     0000a2c3  _device_type                          
-0     00009d93  _dpcopy                               
-0     00009e2e  _epilog_c28x_1                        
-0     00009e32  _epilog_c28x_2                        
-0     00009880  _epwm1_timer_isr                      
-0     00009866  _epwm2_timer_isr                      
-0     0000984c  _epwm3_timer_isr                      
-0     00009815  _epwm4_timer_isr                      
-0     00009cd4  _exit                                 
+0     00009da3  _dpcopy                               
+0     00009e3e  _epilog_c28x_1                        
+0     00009e42  _epilog_c28x_2                        
+0     00009890  _epwm1_timer_isr                      
+0     00009876  _epwm2_timer_isr                      
+0     0000985c  _epwm3_timer_isr                      
+0     00009825  _epwm4_timer_isr                      
+0     00009ce4  _exit                                 
 1     0000a2c1  _g_DeviceNetRequstData                
 1     0000a3e4  _g_FreqMonitor                        
 1     0000a4da  _g_PhaseActionRad                     
@@ -1078,26 +1079,26 @@ abs   ffffffff  ___pinit__
 1     0000a4c0  _g_SystemCalibrationCoefficient       
 1     0000a4ca  _g_SystemVoltageParameter             
 1     0000a000  _i                                    
-0     0000951d  _main                                 
+0     0000952d  _main                                 
 1     0000a2c5  _major_ver                            
-0     00009d23  _memcpy                               
+0     00009d33  _memcpy                               
 1     0000a2c4  _minor_ver                            
 1     0000a3cc  _pCalTimeMonitor                      
-0     00009d93  _pdcopy                               
+0     00009da3  _pdcopy                               
 1     0000a3ca  _phase                                
-0     00009d93  _ppcopy                               
+0     00009da3  _ppcopy                               
 1     0000a2c6  _product_code                         
 1     0000a2cc  _product_name                         
-0     00009dc6  _prolog_c28x_1                        
-0     00009dca  _prolog_c28x_2                        
-0     00009dd2  _prolog_c28x_3                        
+0     00009dd6  _prolog_c28x_1                        
+0     00009dda  _prolog_c28x_2                        
+0     00009de2  _prolog_c28x_3                        
 1     0000a2c8  _providerID                           
 1     0000a400  _rfft                                 
-0     00009143  _rfft_f32_Stages1and2and3andBitReverse
-0     000091af  _rfft_f32_Stages4andUp                
+0     00009153  _rfft_f32_Stages1and2and3andBitReverse
+0     000091bf  _rfft_f32_Stages4andUp                
 0     0000863d  _rsvd_ISR                             
 1     0000a2ca  _serialID                             
-0     00009c6e  _sin                                  
+0     00009c7e  _sin                                  
 1     0000a3d0  _sumt                                 
 1     0000a3d2  _t0                                   
 1     0000a3ce  _t1                                   
@@ -1110,7 +1111,7 @@ abs   ffffffff  ___pinit__
 abs   ffffffff  binit                                 
 0     00000050  cinit                                 
 0     00000000  code_start                            
-0     00009e54  etext                                 
+0     00009e64  etext                                 
 abs   ffffffff  pinit                                 
 
 
@@ -1243,98 +1244,98 @@ page  address   name
 0     000089ce  _ADCINT1_ISR                          
 0     000089d8  _FFT_Cal                              
 0     000089f0  _SynchronizTrigger                    
-0     00008ac3  _FFT_Init                             
-0     00008adb  _InitMonitorCalData                   
-0     00008b3a  _GetOVD                               
-0     00008c5b  _InitAdcAio                           
-0     00008c81  _InitAdc                              
-0     00008cb0  _AdcChanSelect                        
-0     00008d08  _AdcConversion                        
-0     00008df1  _AdcOffsetSelfCal                     
-0     00008e16  _MidMeanFilter                        
-0     00008e47  _GetNewFreq                           
-0     00008ee0  _CaliAB_Base                          
-0     00008f7b  _CalFreq                              
-0     00008fb3  _XtalOscSel                           
-0     00008fc7  _ServiceDog                           
-0     00008fd1  _IntOsc2Sel                           
-0     00008fe5  _IntOsc1Sel                           
-0     00008ff5  _DisableDog                           
-0     00008ffd  _InitPll                              
-0     0000904f  _InitPeripheralClocks                 
-0     000090ae  _InitSysCtrl                          
-0     000090c6  _InitPll2                             
-0     000090f3  _ExtOscSel                            
-0     0000910b  _CsmUnlock                            
-0     00009139  __system_post_cinit                   
-0     0000913a  _RFFT_f32                             
-0     00009143  _rfft_f32_Stages1and2and3andBitReverse
-0     000091af  _rfft_f32_Stages4andUp                
-0     00009258  _FrameServer                          
-0     00009360  _ActionDataInit                       
-0     00009367  _RefParameterInit                     
-0     00009445  _InitStandardCAN                      
-0     00009475  _CANSendData                          
-0     0000951d  _main                                 
-0     000095c5  FD$$ADD                               
-0     00009661  _ADC_INT1_ISR                         
-0     000096f7  _InitECanGpio                         
-0     000096f7  _InitECanaGpio                        
-0     00009712  _InitECan                             
-0     00009712  _InitECana                            
-0     0000978a  FD$$DIV                               
-0     00009815  _epwm4_timer_isr                      
-0     0000984c  _epwm3_timer_isr                      
-0     00009866  _epwm2_timer_isr                      
-0     00009880  _epwm1_timer_isr                      
-0     0000989a  FD$$MPY                               
-0     0000991d  _Can0Recive_ISR                       
-0     0000998e  _RFFT_f32_sincostable                 
-0     000099fe  _StopSample                           
-0     00009a03  _StartSample                          
-0     00009a0b  _SetSamplePriod                       
-0     00009a29  _ConfigADC_Monitor                    
-0     00009a67  _InitDeviceIO                         
-0     00009ac0  _InitCpuTimers                        
-0     00009af5  _ConfigCpuTimer                       
-0     00009b18  _c_int00                              
-0     00009b6e  _atan                                 
-0     00009bb8  _copy_in                              
-0     00009bfe  _Cpu_timer0_isr                       
-0     00009c3a  _cos                                  
-0     00009c6e  _sin                                  
-0     00009ca2  _InitSampleProcessData                
-0     00009cd2  C$$EXIT                               
-0     00009cd2  _abort                                
-0     00009cd4  _exit                                 
-0     00009cfb  _InitPieCtrl                          
-0     00009d1a  _EnableInterrupts                     
-0     00009d23  _memcpy                               
-0     00009d41  FS$$TOFD                              
-0     00009d5d  _IsOverTime                           
-0     00009d78  FD$$TOUL                              
-0     00009d93  _ddcopy                               
-0     00009d93  _dpcopy                               
-0     00009d93  _pdcopy                               
-0     00009d93  _ppcopy                               
-0     00009dad  __args_main                           
-0     00009dc6  _prolog_c28x_1                        
-0     00009dca  _prolog_c28x_2                        
-0     00009dd2  _prolog_c28x_3                        
-0     00009ddf  FS$$DIV                               
-0     00009df8  U$$TOFD                               
-0     00009e0f  _InitPieVectTable                     
-0     00009e20  FD$$SUB                               
-0     00009e2e  _epilog_c28x_1                        
-0     00009e32  _epilog_c28x_2                        
-0     00009e3a  __register_unlock                     
-0     00009e3e  __register_lock                       
-0     00009e42  __nop                                 
-0     00009e4b  _DSP28x_DisableInt                    
-0     00009e4f  _DSP28x_RestoreInt                    
-0     00009e52  __system_pre_init                     
-0     00009e54  ___etext__                            
-0     00009e54  etext                                 
+0     00008ad2  _FFT_Init                             
+0     00008aea  _InitMonitorCalData                   
+0     00008b49  _GetOVD                               
+0     00008c6a  _InitAdcAio                           
+0     00008c90  _InitAdc                              
+0     00008cbf  _AdcChanSelect                        
+0     00008d17  _AdcConversion                        
+0     00008e00  _AdcOffsetSelfCal                     
+0     00008e25  __system_post_cinit                   
+0     00008e26  _MidMeanFilter                        
+0     00008e57  _GetNewFreq                           
+0     00008ef0  _CaliAB_Base                          
+0     00008f8b  _CalFreq                              
+0     00008fc3  _XtalOscSel                           
+0     00008fd7  _ServiceDog                           
+0     00008fe1  _IntOsc2Sel                           
+0     00008ff5  _IntOsc1Sel                           
+0     00009005  _DisableDog                           
+0     0000900d  _InitPll                              
+0     0000905f  _InitPeripheralClocks                 
+0     000090be  _InitSysCtrl                          
+0     000090d6  _InitPll2                             
+0     00009103  _ExtOscSel                            
+0     0000911b  _CsmUnlock                            
+0     0000914a  _RFFT_f32                             
+0     00009153  _rfft_f32_Stages1and2and3andBitReverse
+0     000091bf  _rfft_f32_Stages4andUp                
+0     00009268  _FrameServer                          
+0     00009370  _ActionDataInit                       
+0     00009377  _RefParameterInit                     
+0     00009455  _InitStandardCAN                      
+0     00009485  _CANSendData                          
+0     0000952d  _main                                 
+0     000095d5  FD$$ADD                               
+0     00009671  _ADC_INT1_ISR                         
+0     00009707  _InitECanGpio                         
+0     00009707  _InitECanaGpio                        
+0     00009722  _InitECan                             
+0     00009722  _InitECana                            
+0     0000979a  FD$$DIV                               
+0     00009825  _epwm4_timer_isr                      
+0     0000985c  _epwm3_timer_isr                      
+0     00009876  _epwm2_timer_isr                      
+0     00009890  _epwm1_timer_isr                      
+0     000098aa  FD$$MPY                               
+0     0000992d  _Can0Recive_ISR                       
+0     0000999e  _RFFT_f32_sincostable                 
+0     00009a0e  _StopSample                           
+0     00009a13  _StartSample                          
+0     00009a1b  _SetSamplePriod                       
+0     00009a39  _ConfigADC_Monitor                    
+0     00009a77  _InitDeviceIO                         
+0     00009ad0  _InitCpuTimers                        
+0     00009b05  _ConfigCpuTimer                       
+0     00009b28  _c_int00                              
+0     00009b7e  _atan                                 
+0     00009bc8  _copy_in                              
+0     00009c0e  _Cpu_timer0_isr                       
+0     00009c4a  _cos                                  
+0     00009c7e  _sin                                  
+0     00009cb2  _InitSampleProcessData                
+0     00009ce2  C$$EXIT                               
+0     00009ce2  _abort                                
+0     00009ce4  _exit                                 
+0     00009d0b  _InitPieCtrl                          
+0     00009d2a  _EnableInterrupts                     
+0     00009d33  _memcpy                               
+0     00009d51  FS$$TOFD                              
+0     00009d6d  _IsOverTime                           
+0     00009d88  FD$$TOUL                              
+0     00009da3  _ddcopy                               
+0     00009da3  _dpcopy                               
+0     00009da3  _pdcopy                               
+0     00009da3  _ppcopy                               
+0     00009dbd  __args_main                           
+0     00009dd6  _prolog_c28x_1                        
+0     00009dda  _prolog_c28x_2                        
+0     00009de2  _prolog_c28x_3                        
+0     00009def  FS$$DIV                               
+0     00009e08  U$$TOFD                               
+0     00009e1f  _InitPieVectTable                     
+0     00009e30  FD$$SUB                               
+0     00009e3e  _epilog_c28x_1                        
+0     00009e42  _epilog_c28x_2                        
+0     00009e4a  __register_unlock                     
+0     00009e4e  __register_lock                       
+0     00009e52  __nop                                 
+0     00009e5b  _DSP28x_DisableInt                    
+0     00009e5f  _DSP28x_RestoreInt                    
+0     00009e62  __system_pre_init                     
+0     00009e64  ___etext__                            
+0     00009e64  etext                                 
 0     003fd860  _FPUsinTable                          
 0     003fd960  _FPUcosTable                          
 0     003fdc60  _FPUsinTableEnd                       
