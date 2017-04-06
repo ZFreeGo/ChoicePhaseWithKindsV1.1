@@ -36,7 +36,7 @@ ORDERED_OBJS += \
 "./source/F2806x_SysCtrl.obj" \
 "./source/F2806x_usDelay.obj" \
 "./withFFT/withFFTmain.obj" \
-"../cmd/28069_RAM_lnk.cmd" \
+"../cmd/F28069.cmd" \
 "../cmd/F2806x_Headers_nonBIOS.cmd" \
 "../lib/2806x_BootROM_API_TABLE_Symbols.lib" \
 "../lib/2806x_BootROM_API_TABLE_Symbols_fpu32.lib" \

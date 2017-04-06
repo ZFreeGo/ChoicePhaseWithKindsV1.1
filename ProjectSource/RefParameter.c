@@ -15,6 +15,27 @@
 
 #include "RefParameter.h"
 
+/**
+ * 获取有效位数
+ */
+#define GET_ENOB(type) ((uint8_t)type & 0x0F)
+/**
+* 字节组成个数
+*/
+#define GET_BYTE_NUM(type) ((uint8_t)(type>>4) & 0x0F)
+
+
+/*
+ * 局部函数定义
+ */
+static void SetValueFloat32(PointUint8* pPoint, ConfigData* pConfig);
+static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig);
+static void SetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig);
+static void GetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig);
+static void GetValueUint16(PointUint8* pPoint, ConfigData* pConfig);
+static void SetValueUint16(PointUint8* pPoint, ConfigData* pConfig);
+static void GetValueUint8(PointUint8* pPoint, ConfigData* pConfig);
+static void SetValueUint8(PointUint8* pPoint, ConfigData* pConfig);
 
 /**
  * 用于三相控制的延时参数
@@ -37,7 +58,221 @@ SystemVoltageParameter g_SystemVoltageParameter;
  */
 ActionRad g_PhaseActionRad[3];
 
+/**
+ *系统参数上下限
+ */
+LimitValue g_SystemLimit;
 
+/**
+ *同步预制等待时间,单位ms
+ */
+uint16_t g_SyncReadyWaitTime ;
+
+
+/**
+ *默认同步命令
+ */
+SyncCommand g_SyncCommand;
+
+#define PARAMETER_LEN 28
+/**
+ *系统配置参数合集
+ */
+ConfigData g_SetParameterCollect[PARAMETER_LEN];
+
+/**
+ * 初始化系统参数合集
+ */
+static void InitSetParameterCollect(void)
+{
+	uint8_t index = 0, id = 1;
+	//Uint32 -- 互感器输入到检测之间的校准系数，保留6位小数
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemCalibrationCoefficient.voltageCoefficient1;
+	g_SetParameterCollect[index].type = 0x46;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemCalibrationCoefficient.voltageCoefficient2;
+	g_SetParameterCollect[index].type = 0x46;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemCalibrationCoefficient.voltageCoefficient3;
+	g_SetParameterCollect[index].type = 0x46;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemCalibrationCoefficient.voltageCoefficient4;
+	g_SetParameterCollect[index].type = 0x46;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemCalibrationCoefficient.frequencyCoefficient;
+	g_SetParameterCollect[index].type = 0x46;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.inportVoltage.upper;
+	g_SetParameterCollect[index].type = 0x46;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.inportVoltage.down;
+	g_SetParameterCollect[index].type = 0x46;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
+	index++;
+
+	//Uint16 --[0-65535]，单位us
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_A].sampleDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_B].sampleDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_C].sampleDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_A].transmitDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_B].transmitDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_C].transmitDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_A].actionDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_B].actionDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_C].actionDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+	//int16 us
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_A].compensationTime;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_B].compensationTime;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index ++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_C].compensationTime;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+	//Uint16 --[0-65535]，单位ms
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SyncReadyWaitTime;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+	//[0-65.535]
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.frequency.upper;
+	g_SetParameterCollect[index].type = 0x23;
+	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.frequency.down;
+	g_SetParameterCollect[index].type = 0x23;
+	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.workVoltage.down;
+	g_SetParameterCollect[index].type = 0x23;
+	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.workVoltage.down;
+	g_SetParameterCollect[index].type = 0x23;
+	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
+	index++;
+	//Uint16 归一化值 合闸相角
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SyncCommand.actionRadA;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SyncCommand.actionRadB;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SyncCommand.actionRadC;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SyncCommand.configbyte;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
+
+	if (PARAMETER_LEN < index)
+	{
+		while(1);
+	}
+
+}
+
+
+/**
+ * 初始化全局变量参数
+ */
 void RefParameterInit(void)
 {
 	//A相
@@ -103,8 +338,208 @@ void RefParameterInit(void)
 	 g_PhaseActionRad[2].enable = 0xff;
 	 g_PhaseActionRad[2].realRatio = 0;
 	 g_PhaseActionRad[2].startTime = 0;
-	 g_PhaseActionRad[0].realTime = 0;
+	 g_PhaseActionRad[2].realTime = 0;
 
+
+	 //系统参数上下限
+	 g_SystemLimit.frequency.upper = 55.0f;
+	 g_SystemLimit.frequency.down = 45.0f;
+	 g_SystemLimit.workVoltage.upper = 3.5f;
+	 g_SystemLimit.workVoltage.down =  3.1f;
+
+	 //同步预制等待时间
+	 g_SyncReadyWaitTime = 3000;
+
+	 InitSetParameterCollect();
+}
+
+
+/**
+ * 设置系统校准系数[0,4294.967295]，默认保留六位小数;
+ * 适用于校准系数,二次电压值
+ * <p>
+ * 以float形式存储，以4字节进行交换传输的数据
+ * 
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void SetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >=  4)
+	{
+		//Todo: 根据ID选择保留有效位数
+		float ration = 0.000001f;
+	    uint32_t data1 = pPoint->pData[1];
+	    uint32_t data2 = pPoint->pData[2];
+	    uint32_t data3 = pPoint->pData[3];
+	    uint32_t data = (data3 << 24) | (data2 << 16) | (data1 << 8)|pPoint->pData[0] ;
+
+		float result = (float)data *  ration;
+	    *(float*)pConfig->pData = result;
+
+		//TODO:校准系数需考虑EEPROM存储
+	}
+}
+
+/**
+* 获取系统校准系数[0,4294.967295]，默认保留六位小数;
+ * 适用于校准系数,二次电压值
+ * <p>
+ * 以float形式存储，以4字节进行交换传输的数据
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >= 4)
+	{
+		//Todo: 根据ID选择保留有效位数
+		float ration = 1000000.0f;
+
+		uint32_t result = (uint32_t)(*(float*)pConfig->pData * ration);
+		pPoint->pData[0] = (uint8_t)(result & 0x00FF);
+		pPoint->pData[1] = (uint8_t)(result >> 8);
+		pPoint->pData[2] = (uint8_t)(result >> 16);
+		pPoint->pData[3] = (uint8_t)(result >> 24);
+		pPoint->len = 4;
+	}
+}
+
+/**
+ * 设置参数[0,65.535]，默认保留3位小数
+ * 适用于电压频率,工作电压，
+ * <p>
+ * 以float存储，以2字节进行交换传输的数据
+ *
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void SetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >= 2)
+	{
+		//Todo: 更具ID选择保留有效位数
+		float ration = 0.001f;
+		uint16_t data = pPoint->pData[1];
+		data =  (data << 8) | pPoint->pData[0];
+		float result = (float)data *  ration;
+		*(float*)pConfig->pData = result;
+
+		//TODO:需考虑EEPROM存储
+	}
+}
+
+/**
+ * 获取参数[0,65.535]，默认保留3位小数
+ * 适用于电压频率,工作电压，
+ * <p>
+ * 以float存储，以2字节进行交换传输的数据
+ *
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void GetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >= 4)
+	{
+		//Todo: 更具ID选择保留有效位数
+		float ration = 1000.0f;
+
+		uint16_t result = (uint16_t)(*(float*)pConfig->pData * ration);
+		pPoint->pData[0] = (uint8_t)(result & 0x00FF);
+		pPoint->pData[1] = (uint8_t)(result >> 8);
+		pPoint->len = 2;
+	}
+}
+
+/**
+ * 设置值，针对2字节[0,65535]
+ * 适用于电压采样延时,传输延时，合闸时间，同步预制等待时间，
+ * <p>
+ * 以uint16_t形式存储，以2字节进行交换传输的数据
+ *
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void SetValueUint16(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >= 2)
+	{
+		uint16_t data = pPoint->pData[1];
+		data = (data<<8) | pPoint->pData[0];
+		*(uint16_t*)pConfig->pData = data;
+	}
+}
+
+/**
+ * 获取值，针对2字节[0,65535]
+ * 适用于电压采样延时,传输延时，合闸时间，同步预制等待时间，
+ * <p>
+ * 以uint16_t形式存储，以2字节进行交换传输的数据
+ *
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void GetValueUint16(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >= 2)
+	{
+		uint16_t data = *(uint16_t*)pConfig->pData;
+		pPoint->pData[0] = (uint8_t)(data & 0x00FF);
+		pPoint->pData[1] = (uint8_t)(data >> 8);
+		pPoint->len = 2;
+	}
+}
+
+/**
+ * 设置值，针对1字节[0,255]
+ *
+ * <p>
+ * 以uint8_t形式存储，以1字节进行交换传输的数据
+ *
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void SetValueUint8(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >= 1)
+	{
+		*(uint8_t*)pConfig->pData = pPoint->pData[0];
+	}
+}
+
+/**
+ * 获取值，针对2字节[0,65535]
+ * 适用于电压采样延时,传输延时，合闸时间，同步预制等待时间，
+ * <p>
+ * 以uint8_t形式存储，以1字节进行交换传输的数据
+ *
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void GetValueUint8(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >= 1)
+	{
+		pPoint->pData[0] =  *(uint8_t*)pConfig->pData;
+		pPoint->len = 2;
+	}
 }
 
 
