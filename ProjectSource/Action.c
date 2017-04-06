@@ -52,6 +52,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 	uint8_t ph[3] = {0};//三相选择
 	uint16_t rad[3] = {0};//弧度归一化值
+	uint8_t tempData[8] = {0};
 	PointUint8 point;
 	uint8_t result = 0;
 	//最小长度必须大于0,且小于8对于单帧
@@ -87,6 +88,28 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				return 0;
 
 			}
+			break;
+		}
+		case 0x13:
+		{
+			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
+			{
+
+				point.pData  = tempData;
+				point.len = 8;
+				result = ReadParamValue(pReciveFrame->pBuffer[1], &point); //一次只获取1个属性
+				if(result)
+				{
+					return 0xE2;
+				}
+				pSendFrame->pBuffer[0] = id| 0x80;
+				pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[1];//赋值功能码
+				memcpy(pSendFrame->pBuffer + 2, point.pData, point.len );
+				pSendFrame->len = point.len + 2;
+				return 0;
+
+			}
+
 			break;
 		}
 		case 0x30://同步合闸预制

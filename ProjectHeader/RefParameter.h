@@ -55,13 +55,15 @@ typedef struct TagSystemVoltageParameter
 {
 	float voltageA;//默认用于A相电压 二次值
 	float voltageB;//默认用于B相电压
-	float VoltageC;//默认用于C相电压
+	float voltageC;//默认用于C相电压
 	float voltage0;//默认用于备用电压
 
 	float frequency;//频率 hz
 	float period;//周期 us
-	float delayAB; //B相滞后A的延时 us
-	float delayAC; //相滞后A的延时 us
+	uint16_t delayAB; //B相滞后A的延时 us
+	uint16_t delayAC; //相滞后A的延时 us
+
+	float workVoltage; //工作电压
 
 }SystemVoltageParameter;
 /**
@@ -135,7 +137,7 @@ extern SystemCalibrationCoefficient g_SystemCalibrationCoefficient;
 extern SystemVoltageParameter g_SystemVoltageParameter;
 extern ActionRad g_PhaseActionRad[3];
 
-
+extern uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint);
 extern uint8_t SetParamValue(uint8_t id, PointUint8* pPoint);
 extern void RefParameterInit(void);
 #endif /* PROJECTHEADER_REFPARAMETER_H_ */
