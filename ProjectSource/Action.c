@@ -52,7 +52,8 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 	uint8_t ph[3] = {0};//三相选择
 	uint16_t rad[3] = {0};//弧度归一化值
-
+	PointUint8 point;
+	uint8_t result = 0;
 	//最小长度必须大于0,且小于8对于单帧
 	if ((pReciveFrame->len == 0) || (pReciveFrame->len > 8))
 	{
@@ -60,13 +61,34 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	}
 	//接收帧ID必须大于等于0x30 --表示DSP控制指令
 	id = pReciveFrame->pBuffer[0];
-	if(id < 0x30)
+	if(id < 0x10)
 	{
 		return 0XF2;
 	}
 
 	switch (id)
 	{
+
+		case 0x11: //主站参数设置
+		{
+			if (pReciveFrame->len >= 2) //ID+配置号+属性值 至少3字节
+			{
+				point.pData  = pReciveFrame->pBuffer + 2;
+				point.len = pReciveFrame->len - 2;
+				result = SetParamValue(pReciveFrame->pBuffer[1], &point);
+				if(result)
+				{
+					return 0xE1;
+				}
+				pSendFrame->pBuffer[0] = id| 0x80;
+				pSendFrame->len = pReciveFrame->len;
+				pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[1];//赋值功能码
+				memcpy(pSendFrame->pBuffer + 2, point.pData, point.len );
+				return 0;
+
+			}
+			break;
+		}
 		case 0x30://同步合闸预制
 		case 0x32://同步分闸预制
 		{

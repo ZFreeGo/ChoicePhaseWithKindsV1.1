@@ -135,5 +135,7 @@ extern SystemCalibrationCoefficient g_SystemCalibrationCoefficient;
 extern SystemVoltageParameter g_SystemVoltageParameter;
 extern ActionRad g_PhaseActionRad[3];
 
+
+extern uint8_t SetParamValue(uint8_t id, PointUint8* pPoint);
 extern void RefParameterInit(void);
 #endif /* PROJECTHEADER_REFPARAMETER_H_ */

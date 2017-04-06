@@ -81,6 +81,44 @@ SyncCommand g_SyncCommand;
 ConfigData g_SetParameterCollect[PARAMETER_LEN];
 
 /**
+ * 设置参数
+ * @param id      配置号
+ * @param pPoint  指向保存数据的指针
+ *
+ * @return 错误代码 0-没有错误 非0-有错误
+ */
+uint8_t SetParamValue(uint8_t id, PointUint8* pPoint)
+{
+	for(uint8_t i = 0; i < PARAMETER_LEN; i++)
+	{
+		if(g_SetParameterCollect[i].ID == id)
+		{
+			//TODO :添加错误处理——每一个Set/Get函数添加相应的处理内容。
+			g_SetParameterCollect[i].fSetValue(pPoint, g_SetParameterCollect + i);
+			if (pPoint->len == 0)
+			{
+				return 0xF1;
+			}
+
+			g_SetParameterCollect[i].fGetValue(pPoint, g_SetParameterCollect + i);
+			if (pPoint->len == 0)
+			{
+				return 0xF2;
+			}
+
+			return 0;
+		}
+
+	}
+	return 0xFF;
+
+
+
+}
+
+
+
+/**
  * 初始化系统参数合集
  */
 static void InitSetParameterCollect(void)
@@ -225,7 +263,7 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SystemLimit.workVoltage.down;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.workVoltage.upper;
 	g_SetParameterCollect[index].type = 0x23;
 	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
@@ -381,6 +419,10 @@ static void SetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
 
 		//TODO:校准系数需考虑EEPROM存储
 	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
+	}
 }
 
 /**
@@ -406,6 +448,10 @@ static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
 		pPoint->pData[2] = (uint8_t)(result >> 16);
 		pPoint->pData[3] = (uint8_t)(result >> 24);
 		pPoint->len = 4;
+	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
 	}
 }
 
@@ -433,6 +479,10 @@ static void SetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig)
 
 		//TODO:需考虑EEPROM存储
 	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
+	}
 }
 
 /**
@@ -458,6 +508,10 @@ static void GetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig)
 		pPoint->pData[1] = (uint8_t)(result >> 8);
 		pPoint->len = 2;
 	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
+	}
 }
 
 /**
@@ -478,6 +532,10 @@ static void SetValueUint16(PointUint8* pPoint, ConfigData* pConfig)
 		uint16_t data = pPoint->pData[1];
 		data = (data<<8) | pPoint->pData[0];
 		*(uint16_t*)pConfig->pData = data;
+	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
 	}
 }
 
@@ -501,6 +559,10 @@ static void GetValueUint16(PointUint8* pPoint, ConfigData* pConfig)
 		pPoint->pData[1] = (uint8_t)(data >> 8);
 		pPoint->len = 2;
 	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
+	}
 }
 
 /**
@@ -519,6 +581,10 @@ static void SetValueUint8(PointUint8* pPoint, ConfigData* pConfig)
 	if (pPoint->len >= 1)
 	{
 		*(uint8_t*)pConfig->pData = pPoint->pData[0];
+	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
 	}
 }
 
@@ -539,6 +605,10 @@ static void GetValueUint8(PointUint8* pPoint, ConfigData* pConfig)
 	{
 		pPoint->pData[0] =  *(uint8_t*)pConfig->pData;
 		pPoint->len = 2;
+	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
 	}
 }
 
