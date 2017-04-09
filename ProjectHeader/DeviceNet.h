@@ -217,7 +217,14 @@ struct DefFrameData
 #define MAKE_GROUP2_ID(function, mac_id)  (int32_t)( (0x0400) | ((int32_t)((mac_id) &0x3F)<<3) | ((uint16_t)(function) & 0x07))
 
 
-
+/**
+ *运行时间戳
+ */
+typedef struct TagRunTimeStamp
+{
+    uint32_t startTime; //启动时间
+    uint32_t delayTime; // 延时时间
+}RunTimeStamp;
 
 //////////////供其他模块调用的函数///////////////
 extern void CANFrameFilter(struct DefFrameData * pReciveBuf, struct DefFrameData * pSendBuf);
@@ -227,6 +234,7 @@ extern BOOL DeviceNetReciveCenter(UINT* pID, USINT * pbuff,USINT len);
 extern void InitDeviceNet();
 
 extern void AckMsgService(void);
+extern void PacktIOMessage( struct DefFrameData* pSendFrame);
 //////////////供其他模块调用的变量/////////////////
 extern struct DefDeviceNetObj  DeviceNetObj;
 extern struct DefIdentifierObject   IdentifierObj;

@@ -751,7 +751,7 @@ static void GetValueUint8(PointUint8* pPoint, ConfigData* pConfig)
 	if (pPoint->len >= 1)
 	{
 		pPoint->pData[0] =  *(uint8_t*)pConfig->pData;
-		pPoint->len = 2;
+		pPoint->len = 1;
 	}
 	else
 	{

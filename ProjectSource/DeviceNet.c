@@ -41,7 +41,7 @@ void VisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* p
 static void CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 static void AckCycleInquireMsgService(void);
-
+void PacktIOMessageStatus( struct DefFrameData* pSendFrame);
 BOOL IsTimeRemain();    //需要根据具体平台改写
 void StartOverTimer();//需要根据具体平台改写
 void SendData(struct DefFrameData* pFrame);//需要根据具体平台改写
@@ -74,6 +74,7 @@ static volatile USINT WorkMode = 0; //
 static volatile uint8_t StartTime = 0;
 
 
+static RunTimeStamp LoopStatusSend;//循环状态发送
 
 
 
@@ -117,6 +118,7 @@ void InitDeviceNet()
     
     WorkMode = MODE_NORMAL;
     g_DeviceNetRequstData = 0;//请求标志清0
+
 }
 
 /*******************************************************************************
@@ -645,7 +647,7 @@ void InitCycleInquireConnectionObj(void)
 ********************************************************************************/    
 void InitStatusChangedConnectionObj(void)
 {
-	StatusChangedConnedctionObj.state = STATE_LINKED;	                //配置状态
+	StatusChangedConnedctionObj.state = STATE_LINKED;	                //建立连接
 	StatusChangedConnedctionObj.instance_type = STATUS_CHANGE;	       
 	StatusChangedConnedctionObj.transportClass_trigger = 0x82;	//传输分类2
 	StatusChangedConnedctionObj.produced_connection_id = 0xFF;	
@@ -658,6 +660,9 @@ void InitStatusChangedConnectionObj(void)
 	StatusChangedConnedctionObj.produced_connection_path_length = 0xFF;	
 	StatusChangedConnedctionObj.consumed_connection_path_length = 0xFF;	
 	StatusChangedConnedctionObj.produced_inhibit_time = 0;		        //无时间间隔
+
+    LoopStatusSend.startTime = CpuTimer0.InterruptCount;
+    LoopStatusSend.delayTime = 3000; //3s 上传一次状态信息
 }
 /*******************************************************************************  
 ** 函数名:	void CANFrameFilter(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
@@ -926,6 +931,7 @@ void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameDa
             pSendFrame->len = 3;
             pReciveFrame->complteFlag = 0;
 			SendData(pSendFrame);             //发送报文
+
 			return ;
 		}
 		if(config &  BIT_STROKE) //分配位选通连接
@@ -1110,15 +1116,40 @@ static void AckCycleInquireMsgService(void)
 		DeviceNetSendFrame.pBuffer[2] = result;
 		DeviceNetSendFrame.pBuffer[3] = 0xFF;
 		DeviceNetSendFrame.len = 4;
-	 }
+	}
 	DeviceNetReciveFrame.complteFlag = 0;
 
-	DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
+	PacktIOMessage(&DeviceNetSendFrame);
+	//DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
 
+	//SendData(&DeviceNetSendFrame);
+}
+/**
+ * 对发送IO数据进行打包，使用轮询
+ * @brief   应答循环帧处理
+ */
+void PacktIOMessage( struct DefFrameData* pSendFrame)
+{
+	if (pSendFrame->len == 0)
+	{
+		return;
+	}
+	DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
 	SendData(&DeviceNetSendFrame);
 }
-
-
+/**
+ * 对发送IO数据进行打包,使用状态变化信息
+ * @brief   应答循环帧处理
+ */
+void PacktIOMessageStatus( struct DefFrameData* pSendFrame)
+{
+	if (pSendFrame->len == 0)
+	{
+		return;
+	}
+	DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_STATUS_CYCLE_ACK, DeviceNetObj.MACID);
+	SendData(&DeviceNetSendFrame);
+}
 /*******************************************************************************
 ** 函数名:	void DeviceMonitorPluse(void)
 ** 功能描述:	设备监测脉冲函数
@@ -1239,6 +1270,26 @@ BOOL IsTimeRemain()
  */
 void AckMsgService(void)
 {
+
+	//已经建立后状态改变连接---周期性报告状态/或者突发报告
+	if (StatusChangedConnedctionObj.state == STATE_LINKED)
+	{
+		if(IsOverTime(LoopStatusSend.startTime, LoopStatusSend.delayTime) )
+		{
+			DeviceNetSendFrame.pBuffer[0] = 0x1A | 0x80;
+			DeviceNetSendFrame.pBuffer[1] = 0xA1; //测试
+			DeviceNetSendFrame.pBuffer[2] = 0xA2; //测试
+			DeviceNetSendFrame.pBuffer[3] = 0xA3; //测试
+			DeviceNetSendFrame.pBuffer[4] = 0xA4; //测试
+			DeviceNetSendFrame.pBuffer[5] = 0xA5; //测试
+			DeviceNetSendFrame.len = 6;
+			PacktIOMessageStatus(&DeviceNetSendFrame);
+			LoopStatusSend.startTime =  CpuTimer0.InterruptCount; //重新设置新的延时
+		}
+
+
+	}
+
 	if(g_DeviceNetRequstData == 0)
 	{
 		return;
@@ -1248,7 +1299,6 @@ void AckMsgService(void)
 		AckCycleInquireMsgService();
 		g_DeviceNetRequstData &= 0xFFFC; //清除标志位
 	}
-
 
 
 

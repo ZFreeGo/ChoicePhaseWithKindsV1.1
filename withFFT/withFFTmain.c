@@ -33,7 +33,7 @@
 
 
 
-//#define FLASH   1
+#define FLASH   1
 #ifdef FLASH
 extern Uint16 RamfuncsLoadStart;
 extern Uint16 RamfuncsLoadEnd;
@@ -139,7 +139,6 @@ int main(void)
 			if (freqLen < 7) //计数长度 每7求取平均值计算周期
 			{
 				freqArray[freqLen++] = g_FreqMonitor.FreqReal;
-
 			}
 			else
 			{

@@ -55,6 +55,8 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	uint8_t tempData[8] = {0};
 	PointUint8 point;
 	uint8_t result = 0;
+	uint8_t codeStart = 0;
+	uint8_t codeEnd = 0;
 	//最小长度必须大于0,且小于8对于单帧
 	if ((pReciveFrame->len == 0) || (pReciveFrame->len > 8))
 	{
@@ -90,24 +92,59 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			}
 			break;
 		}
-		case 0x13:
+		case 0x12:// 参数读取顺序结构
 		{
-			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
+			if (pReciveFrame->len == 3) //ID+配置号1+配置号1  为3个字节
 			{
-
-				point.pData  = tempData;
-				point.len = 8;
-				result = ReadParamValue(pReciveFrame->pBuffer[1], &point); //一次只获取1个属性
-				if(result)
+				codeStart = pReciveFrame->pBuffer[1];
+				codeEnd = pReciveFrame->pBuffer[2];
+				if (codeEnd < codeStart) //结束值不小于开始值
 				{
 					return 0xE2;
 				}
-				pSendFrame->pBuffer[0] = id| 0x80;
-				pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[1];//赋值功能码
-				memcpy(pSendFrame->pBuffer + 2, point.pData, point.len );
-				pSendFrame->len = point.len + 2;
-				return 0;
 
+				for( ; codeStart <= codeEnd; codeStart++)
+				{
+					point.pData  = tempData;
+					point.len = 8;
+					result = ReadParamValue(codeStart, &point); //一次只获取1个属性
+					if(result)
+					{
+						//return 0xE3; //有中断则不能继续存储
+						continue;//允许不连续的属性存在
+					}
+					pSendFrame->pBuffer[0] = id| 0x80;
+					pSendFrame->pBuffer[1] = codeStart;//赋值功能码
+					memcpy(pSendFrame->pBuffer + 2, point.pData, point.len );
+					pSendFrame->len = point.len + 2;
+					PacktIOMessage(pSendFrame);
+				}
+				pSendFrame->len = 0; //让底层禁止发送
+				return 0;
+			}
+			break;
+		}
+		case 0x13://参数读取非顺序结构
+		{
+			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
+			{
+				for( i = 1; i < pReciveFrame->len; i++)
+				{
+					point.pData  = tempData;
+					point.len = 8;
+					result = ReadParamValue(pReciveFrame->pBuffer[i], &point); //一次只获取1个属性
+					if(result)
+					{
+						return 0xE4;
+					}
+					pSendFrame->pBuffer[0] = id| 0x80;
+					pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[i];//赋值功能码
+					memcpy(pSendFrame->pBuffer + 2, point.pData, point.len );
+					pSendFrame->len = point.len + 2;
+					PacktIOMessage(pSendFrame);
+				}
+				pSendFrame->len = 0; //让底层禁止发送
+				return 0;
 			}
 
 			break;
