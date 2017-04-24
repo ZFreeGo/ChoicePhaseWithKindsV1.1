@@ -13,4 +13,5 @@
 
 extern void ActionDataInit(void);
 extern uint8_t  FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
+extern void  SendMultiFrame(struct DefFrameData* pSendFrame);
 #endif /* PROJECTHEADER_ACTION_H_ */

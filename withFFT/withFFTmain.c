@@ -30,7 +30,7 @@
 
 #include "DSP28x_Project.h"
 #include "Header.h"
-
+#include "RefParameter.h"
 
 
 #define FLASH   1
@@ -56,6 +56,8 @@ int main(void)
 	float samplePriod = 0;
 	float freqArray[7] = { 0 };
 	Uint8 freqLen = 0;
+
+
 
 	InitSysCtrl();            //20*4 = 80M
 	InitDeviceIO();
@@ -145,7 +147,11 @@ int main(void)
 				freqLen = 0;
 				g_FreqMonitor.FreqMean = MidMeanFilter(freqArray, 7); //
 			}
+
+
+
 			g_FreqMonitor.FreqReal = g_FreqMonitor.FreqMean;
+			g_SystemVoltageParameter.frequency =  g_FreqMonitor.FreqMean;
 			samplePriod = 15625.0f / g_FreqMonitor.FreqMean; //计算实时采样周期 1e6/64
 			SetSamplePriod(samplePriod);
 			StartSample(); //继续开始采样，再次测频

@@ -57,6 +57,9 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	uint8_t result = 0;
 	uint8_t codeStart = 0;
 	uint8_t codeEnd = 0;
+
+	uint8_t remain = 0;
+	uint16_t temp = 0;
 	//最小长度必须大于0,且小于8对于单帧
 	if ((pReciveFrame->len == 0) || (pReciveFrame->len > 8))
 	{
@@ -149,6 +152,71 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 			break;
 		}
+		case 0x1B://超过一帧数据读取结构
+		{
+			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
+			{
+				if (pReciveFrame->pBuffer[1] != 0xAA)
+				{
+					return 0xE5;
+				}
+
+
+
+				remain= SAMPLE_LEN % 3;
+				count = SAMPLE_LEN / 3;
+
+				for (i = 0; i < count ;i++)
+				{
+
+					pSendFrame->pBuffer[0] = id| 0x80;
+					pSendFrame->pBuffer[1] = i;
+					temp =  (uint16_t)SampleDataSavefloat[3*i];
+					pSendFrame->pBuffer[2] = (uint8_t)temp;
+					pSendFrame->pBuffer[3] = (uint8_t)(temp>>8);
+					temp =  (uint16_t)SampleDataSavefloat[3*i + 1];
+					pSendFrame->pBuffer[4] = (uint8_t)temp;
+					pSendFrame->pBuffer[5] = (uint8_t)(temp>>8);
+					temp =  (uint16_t)SampleDataSavefloat[3*i + 2];
+					pSendFrame->pBuffer[6] = (uint8_t)temp;
+					pSendFrame->pBuffer[7] = (uint8_t)(temp>>8);
+
+					if (remain ==0)
+					{
+						pSendFrame->pBuffer[1] = i |0x80;
+					}
+					pSendFrame->len = 8;
+					PacktIOMessage(pSendFrame);
+				}
+				if (remain !=0)
+				{
+
+				pSendFrame->pBuffer[0] = id| 0x80;
+				pSendFrame->pBuffer[1] =  i |0x80;
+
+				temp =  (uint16_t)SampleDataSavefloat[3*count];
+				pSendFrame->pBuffer[2] = (uint8_t)temp;
+				pSendFrame->pBuffer[3] = (uint8_t)(temp>>8);
+
+				if (remain == 2)
+				{
+					temp =  (uint16_t)SampleDataSavefloat[3*i + 1];
+					pSendFrame->pBuffer[4] = (uint8_t)temp;
+					pSendFrame->pBuffer[5] = (uint8_t)(temp>>8);
+				}
+				pSendFrame->len = 2 + remain * 2;
+				PacktIOMessage(pSendFrame);
+				}
+				pSendFrame->len = 0; //让底层禁止发送
+				return 0;
+
+
+			}
+
+
+		}
+
+
 		case 0x30://同步合闸预制
 		case 0x32://同步分闸预制
 		{
@@ -247,11 +315,11 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					 {
 						 g_PhaseActionRad[i].enable = 0;
 					 }
-					 ZVDFlag = 0xFF;
 
 					 memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 					 pSendFrame->pBuffer[0] = id| 0x80;
 					 pSendFrame->len = pReciveFrame->len;
+					 ZVDFlag = 0xFF;
 					 return 0;
 
 				 }
@@ -262,6 +330,66 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 		}
 	}
 	return 0xFF;
+
+
+
+}
+/**
+ * 发送帧数据
+ *
+ * @param  pSendFrame 指向发送帧信息的指针
+ *
+ * @retrun null
+ */
+void SendMultiFrame(struct DefFrameData* pSendFrame)
+{
+	uint8_t i = 0;
+	uint8_t remain= SAMPLE_LEN % 3;
+	uint8_t count = SAMPLE_LEN / 3;
+	uint16_t temp = 0;
+	uint8_t id  = 0x1B;
+
+	for (i = 0; i < count ;i++)
+	{
+
+		pSendFrame->pBuffer[0] = id| 0x80;
+		pSendFrame->pBuffer[1] = i;
+		temp =  (uint16_t)SampleDataSavefloat[3*i];
+		pSendFrame->pBuffer[2] = (uint8_t)temp;
+		pSendFrame->pBuffer[3] = (uint8_t)(temp>>8);
+		temp =  (uint16_t)SampleDataSavefloat[3*i + 1];
+		pSendFrame->pBuffer[4] = (uint8_t)temp;
+		pSendFrame->pBuffer[5] = (uint8_t)(temp>>8);
+		temp =  (uint16_t)SampleDataSavefloat[3*i + 2];
+		pSendFrame->pBuffer[6] = (uint8_t)temp;
+		pSendFrame->pBuffer[7] = (uint8_t)(temp>>8);
+
+		if (remain ==0)
+		{
+			pSendFrame->pBuffer[1] = i |0x80;
+		}
+		pSendFrame->len = 8;
+		PacktIOMessage(pSendFrame);
+	}
+	if (remain !=0)
+	{
+
+	pSendFrame->pBuffer[0] = id| 0x80;
+	pSendFrame->pBuffer[1] =  i |0x80;
+
+	temp =  (uint16_t)SampleDataSavefloat[3*count];
+	pSendFrame->pBuffer[2] = (uint8_t)temp;
+	pSendFrame->pBuffer[3] = (uint8_t)(temp>>8);
+
+	if (remain == 2)
+	{
+		temp =  (uint16_t)SampleDataSavefloat[3*i + 1];
+		pSendFrame->pBuffer[4] = (uint8_t)temp;
+		pSendFrame->pBuffer[5] = (uint8_t)(temp>>8);
+	}
+	pSendFrame->len = 2 + remain * 2;
+	PacktIOMessage(pSendFrame);
+	}
 
 
 

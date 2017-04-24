@@ -76,14 +76,23 @@ SyncCommand g_SyncCommand;
 
 
 
+uint8_t  BufferData[10];//接收缓冲数据
+
+struct DefFrameData  g_NetSendFrame; //发送帧处理
+
+
+
 #define PARAMETER_LEN 29  //设置参数列表
-#define READONLY_PARAMETER_LEN 11  //设置参数列表
+#define READONLY_PARAMETER_LEN 14  //读取参数列表
 #define READONLY_START_ID 0x41
 /**
  *系统配置参数合集
  */
 ConfigData g_SetParameterCollect[PARAMETER_LEN]; //配置参数列表--可读可写
 ConfigData g_ReadOnlyParameterCollect[READONLY_PARAMETER_LEN]; //参数合集--只读列表
+
+
+
 
 /**
  * 设置参数
@@ -231,6 +240,28 @@ static void InitReadonlyParameterCollect(void)
 	g_ReadOnlyParameterCollect[index].type = 0x20;
 	g_ReadOnlyParameterCollect[index].fSetValue = 0;
 	g_ReadOnlyParameterCollect[index].fGetValue = GetValueUint16;
+
+	index++;
+	g_ReadOnlyParameterCollect[index].ID = id++;
+	g_ReadOnlyParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_A].calDelay;
+	g_ReadOnlyParameterCollect[index].type = 0x46;
+	g_ReadOnlyParameterCollect[index].fSetValue = 0;
+	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloat32;
+	index++;
+	g_ReadOnlyParameterCollect[index].ID = id++;
+	g_ReadOnlyParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_B].calDelay;
+	g_ReadOnlyParameterCollect[index].type = 0x46;
+	g_ReadOnlyParameterCollect[index].fSetValue = 0;
+	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloat32;
+	index++;
+	g_ReadOnlyParameterCollect[index].ID = id++;
+	g_ReadOnlyParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_C].calDelay;
+	g_ReadOnlyParameterCollect[index].type = 0x46;
+	g_ReadOnlyParameterCollect[index].fSetValue = 0;
+	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloat32;
+
+
+
 	index++;
 	//[0-65.535]
 	g_ReadOnlyParameterCollect[index].ID = id++;
@@ -536,6 +567,9 @@ void RefParameterInit(void)
 
 	 InitSetParameterCollect();
 	 InitReadonlyParameterCollect();
+
+	 //缓冲数据发送
+	 g_NetSendFrame.pBuffer = BufferData;
 }
 
 

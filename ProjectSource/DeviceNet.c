@@ -1134,8 +1134,8 @@ void PacktIOMessage( struct DefFrameData* pSendFrame)
 	{
 		return;
 	}
-	DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
-	SendData(&DeviceNetSendFrame);
+	pSendFrame->ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
+	SendData(pSendFrame);
 }
 /**
  * 对发送IO数据进行打包,使用状态变化信息
@@ -1147,8 +1147,8 @@ void PacktIOMessageStatus( struct DefFrameData* pSendFrame)
 	{
 		return;
 	}
-	DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_STATUS_CYCLE_ACK, DeviceNetObj.MACID);
-	SendData(&DeviceNetSendFrame);
+	pSendFrame->ID =  MAKE_GROUP1_ID(GROUP1_STATUS_CYCLE_ACK, DeviceNetObj.MACID);
+	SendData(pSendFrame);
 }
 /*******************************************************************************
 ** 函数名:	void DeviceMonitorPluse(void)

@@ -17,7 +17,7 @@
 #include "F2806x_Examples.h"   // F2806x Examples Include File
 #include "Header.h"
 #include "RefParameter.h"
-
+#include "Action.h"
 /*=============================全局变量定义 Start=============================*/
 //#define RFFT_STAGES 6
 //#define RFFT_SIZE (1 << RFFT_STAGES)
@@ -406,6 +406,9 @@ void SynchronizTrigger(float* pData)
 	    g_PhaseActionRad[0].startTime = g_SystemVoltageParameter.period* phase* D2PI;
 	    //此处相乘，为了保证使用最新的周期
 	    g_PhaseActionRad[0].realTime =  g_SystemVoltageParameter.period * g_PhaseActionRad[0].realRatio;
+	    //计算延时之和
+	    g_ProcessDelayTime[PHASE_A].sumDelay = g_ProcessDelayTime[PHASE_A].sampleDelay +
+	    		g_ProcessDelayTime[PHASE_A].transmitDelay +g_ProcessDelayTime[PHASE_A].actionDelay;
 	    //总的时间和
 	    time =  g_ProcessDelayTime[PHASE_A].sumDelay +
 	    		g_PhaseActionRad[0].startTime - g_PhaseActionRad[0].realTime;
@@ -444,6 +447,8 @@ void SynchronizTrigger(float* pData)
 			SET_OUTA8_H;
 			DELAY_US(1000000);
 			SET_OUTA8_L;
+
+			SendMultiFrame(&g_NetSendFrame);
 		}
 
 

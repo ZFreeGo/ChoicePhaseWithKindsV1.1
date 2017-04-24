@@ -53,6 +53,7 @@ withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/P
 withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/stdType.h
 withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/CAN.h
 withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceNet.h
+withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/RefParameter.h
 
 ../withFFT/withFFTmain.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/include/DSP28x_Project.h: 
@@ -107,3 +108,4 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/Timer.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/stdType.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/CAN.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/DeviceNet.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.1/ProjectHeader/RefParameter.h: 

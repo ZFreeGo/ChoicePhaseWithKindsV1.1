@@ -9,7 +9,7 @@
 #define PROJECTHEADER_REFPARAMETER_H_
 
 #include "StdType.h"
-
+#include "DeviceNet.h"
 
 /**
  * 用于电压控制
@@ -64,6 +64,8 @@ typedef struct TagSystemVoltageParameter
 	uint16_t delayAC; //相滞后A的延时 us
 
 	float workVoltage; //工作电压
+
+
 
 }SystemVoltageParameter;
 /**
@@ -140,4 +142,7 @@ extern ActionRad g_PhaseActionRad[3];
 extern uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint);
 extern uint8_t SetParamValue(uint8_t id, PointUint8* pPoint);
 extern void RefParameterInit(void);
+
+
+extern struct DefFrameData  g_NetSendFrame;
 #endif /* PROJECTHEADER_REFPARAMETER_H_ */
