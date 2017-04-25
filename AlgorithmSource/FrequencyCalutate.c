@@ -23,7 +23,11 @@ float Sin1step = 0;  //sin(2*PI*step/RFFT_SIZE)
 float TwoDivideN = 0; //2/N
 /*=============================全局变量定义 End=============================*/
 
+void CaliAB_Base(float yangben[], AngleElement* pBase);
+void GetNewFreq(float yangben[], float f0, float* pFq);
+void CalFreq(float* pData);
 
+float  MidMeanFilter(float *pData, Uint8 len);
 
 
 /**************************************************
@@ -124,8 +128,6 @@ void GetNewFreq(float yangben[], float f0, float* pFq)
   baseB.imag = RFFToutBuff[RFFT_SIZE - 1];
   baseB.im_re =  RFFToutBuff[RFFT_SIZE - 1]/ RFFToutBuff[1] ;
   baseB.phase = atan(baseB.im_re);
-  //计算实部与虚部平方和作为有效值
-//  g_SystemVoltageParameter.voltageA = sqrt( baseA.real*baseA.real + baseA.imag*baseA.imag) * g_SystemCalibrationCoefficient.voltageCoefficient1;
 
   df1 = f0*baseA.phase*D2PI;
   r = f0/(f0 + df1);
@@ -210,4 +212,43 @@ float  MidMeanFilter(float *pData, Uint8 len)
 	return res;
 }
 
+static float freqArray[7] = { 0 };
+static Uint8 freqLen = 0;
+/**
+ * 更新计算频率
+ * <p>
+ * 以float形式存储，以4字节进行交换传输的数据
+ * @param   null
+ *
+ * @brif 用于通讯交互数据使用
+ */
+void UpdateFrequency(void)
+{
+	float samplePriod = 0;
+	//测频模块处理
+			//理论上将是20ms一个循环
+	//Todo:浮点数等于比较是个隐患
+	if (SampleDataSavefloat[SAMPLE_LEN] == SAMPLE_COMPLTE) //采样完成
+		{
+		//计算频率
+		CalFreq(SampleDataSavefloat);
+		CalEffectiveValue();
+		if (freqLen < 7) //计数长度 每7求取平均值计算周期
+		{
+			freqArray[freqLen++] = g_SystemVoltageParameter.frequencyCollect.FreqReal;
+
+		}
+		else
+		{
+			freqLen = 0;
+			g_SystemVoltageParameter.frequencyCollect.FreqMean = g_SystemCalibrationCoefficient.frequencyCoefficient * MidMeanFilter(freqArray, 7); //
+		}
+
+		 g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqMean;
+		samplePriod = 15625.0f / g_SystemVoltageParameter.frequencyCollect.FreqMean; //计算实时采样周期 1e6/64
+		SetSamplePriod(samplePriod);
+		StartSample(); //继续开始采样，再次测频
+	}
+
+}
 

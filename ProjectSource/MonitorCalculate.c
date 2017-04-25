@@ -171,7 +171,24 @@ void FFT_Cal(float ADsample[])
 
 }
 
+/**
+ * 使用FFT值计算有效值
+ */
+void CalEffectiveValue(void)
+{
+	uint16_t j = 0;
+	float sum = 0;
+	float basic = RFFToutBuff[0]/RFFT_SIZE;
+	 //计算实部与虚部平方和作为有效值 基波
+	 // g_SystemVoltageParameter.voltageA = sqrt( RFFToutBuff[1]*RFFToutBuff[1] + RFFTmagBuff[1]*RFFTmagBuff[1]) * g_SystemCalibrationCoefficient.voltageCoefficient1;
+	  for(j=0;j<RFFT_SIZE;j++)
+	  {
+		  sum += (RFFTin1Buff[j] -  basic) * (RFFTin1Buff[j] -  basic); //
+	  }
+	  g_SystemVoltageParameter.voltageA = sqrt(sum/RFFT_SIZE) *  g_SystemCalibrationCoefficient.voltageCoefficient1;
 
+
+}
 
 
 

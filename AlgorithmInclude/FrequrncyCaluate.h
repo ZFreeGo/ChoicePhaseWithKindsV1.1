@@ -34,9 +34,6 @@ typedef struct
 #define PID2  1.570796326794897f //  PI/2
 #define D2PI  0.159154943091895f  //  1/(2PI)
 
-void CaliAB_Base(float yangben[], AngleElement* pBase);
-void GetNewFreq(float yangben[], float f0, float* pFq);
-void CalFreq(float* pData);
 
-float  MidMeanFilter(float *pData, Uint8 len);
+extern void UpdateFrequency(void);
 #endif /* ALGORITHMINCLUDE_FREQURNCYCALUATE_H_ */

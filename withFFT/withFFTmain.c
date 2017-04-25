@@ -53,9 +53,7 @@ extern Uint16 RamfuncsLoadSize;
 
 int main(void)
 {
-	float samplePriod = 0;
-	float freqArray[7] = { 0 };
-	Uint8 freqLen = 0;
+
 
 
 
@@ -130,31 +128,10 @@ int main(void)
 
 	while (1)
 	{
-		//测频模块处理
-		//理论上将是20ms一个循环
-		//Todo:浮点数等于比较是个隐患
-		if (SampleDataSavefloat[SAMPLE_LEN] == SAMPLE_COMPLTE) //采样完成
-		{
-			//计算频率
-			CalFreq(SampleDataSavefloat);
 
-			if (freqLen < 7) //计数长度 每7求取平均值计算周期
-			{
-				freqArray[freqLen++] = g_SystemVoltageParameter.frequencyCollect.FreqReal;
 
-			}
-			else
-			{
-				freqLen = 0;
-				g_SystemVoltageParameter.frequencyCollect.FreqMean = g_SystemCalibrationCoefficient.frequencyCoefficient * MidMeanFilter(freqArray, 7); //
-			}
-
-			 g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqMean;
-			samplePriod = 15625.0f / g_SystemVoltageParameter.frequencyCollect.FreqMean; //计算实时采样周期 1e6/64
-			SetSamplePriod(samplePriod);
-			StartSample(); //继续开始采样，再次测频
-		}
-		AckMsgService();
+		 UpdateFrequency();
+		 AckMsgService();
 
 
 	}
