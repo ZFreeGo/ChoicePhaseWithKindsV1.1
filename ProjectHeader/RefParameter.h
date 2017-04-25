@@ -80,21 +80,22 @@ typedef struct TagSystemVoltageParameter
 /**
  * 上下限值
  */
-typedef struct TagUpDownValue
+typedef struct TagMaxMinValue
 {
-	float upper;//上限
-	float down;//下限
+	float max;//上限
+	float min;//下限
 
-}UpDownValue;
+}MaxMinValue;
 
 /**
  * 系统限定参数值
  */
 typedef struct TagLimitValue
 {
-	UpDownValue frequency; //频率
-	UpDownValue workVoltage; //工作电压
-	UpDownValue inportVoltage; //二次输入电压
+	MaxMinValue frequency; //频率
+	MaxMinValue workVoltage; //工作电压
+	MaxMinValue inportVoltage; //二次输入电压
+	uint16_t syncReadyWaitTime;
 
 }LimitValue;
 

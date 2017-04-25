@@ -160,53 +160,8 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				{
 					return 0xE5;
 				}
+				SendMultiFrame(pSendFrame);
 
-
-
-				remain= SAMPLE_LEN % 3;
-				count = SAMPLE_LEN / 3;
-
-				for (i = 0; i < count ;i++)
-				{
-
-					pSendFrame->pBuffer[0] = id| 0x80;
-					pSendFrame->pBuffer[1] = i;
-					temp =  (uint16_t)SampleDataSavefloat[3*i];
-					pSendFrame->pBuffer[2] = (uint8_t)temp;
-					pSendFrame->pBuffer[3] = (uint8_t)(temp>>8);
-					temp =  (uint16_t)SampleDataSavefloat[3*i + 1];
-					pSendFrame->pBuffer[4] = (uint8_t)temp;
-					pSendFrame->pBuffer[5] = (uint8_t)(temp>>8);
-					temp =  (uint16_t)SampleDataSavefloat[3*i + 2];
-					pSendFrame->pBuffer[6] = (uint8_t)temp;
-					pSendFrame->pBuffer[7] = (uint8_t)(temp>>8);
-
-					if (remain ==0)
-					{
-						pSendFrame->pBuffer[1] = i |0x80;
-					}
-					pSendFrame->len = 8;
-					PacktIOMessage(pSendFrame);
-				}
-				if (remain !=0)
-				{
-
-				pSendFrame->pBuffer[0] = id| 0x80;
-				pSendFrame->pBuffer[1] =  i |0x80;
-
-				temp =  (uint16_t)SampleDataSavefloat[3*count];
-				pSendFrame->pBuffer[2] = (uint8_t)temp;
-				pSendFrame->pBuffer[3] = (uint8_t)(temp>>8);
-
-				if (remain == 2)
-				{
-					temp =  (uint16_t)SampleDataSavefloat[3*i + 1];
-					pSendFrame->pBuffer[4] = (uint8_t)temp;
-					pSendFrame->pBuffer[5] = (uint8_t)(temp>>8);
-				}
-				pSendFrame->len = 2 + remain * 2;
-				PacktIOMessage(pSendFrame);
-				}
 				pSendFrame->len = 0; //让底层禁止发送
 				return 0;
 
@@ -218,7 +173,6 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 
 		case 0x30://同步合闸预制
-		case 0x32://同步分闸预制
 		{
 			//必须不小于4
 			if (pReciveFrame->len < 4)
@@ -280,7 +234,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 		case 0x31://同步合闸执行
 		{
 			 //判断是否超时
-			 if (!IsOverTime(LastTime, 5000))
+			 if (!IsOverTime(LastTime, g_SystemLimit.syncReadyWaitTime))
 			 {
 				 if (LastFlag == 0xAA)//是否已经预制
 				 {
@@ -309,6 +263,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 						 g_PhaseActionRad[i].actionRad =
 								 pReciveFrame->pBuffer[2*i + 2] + ((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8;
 						 g_PhaseActionRad[i].enable = 0xFF;
+						 g_PhaseActionRad[i].realRatio =   (float)g_PhaseActionRad[i].actionRad / 65536 ;
 					 }
 					 //禁止合闸动作相角
 					 for (i = count; i < 3; i++)
@@ -319,7 +274,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					 memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 					 pSendFrame->pBuffer[0] = id| 0x80;
 					 pSendFrame->len = pReciveFrame->len;
-					 ZVDFlag = 0xFF;
+					 ZVDFlag = 0xFF; //设置同步预制命令
 					 return 0;
 
 				 }

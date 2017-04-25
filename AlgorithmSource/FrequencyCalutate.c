@@ -164,8 +164,8 @@ void CalFreq(float* pData)
       pData[SAMPLE_LEN] = SAMPLE_NOT_FULL; //置为非满标志
 
       //判断新求得的频率是否在阈值内，如果不在区域内，则置频率为默认频率，并报错
-      if ((g_SystemVoltageParameter.frequencyCollect.FreqCal >=  g_SystemLimit.frequency.down)
-    		  && (g_SystemVoltageParameter.frequencyCollect.FreqCal <=  g_SystemLimit.frequency.upper))
+      if ((g_SystemVoltageParameter.frequencyCollect.FreqCal >=  g_SystemLimit.frequency.min)
+    		  && (g_SystemVoltageParameter.frequencyCollect.FreqCal <=  g_SystemLimit.frequency.max))
         {
           g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqCal; //置新频率为默认频率  //
         }
@@ -245,7 +245,9 @@ void UpdateFrequency(void)
 		}
 
 		 g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqMean;
+		 g_SystemVoltageParameter.period = 1e6/g_SystemVoltageParameter.frequencyCollect.FreqMean;
 		samplePriod = 15625.0f / g_SystemVoltageParameter.frequencyCollect.FreqMean; //计算实时采样周期 1e6/64
+
 		SetSamplePriod(samplePriod);
 		StartSample(); //继续开始采样，再次测频
 	}

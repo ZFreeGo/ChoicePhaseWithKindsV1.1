@@ -368,11 +368,12 @@ void SynchronizTrigger(float* pData)
 	a = RFFToutBuff[1]; //实部
 	b = RFFToutBuff[RFFT_SIZE - 1]; //虚部
 	phase = atan( b/a ); //求取相位
+	phase += PID2;//转化为sin
 
 	//相位判断
-		if (phase >= -0.00001 ) //认为在第1,3象限   浮点数与零判断问题,是否需要特殊处理？
+		if (phase >= 0 ) //认为在第1,3象限   浮点数与零判断问题,是否需要特殊处理？
 		{
-			if (a >= -0.00001)
+			if (a >= 0)
 			{
 				xiang = 1; //在第一象限
 

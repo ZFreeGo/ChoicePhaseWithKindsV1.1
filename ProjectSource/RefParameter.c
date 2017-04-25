@@ -64,10 +64,7 @@ ActionRad g_PhaseActionRad[3];
  */
 LimitValue g_SystemLimit;
 
-/**
- *同步预制等待时间,单位ms
- */
-uint16_t g_SyncReadyWaitTime ;
+
 uint8_t g_LocalMac;
 
 /**
@@ -78,7 +75,6 @@ SyncCommand g_SyncCommand;
 
 
 uint8_t  BufferData[10];//接收缓冲数据
-
 struct DefFrameData  g_NetSendFrame; //发送帧处理
 
 
@@ -332,13 +328,13 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SystemLimit.inportVoltage.upper;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.inportVoltage.max;
 	g_SetParameterCollect[index].type = 0x46;
 	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
 	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SystemLimit.inportVoltage.down;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.inportVoltage.min;
 	g_SetParameterCollect[index].type = 0x46;
 	g_SetParameterCollect[index].fSetValue = SetValueFloat32;
 	g_SetParameterCollect[index].fGetValue = GetValueFloat32;
@@ -420,32 +416,32 @@ static void InitSetParameterCollect(void)
 	index++;
 	//Uint16 --[0-65535]，单位ms
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SyncReadyWaitTime;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.syncReadyWaitTime;
 	g_SetParameterCollect[index].type = 0x20;
 	g_SetParameterCollect[index].fSetValue = SetValueUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueUint16;
 	index++;
 	//[0-65.535]
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SystemLimit.frequency.upper;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.frequency.max;
 	g_SetParameterCollect[index].type = 0x23;
 	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SystemLimit.frequency.down;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.frequency.min;
 	g_SetParameterCollect[index].type = 0x23;
 	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SystemLimit.workVoltage.upper;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.workVoltage.max;
 	g_SetParameterCollect[index].type = 0x23;
 	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SystemLimit.workVoltage.down;
+	g_SetParameterCollect[index].pData = &g_SystemLimit.workVoltage.min;
 	g_SetParameterCollect[index].type = 0x23;
 	g_SetParameterCollect[index].fSetValue = SetValueFloatUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueFloatUint16;
@@ -566,13 +562,14 @@ void RefParameterInit(void)
 
 
 	 //系统参数上下限
-	 g_SystemLimit.frequency.upper = 55.0f;
-	 g_SystemLimit.frequency.down = 45.0f;
-	 g_SystemLimit.workVoltage.upper = 3.5f;
-	 g_SystemLimit.workVoltage.down =  3.1f;
-
+	 g_SystemLimit.frequency.max = 55.0f;
+	 g_SystemLimit.frequency.min = 45.0f;
+	 g_SystemLimit.workVoltage.max = 3.5f;
+	 g_SystemLimit.workVoltage.min =  3.1f;
 	 //同步预制等待时间
-	 g_SyncReadyWaitTime = 3000;
+	 g_SystemLimit.syncReadyWaitTime = 3000;
+
+
 	 g_LocalMac = 0x0D;
 
 	 InitSetParameterCollect();
