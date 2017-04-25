@@ -140,19 +140,17 @@ int main(void)
 
 			if (freqLen < 7) //计数长度 每7求取平均值计算周期
 			{
-				freqArray[freqLen++] = g_FreqMonitor.FreqReal;
+				freqArray[freqLen++] = g_SystemVoltageParameter.frequencyCollect.FreqReal;
+
 			}
 			else
 			{
 				freqLen = 0;
-				g_FreqMonitor.FreqMean = MidMeanFilter(freqArray, 7); //
+				g_SystemVoltageParameter.frequencyCollect.FreqMean = g_SystemCalibrationCoefficient.frequencyCoefficient * MidMeanFilter(freqArray, 7); //
 			}
 
-
-
-			g_FreqMonitor.FreqReal = g_FreqMonitor.FreqMean;
-			g_SystemVoltageParameter.frequency =  g_FreqMonitor.FreqMean;
-			samplePriod = 15625.0f / g_FreqMonitor.FreqMean; //计算实时采样周期 1e6/64
+			 g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqMean;
+			samplePriod = 15625.0f / g_SystemVoltageParameter.frequencyCollect.FreqMean; //计算实时采样周期 1e6/64
 			SetSamplePriod(samplePriod);
 			StartSample(); //继续开始采样，再次测频
 		}

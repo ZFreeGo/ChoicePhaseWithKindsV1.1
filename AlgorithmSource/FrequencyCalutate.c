@@ -124,6 +124,8 @@ void GetNewFreq(float yangben[], float f0, float* pFq)
   baseB.imag = RFFToutBuff[RFFT_SIZE - 1];
   baseB.im_re =  RFFToutBuff[RFFT_SIZE - 1]/ RFFToutBuff[1] ;
   baseB.phase = atan(baseB.im_re);
+  //计算实部与虚部平方和作为有效值
+//  g_SystemVoltageParameter.voltageA = sqrt( baseA.real*baseA.real + baseA.imag*baseA.imag) * g_SystemCalibrationCoefficient.voltageCoefficient1;
 
   df1 = f0*baseA.phase*D2PI;
   r = f0/(f0 + df1);
@@ -156,17 +158,18 @@ void CalFreq(float* pData)
   if (pData[SAMPLE_LEN] == SAMPLE_COMPLTE) //已经完成采样
     {
 
-      GetNewFreq(pData, g_FreqMonitor.FreqReal, &g_FreqMonitor.FreqCal); //求取新频率
+      GetNewFreq(pData, g_SystemVoltageParameter.frequencyCollect.FreqReal, &g_SystemVoltageParameter.frequencyCollect.FreqCal); //求取新频率
       pData[SAMPLE_LEN] = SAMPLE_NOT_FULL; //置为非满标志
 
       //判断新求得的频率是否在阈值内，如果不在区域内，则置频率为默认频率，并报错
-      if (g_FreqMonitor.FreqCal >= FREQ_MIN && g_FreqMonitor.FreqCal <= FREQ_MAX)
+      if ((g_SystemVoltageParameter.frequencyCollect.FreqCal >=  g_SystemLimit.frequency.down)
+    		  && (g_SystemVoltageParameter.frequencyCollect.FreqCal <=  g_SystemLimit.frequency.upper))
         {
-          g_FreqMonitor.FreqReal = g_FreqMonitor.FreqCal; //置新频率为默认频率  //
+          g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqCal; //置新频率为默认频率  //
         }
       else
         {
-          g_FreqMonitor.FreqReal = g_FreqMonitor.FreqInit; //置为默认频率
+          g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqInit; //置为默认频率
           //发送错误信息
         }
     }

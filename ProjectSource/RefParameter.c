@@ -30,6 +30,7 @@
  */
 static void SetValueFloat32(PointUint8* pPoint, ConfigData* pConfig);
 static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig);
+
 static void SetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig);
 static void GetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig);
 static void GetValueUint16(PointUint8* pPoint, ConfigData* pConfig);
@@ -83,7 +84,7 @@ struct DefFrameData  g_NetSendFrame; //发送帧处理
 
 
 #define PARAMETER_LEN 29  //设置参数列表
-#define READONLY_PARAMETER_LEN 14  //读取参数列表
+#define READONLY_PARAMETER_LEN 15  //读取参数列表
 #define READONLY_START_ID 0x41
 /**
  *系统配置参数合集
@@ -244,22 +245,28 @@ static void InitReadonlyParameterCollect(void)
 	index++;
 	g_ReadOnlyParameterCollect[index].ID = id++;
 	g_ReadOnlyParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_A].calDelay;
-	g_ReadOnlyParameterCollect[index].type = 0x46;
+	g_ReadOnlyParameterCollect[index].type = 0x42;
 	g_ReadOnlyParameterCollect[index].fSetValue = 0;
 	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloat32;
 	index++;
 	g_ReadOnlyParameterCollect[index].ID = id++;
 	g_ReadOnlyParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_B].calDelay;
-	g_ReadOnlyParameterCollect[index].type = 0x46;
+	g_ReadOnlyParameterCollect[index].type = 0x42;
 	g_ReadOnlyParameterCollect[index].fSetValue = 0;
 	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloat32;
 	index++;
 	g_ReadOnlyParameterCollect[index].ID = id++;
 	g_ReadOnlyParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_C].calDelay;
-	g_ReadOnlyParameterCollect[index].type = 0x46;
+	g_ReadOnlyParameterCollect[index].type = 0x42;
 	g_ReadOnlyParameterCollect[index].fSetValue = 0;
 	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloat32;
 
+	index++;
+	g_ReadOnlyParameterCollect[index].ID = id++;
+	g_ReadOnlyParameterCollect[index].pData = &g_PhaseActionRad[0].startTime;
+	g_ReadOnlyParameterCollect[index].type = 0x42;
+	g_ReadOnlyParameterCollect[index].fSetValue = 0;
+	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloat32;
 
 
 	index++;
@@ -271,7 +278,7 @@ static void InitReadonlyParameterCollect(void)
 	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloatUint16;
 	index++;
 	g_ReadOnlyParameterCollect[index].ID = id++;
-	g_ReadOnlyParameterCollect[index].pData = &g_SystemVoltageParameter.frequency;
+	g_ReadOnlyParameterCollect[index].pData = &g_SystemVoltageParameter.frequencyCollect.FreqMean;
 	g_ReadOnlyParameterCollect[index].type = 0x23;
 	g_ReadOnlyParameterCollect[index].fSetValue = 0;
 	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloatUint16;
@@ -525,7 +532,10 @@ void RefParameterInit(void)
 	 g_SystemVoltageParameter.voltageC = 0;
 	 g_SystemVoltageParameter.delayAB = 0;
 	 g_SystemVoltageParameter.delayAC = 0;
-	 g_SystemVoltageParameter.frequency = 50.0;
+	 g_SystemVoltageParameter.frequencyCollect.FreqInit = 50.0f;
+	 g_SystemVoltageParameter.frequencyCollect.FreqReal = 50.0f;
+	 g_SystemVoltageParameter.frequencyCollect.FreqMean = 50.0f;
+	 g_SystemVoltageParameter.frequencyCollect.FreqCal = 50.0f;
 	 g_SystemVoltageParameter.period = 20000;
 	 g_SystemVoltageParameter.voltage0 = 0;
 	 g_SystemVoltageParameter.voltageA = 0;
@@ -621,7 +631,13 @@ static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
 	if (pPoint->len >= 4)
 	{
 		//Todo: 根据ID选择保留有效位数
+
 		float ration = 1000000.0f;
+		if (pConfig->type == 0x42)
+		{
+			ration = 100.0f;
+		}
+
 
 		uint32_t result = (uint32_t)(*(float*)pConfig->pData * ration);
 		pPoint->pData[0] = (uint8_t)(result & 0x00FF);
@@ -635,6 +651,7 @@ static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
 		pPoint->len = 0; //置为0，以示意错误
 	}
 }
+
 
 /**
  * 设置参数[0,65.535]，默认保留3位小数

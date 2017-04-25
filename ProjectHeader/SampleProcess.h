@@ -21,7 +21,10 @@
 #define SAMPLE_COMPLTE  0x5555
 #define SAMPLE_NOT_FULL 0xAAAA
 
+
 #include "Header.h"
+#include "RefParameter.h"
+
 
 //过采样深度
 #define OVER_SAMPLE_LEN  1

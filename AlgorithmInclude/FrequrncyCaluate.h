@@ -28,8 +28,6 @@ typedef struct
 
 
 
-#define FREQ_MIN  40.0f  //频率偏差最小值
-#define FREQ_MAX  60.0f  //频率偏差最大值
 
 #define PI    3.141592653589793f
 #define PI3_2 4.712388980384690f //3/2*pi

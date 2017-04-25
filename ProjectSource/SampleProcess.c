@@ -71,7 +71,7 @@ void InitSampleProcessData(void)
 
   SampleLen = SAMPLE_LEN;
 #if WITH_FFT == 1
-  SamplePriod =  	15625.0f /  g_FreqMonitor.FreqMean; //设置新频率  50hz
+  SamplePriod =  	15625.0f /  g_SystemVoltageParameter.frequencyCollect.FreqMean; //设置新频率  50hz
 #elif  WITH_ZVD == 1
   SamplePriod = 156.25;//7812.5/50 恢复原有周期
 

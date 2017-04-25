@@ -26,14 +26,7 @@
 
 
 
-//频率合集
-struct FreqCollect
-{
-	float FreqInit;//初始频频率设置
-	float FreqReal;//当前实时频率
-	float FreqMean;//新计算实时频率
-	float FreqCal;
-};
+
 
 //时间计算与中间量
 struct TimeParameteCall
@@ -69,7 +62,7 @@ void FFT_Cal(float ADsample[]);
 void GetOVD(float* pData);
 extern void SynchronizTrigger(float* pData);
 
-extern struct  FreqCollect g_FreqMonitor; //监控频率
+
 extern float32 RFFToutBuff[RFFT_SIZE]; //from MonitorCalculate.c
 
 #ifdef	__cplusplus

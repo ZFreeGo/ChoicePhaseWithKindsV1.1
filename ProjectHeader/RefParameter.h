@@ -19,6 +19,15 @@
 #define PHASE_C  2
 
 
+//频率合集
+typedef struct RagFreqCollect
+{
+	float FreqInit;//初始频频率设置
+	float FreqReal;//当前实时频率
+	float FreqMean;//新计算实时频率
+	float FreqCal;
+} FreqCollect;
+
 /**
  * 过程延时时间定义
  */
@@ -58,7 +67,7 @@ typedef struct TagSystemVoltageParameter
 	float voltageC;//默认用于C相电压
 	float voltage0;//默认用于备用电压
 
-	float frequency;//频率 hz
+	FreqCollect frequencyCollect;//频率 hz
 	float period;//周期 us
 	uint16_t delayAB; //B相滞后A的延时 us
 	uint16_t delayAC; //相滞后A的延时 us
@@ -138,7 +147,7 @@ extern RefProcessTime g_ProcessDelayTime[3];
 extern SystemCalibrationCoefficient g_SystemCalibrationCoefficient;
 extern SystemVoltageParameter g_SystemVoltageParameter;
 extern ActionRad g_PhaseActionRad[3];
-
+extern LimitValue g_SystemLimit;
 extern uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint);
 extern uint8_t SetParamValue(uint8_t id, PointUint8* pPoint);
 extern void RefParameterInit(void);

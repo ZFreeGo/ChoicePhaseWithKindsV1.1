@@ -43,7 +43,7 @@ RFFT_F32_STRUCT rfft; //FFT 变换数据结构体
 //float TwoDivideN = 0; //2/N
 
 
-struct  FreqCollect g_FreqMonitor; //监控频率
+//struct  FreqCollect  g_SystemVoltageParameter.frequencyCollect; //监控频率
 
 
 volatile struct  TimeParameteCall CalTimeMonitor; //计算时间过程
@@ -76,8 +76,8 @@ volatile Uint8 FirstTrig = 0;// 首次触发标志 0--不需要触发 非0--需要触发
        RFFphaseBuff[i], RFFTmagBuff[i],RFFTF32Coef[i],
        RFFToutBuff[i], RFFTin1Buff[i]
        Cos1step, Sin1step
-       g_FreqMonitor, pg_FreqMonitor
-       CalTimeMonitor, pg_FreqMonitor
+       g_SystemVoltageParameter.frequencyCollect, pg_SystemVoltageParameter.frequencyCollect
+       CalTimeMonitor, pg_SystemVoltageParameter.frequencyCollect
        SetParam
 ****************************************************/
 void InitMonitorCalData(void)
@@ -97,11 +97,8 @@ void InitMonitorCalData(void)
   //TwoDivideN = 1;//TwoDivideN = 2.0 / (float)RFFT_SIZE; 消去
   FFT_Init();
 
-  g_FreqMonitor.FreqInit = 50.0f;
-  g_FreqMonitor.FreqReal = 50.0f;
-  g_FreqMonitor.FreqMean = 50.0f;
-  g_FreqMonitor.FreqCal = 50.0f;
-  //pg_FreqMonitor = &g_FreqMonitor;
+
+  //pg_SystemVoltageParameter.frequencyCollect = &g_SystemVoltageParameter.frequencyCollect;
 
   CalTimeMonitor.CalTimeDiff = 0;
   CalTimeMonitor.CalTp = 0;
@@ -245,7 +242,7 @@ void GetOVD(float* pData)
 	}
 	}
 	//超阈值处理
-	tp = 1e6 / g_FreqMonitor.FreqReal; //真实周期
+	tp = 1e6 / g_SystemVoltageParameter.frequencyCollect.FreqReal; //真实周期
 	tph = tp * 0.5f;  //半个周期
 
 
