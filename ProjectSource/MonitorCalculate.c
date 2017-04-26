@@ -13,7 +13,7 @@
 *作者:
 *完成时间:
 *******************************************************/
-
+#include "DSP28x_Project.h"
 #include "F2806x_Examples.h"   // F2806x Examples Include File
 #include "Header.h"
 #include "RefParameter.h"
@@ -367,8 +367,8 @@ void SynchronizTrigger(float* pData)
 	FFT_Cal(pData);   //傅里叶变化计算相角 每个点间隔
 	a = RFFToutBuff[1]; //实部
 	b = RFFToutBuff[RFFT_SIZE - 1]; //虚部
-	phase = atan( b/a ); //求取相位
-	phase += PID2;//转化为sin
+	phase = atan( b/a ); //求取相位(-pi/2 pi/2)
+
 
 	//相位判断
 		if (phase >= 0 ) //认为在第1,3象限   浮点数与零判断问题,是否需要特殊处理？
@@ -394,6 +394,12 @@ void SynchronizTrigger(float* pData)
 				xiang = 2; //在第二象限
 			}
 		}
+		phase += PID2;//cos转化为sin
+		if (phase > PI2)//大于2PI
+		{
+			phase = phase - PI2;
+		}
+
 		//象限变换
 		switch (xiang)
 		{
@@ -441,19 +447,46 @@ void SynchronizTrigger(float* pData)
 
 	    }while(count < 100); //TODO:添加异常判断
 
+
+
+
+	    //停止
+	  	    CpuTimer1Regs.TCR.bit.TSS = 1;//停止定时器，防止打断中断
+	  	    if (CpuTimer1Regs.TIM.all >= CpuTimer1Regs.TIM.all)
+	  	    {
+	  	    	 g_ProcessDelayTime[PHASE_A].innerDelay = (Uint16)(0.0125f *(CpuTimer1Regs.PRD.all - CpuTimer1Regs.TIM.all));
+
+	  	    }
+	  	    else
+	  	    {
+	  	    	g_ProcessDelayTime[PHASE_A].innerDelay = 88;
+	  	    }
+
+
+
 		if (difftime > 0)
 		{
 
+
 			//若时间之和大于等于0，则正常补偿；否则添加一个周期的延时
-			if (difftime + g_ProcessDelayTime[PHASE_A].compensationTime >= 0 )
+			time = difftime - g_ProcessDelayTime[PHASE_A].innerDelay + g_ProcessDelayTime[PHASE_A].compensationTime;
+			if ( time >= 0 )
 			{
-				g_ProcessDelayTime[PHASE_A].calDelay =
-						difftime + g_ProcessDelayTime[PHASE_A].compensationTime;
+				g_ProcessDelayTime[PHASE_A].calDelay =  (Uint16)time;
 			}
 			else
 			{
-				g_ProcessDelayTime[PHASE_A].calDelay =  g_SystemVoltageParameter.period +
-									difftime + g_ProcessDelayTime[PHASE_A].compensationTime;
+				time = g_SystemVoltageParameter.period + time;
+				if (time >= 0)
+				{
+					g_ProcessDelayTime[PHASE_A].calDelay =  (Uint16)time;
+				}
+				else
+				{
+					g_ProcessDelayTime[PHASE_A].calDelay = difftime;//超限后不进行补偿。
+				}
+
+
 			}
 			DELAY_US(g_ProcessDelayTime[PHASE_A].calDelay);
 
@@ -464,6 +497,10 @@ void SynchronizTrigger(float* pData)
 			SET_OUTA8_L;
 
 			SendMultiFrame(&g_NetSendFrame);
+		}
+		else
+		{
+			//TODO: 异常处理
 		}
 
 

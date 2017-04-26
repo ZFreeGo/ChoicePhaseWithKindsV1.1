@@ -67,10 +67,7 @@ LimitValue g_SystemLimit;
 
 uint8_t g_LocalMac;
 
-/**
- *默认同步命令
- */
-SyncCommand g_SyncCommand;
+
 
 
 
@@ -448,25 +445,25 @@ static void InitSetParameterCollect(void)
 	index++;
 	//Uint16 归一化值 合闸相角
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SyncCommand.actionRadA;
+	g_SetParameterCollect[index].pData = &g_PhaseActionRad[0].actionRad;
 	g_SetParameterCollect[index].type = 0x20;
 	g_SetParameterCollect[index].fSetValue = SetValueUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueUint16;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SyncCommand.actionRadB;
+	g_SetParameterCollect[index].pData = &g_PhaseActionRad[1].actionRad;
 	g_SetParameterCollect[index].type = 0x20;
 	g_SetParameterCollect[index].fSetValue = SetValueUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueUint16;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SyncCommand.actionRadC;
+	g_SetParameterCollect[index].pData = &g_PhaseActionRad[2].actionRad;
 	g_SetParameterCollect[index].type = 0x20;
 	g_SetParameterCollect[index].fSetValue = SetValueUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueUint16;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_SyncCommand.configbyte;
+	g_SetParameterCollect[index].pData = &g_PhaseActionRad[0].loopByte;
 	g_SetParameterCollect[index].type = 0x10;
 	g_SetParameterCollect[index].fSetValue = SetValueUint8;
 	g_SetParameterCollect[index].fGetValue = GetValueUint8;
@@ -566,8 +563,12 @@ void RefParameterInit(void)
 	 g_SystemLimit.frequency.min = 45.0f;
 	 g_SystemLimit.workVoltage.max = 3.5f;
 	 g_SystemLimit.workVoltage.min =  3.1f;
+	 g_SystemLimit.inportVoltage.min = 80;
+	 g_SystemLimit.inportVoltage.max = 250;
 	 //同步预制等待时间
 	 g_SystemLimit.syncReadyWaitTime = 3000;
+
+
 
 
 	 g_LocalMac = 0x0D;

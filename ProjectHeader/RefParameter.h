@@ -113,6 +113,7 @@ typedef struct TagActionParameter
     float realTime; //realRatio * 周期
 
     float startTime;//进行同步采样计算的 开始时间
+    uint8_t loopByte;//回路控制字
 
 }ActionRad;
 /**

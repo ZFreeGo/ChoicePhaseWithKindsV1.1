@@ -125,11 +125,17 @@ __interrupt void  ADC_INT1_ISR(void)
            //计算时间差
            if (ZVDFlag) //如果开始计算
            {
+        		ConfigCpuTimer(&CpuTimer1, 80, 10000); //配置CPU在80M工作频率下，最大计时10ms
+        		//TODO:停止定时器，防止打断中断，凭借优先级设置
+        		CpuTimer0Regs.TCR.bit.TSS = 1;
+        		CpuTimer1Regs.TCR.all = 0x4000; // Use write-only instruction to set TSS bit = 0 启动定时器
 #if WITH_FFT == 1
         	   ZVDFlag = 0; //首先清空标志，防止重复进入
 
         	   //GetOVD(SampleDataSavefloat); //7825 7803cyc 80 10us
         	   SynchronizTrigger(SampleDataSavefloat);
+
+
         	   SampleLen = SAMPLE_LEN; //原始
         	   //最后恢复状态
         	  // StartSample();
@@ -144,6 +150,9 @@ __interrupt void  ADC_INT1_ISR(void)
 #elif
 #error "为适当定义当前采样模式"
 #endif
+
+        	   //重新启动timer0
+        	    CpuTimer0Regs.TCR.all = 0x4000; // Use write-only instruction to set TSS bit = 0 启动定时器
            }
          }
        else

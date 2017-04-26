@@ -29,6 +29,7 @@ typedef struct
 
 
 
+#define PI2   6.283185307179586f
 #define PI    3.141592653589793f
 #define PI3_2 4.712388980384690f //3/2*pi
 #define PID2  1.570796326794897f //  PI/2

@@ -20,7 +20,7 @@ uint8_t LastFlag = 0;
 uint8_t CommandData[10] = {0};
 uint8_t LastLen = 0;
 uint32_t LastTime = 0;
-
+uint8_t loopByte = 0;
 
 /**
  * 初始化使用的数据
@@ -46,7 +46,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 {
 	uint8_t id = 0;
 
-	uint8_t loopByte = 0;
+
 	uint8_t count = 0;
 	uint8_t i = 0;
 
@@ -259,7 +259,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					 count = (pReciveFrame->len - 2)/2;
 					 for(i = 0; i < count; i++)
 					 {
-						 g_PhaseActionRad[i].phase = (loopByte>>(2*i));
+						 g_PhaseActionRad[i].phase = (CommandData[1]>>(2*i));
 						 g_PhaseActionRad[i].actionRad =
 								 pReciveFrame->pBuffer[2*i + 2] + ((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8;
 						 g_PhaseActionRad[i].enable = 0xFF;
@@ -270,7 +270,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					 {
 						 g_PhaseActionRad[i].enable = 0;
 					 }
-
+					 g_PhaseActionRad[0].loopByte = CommandData[1];
 					 memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 					 pSendFrame->pBuffer[0] = id| 0x80;
 					 pSendFrame->len = pReciveFrame->len;
