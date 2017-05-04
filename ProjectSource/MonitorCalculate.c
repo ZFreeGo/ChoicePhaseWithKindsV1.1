@@ -492,9 +492,9 @@ void SynchronizTrigger(float* pData)
 
 			//Êä³ö¶¯×÷
 			//
-			SET_OUTA8_H;
+			SET_OUTA1_H;
 			DELAY_US(1000000);
-			SET_OUTA8_L;
+			SET_OUTA1_L;
 
 			SendMultiFrame(&g_NetSendFrame);
 		}

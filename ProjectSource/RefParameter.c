@@ -64,10 +64,15 @@ ActionRad g_PhaseActionRad[3];
  */
 LimitValue g_SystemLimit;
 
-
+/**
+ *本地MAC
+ */
 uint8_t g_LocalMac;
 
-
+/**
+ *CAN错误
+ */
+volatile uint32_t g_CANErrorStatus;
 
 
 
@@ -569,6 +574,8 @@ void RefParameterInit(void)
 	 g_SystemLimit.syncReadyWaitTime = 3000;
 
 
+	 //CAN通讯错误状态
+	 g_CANErrorStatus = 0;
 
 
 	 g_LocalMac = 0x0D;
@@ -578,6 +585,8 @@ void RefParameterInit(void)
 
 	 //缓冲数据发送
 	 g_NetSendFrame.pBuffer = BufferData;
+
+
 }
 
 

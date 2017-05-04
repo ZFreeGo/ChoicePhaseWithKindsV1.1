@@ -150,6 +150,10 @@ extern SystemCalibrationCoefficient g_SystemCalibrationCoefficient;
 extern SystemVoltageParameter g_SystemVoltageParameter;
 extern ActionRad g_PhaseActionRad[3];
 extern LimitValue g_SystemLimit;
+extern volatile uint32_t g_CANErrorStatus;
+
+
+
 extern uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint);
 extern uint8_t SetParamValue(uint8_t id, PointUint8* pPoint);
 extern void RefParameterInit(void);

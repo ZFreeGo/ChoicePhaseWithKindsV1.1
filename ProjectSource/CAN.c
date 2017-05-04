@@ -10,8 +10,8 @@
 #include "stdtype.h"
 #include "DSP28x_Project.h"
 #include "DeviceNet.h"
-
-
+#include "BasicModule.h"
+#include "RefParameter.h"
 
 
 
@@ -64,8 +64,9 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
     EALLOW;
     ECanaRegs.CANMIM.all = 0x00010000;//MAILBOX 16  使能接收
     ECanaRegs.CANGIM.bit.I0EN = 1;//中断0使能
-
-
+    ECanaRegs.CANGIM.bit.EPIM = 1;//使能错误中断Error-passive interrupt mask
+    ECanaRegs.CANGIM.bit.BOIM = 1;//Bus-off interrupt mask
+    ECanaRegs.CANGIM.bit.RMLIM = 1;//Received-message-lost interrupt mask
 
     // Configure the eCAN for self test mode
     // Enable the enhanced features of the eCAN.
@@ -87,7 +88,7 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 /********************************************
 *函数名：CANOneSendByTX0()
 *形参：: uint16* pID  11bitID标识, uint8 * pbuff 缓冲数据, uint8 len 数据长度
-*返回值：uint8 —— 发送数据总长度 0--数据出错
+*返回值：uint8 —— 发送数据总长度  0xFF--数据出错
 *功能： 通过TX0发送带有CRC16的帧数据
 **********************************************/
  uint8_t CANSendData(uint16_t id, uint8_t * pbuff, uint8_t len)
@@ -122,7 +123,13 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 
 			 ECanaMboxes.MBOX0.MSGCTRL.bit.DLC = 8;
 			 ECanaRegs.CANTRS.all = 0x00000001;  // Set TRS for all transmit mailboxes
-			 while (ECanaRegs.CANTA.all != 0x00000001) {}  // Wait for all TAn bits to be set..
+			 while (ECanaRegs.CANTA.all != 0x00000001)
+			 {
+				if( g_CANErrorStatus != 0)
+				{
+					return 0xFF;
+				}
+			 }  // Wait for all TAn bits to be set..
 			 ECanaRegs.CANTA.all = 0x000000001;   // Clear all TAn
 		 }
 		 if ( remainLen > 0)
@@ -143,11 +150,17 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 
 			 ECanaMboxes.MBOX0.MSGCTRL.bit.DLC = remainLen;
 			 ECanaRegs.CANTRS.all = 0x00000001;  // Set TRS for all transmit mailboxes
-			 while (ECanaRegs.CANTA.all != 0x00000001) {}  // Wait for all TAn bits to be set..
+			 while (ECanaRegs.CANTA.all != 0x00000001)// Wait for all TAn bits to be set..
+			 {
+				 if( g_CANErrorStatus != 0)
+				 {
+	 				return 0xFF;
+	 			 }
+			 }
 			 ECanaRegs.CANTA.all = 0x000000001;   // Clear all TAn
 		 }
 	 }
-	 return 0;
+	 return 0xFF;
 
 
 
@@ -164,7 +177,7 @@ uint8_t ReceiveData[10] = { 0 }; //应该注意被意外覆盖
 __interrupt void Can0Recive_ISR(void)
 {
 
-	uint16_t id = 0;
+	uint16_t id = 0, k = 0;
 	uint8_t len = 0;
 
 
@@ -188,10 +201,43 @@ __interrupt void Can0Recive_ISR(void)
     	ReceiveData[7] = GET_BIT24_31( ECanaMboxes.MBOX16.MDH.all);
 
     	DeviceNetReciveCenter(&id, ReceiveData, len);
+    	return;
 
 	}
-
-
+	//ECanaRegs.CANGIM.bit.EPIM = 1;//使能错误中断Error-passive interrupt mask
+	//    ECanaRegs.CANGIM.bit.BOIM = 1;//Bus-off interrupt mask
+	//    ECanaRegs.CANGIM.bit.RMLIM = 1;//Received-message-lost interrupt mask
+	if (ECanaRegs.CANGIF0.bit.BOIF0)//Bus off interrupt flag
+	{
+		 k = 0;
+		while(k++ < 100)
+		{
+			TOGGLE_LED3;
+			DelayMs(100);
+		}
+		ECanaRegs.CANGIF0.bit.BOIF0 = 1;
+	}
+	if (ECanaRegs.CANGIF0.bit.RMLIF0)//Received-message-lost interrupt flag
+	{
+		 k = 0;
+		while(k++ < 100)
+		{
+			TOGGLE_LED3;
+			DelayMs(100);
+		}
+		ECanaRegs.CANGIF0.bit.RMLIF0 = 1;
+	}
+	if (ECanaRegs.CANGIF0.bit.EPIF0)//使能错误中断Error-passive interrupt flag
+	{
+		g_CANErrorStatus = ECanaRegs.CANES.all;
+		 k = 0;
+		while(k++ < 100)
+		{
+			TOGGLE_LED3;
+			DelayMs(100);
+		}
+		ECanaRegs.CANGIF0.bit.EPIF0 = 1;
+	}
    // Acknowledge this interrupt to receive more interrupts from group 9
    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
 }

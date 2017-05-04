@@ -1,3 +1,16 @@
+2017/5/4
+1.对新版本硬件进行适应性更改。
+2.关于ADC输入引脚
+ADCINA0--ref 2.5V
+AN1 --- ADCINB4 ---- PT1
+AN2 --- ADCINB2 ---- PT2
+AN3 --- ADCINB1 ---- PT3
+AN4 --- ADCINB0 ---- PT4
+AN5 --- ADCINA1 ---- VSET
+AN6 --- ADCINA2 ---- NULL
+
+3.添加CAN通讯中断，与相应的处理。
+
 2017/4/26
 1.添加控制字参数
 2.调整sin配置

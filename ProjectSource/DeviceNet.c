@@ -17,6 +17,9 @@
 #include "DSP28x_Project.h"
 #include "CAN.h"
 #include "Action.h"
+#include "BasicModule.h"
+#include "RefParameter.h"
+#include "DeviceIO.h"
 
 //DeviceNet 工作模式
 #define  MODE_REPEAT_MAC  0xA1  //重复MAC检测
@@ -111,13 +114,18 @@ void InitDeviceNet()
     WorkMode = MODE_REPEAT_MAC;
     BOOL result = CheckMACID( &DeviceNetReciveFrame, &DeviceNetSendFrame);
     
-    while(result)
+    if (result)
     {
-        WorkMode = MODE_FAULT;
+    	 WorkMode = MODE_FAULT;
+    	 ON_LED3;
+    }
+    else
+    {
+    	 WorkMode = MODE_NORMAL;
+    	 g_DeviceNetRequstData = 0;//请求标志清0
     }
     
-    WorkMode = MODE_NORMAL;
-    g_DeviceNetRequstData = 0;//请求标志清0
+
 
 }
 
@@ -745,6 +753,10 @@ BOOL CheckMACID(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFra
         pReciveFrame->complteFlag = 0;
            //发送请求
         ResponseMACID( pSendFrame, 0);
+    	if (g_CANErrorStatus != 0) //通讯错误
+    	{
+    		return TRUE;
+    	}
         StartOverTimer();//启动超时定时器
         while( IsTimeRemain())
         {
@@ -1270,7 +1282,12 @@ BOOL IsTimeRemain()
  */
 void AckMsgService(void)
 {
-
+	if (WorkMode== MODE_FAULT) //
+	{
+		TOGGLE_LED3;
+		DelayMs(100);
+		return;
+	}
 	//已经建立后状态改变连接---周期性报告状态/或者突发报告
 	if (StatusChangedConnedctionObj.state == STATE_LINKED)
 	{
@@ -1299,6 +1316,7 @@ void AckMsgService(void)
 		AckCycleInquireMsgService();
 		g_DeviceNetRequstData &= 0xFFFC; //清除标志位
 	}
+
 
 
 
