@@ -128,6 +128,9 @@ void InitDeviceIO(void)
 	EDIS;
 
 	ON_LED1;
+	ON_LED2;
+	ON_LED3;
+	OFF_LED1;
 	OFF_LED2;
 	OFF_LED3;
 }

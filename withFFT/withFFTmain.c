@@ -53,10 +53,7 @@ extern Uint16 RamfuncsLoadSize;
 
 int main(void)
 {
-
-
-
-
+	uint32_t cnTime = 0;
 	InitSysCtrl();            //20*4 = 80M
 	InitDeviceIO();
 	//InitECanGpio();
@@ -77,7 +74,7 @@ int main(void)
 	//PieVectTable.SCIRXINTA = &SciaRX_ISR;
 	//PieVectTable.SCITXINTA = &SciaTX_ISR;
 	PieVectTable.EPWM4_INT = &epwm4_timer_isr;
-	 PieVectTable.ECAN0INTA = &Can0Recive_ISR;
+	PieVectTable.ECAN0INTA = &Can0Recive_ISR;
 
 	EDIS;
 	// This is needed to disable write to EALLOW protected registers
@@ -128,12 +125,13 @@ int main(void)
 
 	while (1)
 	{
-
-
 		 UpdateFrequency();
 		 AckMsgService();
-
-
+		 if(cnTime++ > 200000)
+		 {
+			 TOGGLE_LED1;
+			 cnTime = 0;
+		 }
 	}
 
 	

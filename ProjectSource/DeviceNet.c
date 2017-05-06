@@ -78,7 +78,7 @@ static volatile uint8_t StartTime = 0;
 
 
 static RunTimeStamp LoopStatusSend;//循环状态发送
-
+static RunTimeStamp OffLine;// 处于离线状态时超时复位
 
 
 /*******************************************************************************
@@ -112,15 +112,19 @@ void InitDeviceNet()
 	IdentifierObj.serialID = serialID;            //serialID = 0x001169BC;;序列号
 	IdentifierObj.product_name = product_name;    //product_name = {8, "ADC4"};产品名称
     WorkMode = MODE_REPEAT_MAC;
+    g_CANErrorStatus = 0;
     BOOL result = CheckMACID( &DeviceNetReciveFrame, &DeviceNetSendFrame);
     
     if (result)
     {
     	 WorkMode = MODE_FAULT;
     	 ON_LED3;
+    	 OffLine.startTime =  CpuTimer0.InterruptCount;
+    	 OffLine.delayTime = 10000;
     }
     else
     {
+    	 OFF_LED3;
     	 WorkMode = MODE_NORMAL;
     	 g_DeviceNetRequstData = 0;//请求标志清0
     }
@@ -1275,6 +1279,10 @@ BOOL IsTimeRemain()
 
 
 }
+/**
+ * 通讯闪烁计数
+ */
+uint32_t flashComCn = 0;
 
 /**
  * 应答请求服务--非紧急情况下
@@ -1282,11 +1290,32 @@ BOOL IsTimeRemain()
  */
 void AckMsgService(void)
 {
-	if (WorkMode== MODE_FAULT) //
+	if (WorkMode == MODE_FAULT) //
 	{
 		ON_LED3;
 		//TODO: 添加通讯错误处理程序，超时后复位。
+		if (IsOverTime(OffLine.startTime, OffLine.delayTime))
+		{
+			//重新重新进行初始化
+			InitStandardCAN(0, 0);
+			InitDeviceNet();
+		}
 		return;
+	}
+	//有错误
+	if (  g_CANErrorStatus != 0)
+	{
+		ON_LED3;
+		WorkMode =  MODE_FAULT; //置为故障状态
+		OffLine.startTime =  CpuTimer0.InterruptCount; //重新设置新的延时
+		OffLine.delayTime = 5000;
+
+	}
+	//正常通讯指示灯
+	if (flashComCn++ >200000)
+	{
+		TOGGLE_LED3;
+		flashComCn = 0;
 	}
 	//已经建立后状态改变连接---周期性报告状态/或者突发报告
 	if (StatusChangedConnedctionObj.state == STATE_LINKED)

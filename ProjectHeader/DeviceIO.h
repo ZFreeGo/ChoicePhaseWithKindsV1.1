@@ -64,6 +64,14 @@
 #define GET_INB4  GpioDataRegs.GPADAT.bit.GPIO27
 
 
+#define SET_SCLA_H {GpioDataRegs.GPBSET.bit.GPIO32 = 1;}
+#define SET_SCLA_L  {GpioDataRegs.GPBCLEAR.bit.GPIO32 = 1;}
+#define SET_SDAA_H {GpioDataRegs.GPBSET.bit.GPIO33 = 1;}
+#define SET_SDAA_L  {GpioDataRegs.GPBCLEAR.bit.GPIO33 = 1;}
+
+#define SDAA_DIR_IN {GpioCtrlRegs.GPBDIR.bit.GPIO33 = 0;}
+#define SDAA_DIR_OUT {GpioCtrlRegs.GPBDIR.bit.GPIO33 = 1;}
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
