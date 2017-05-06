@@ -1284,8 +1284,8 @@ void AckMsgService(void)
 {
 	if (WorkMode== MODE_FAULT) //
 	{
-		TOGGLE_LED3;
-		DelayMs(100);
+		ON_LED3;
+		//TODO: 添加通讯错误处理程序，超时后复位。
 		return;
 	}
 	//已经建立后状态改变连接---周期性报告状态/或者突发报告

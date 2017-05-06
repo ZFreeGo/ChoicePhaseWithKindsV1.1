@@ -58,7 +58,7 @@ void InitAdc(void)
     AdcRegs.ADCCTL1.bit.ADCREFPWD = 1;      // Power reference
     AdcRegs.ADCCTL1.bit.ADCPWDN   = 1;      // Power ADC
     AdcRegs.ADCCTL1.bit.ADCENABLE = 1;      // Enable ADC
-    AdcRegs.ADCCTL1.bit.ADCREFSEL = 0;      // Select interal BG
+    AdcRegs.ADCCTL1.bit.ADCREFSEL = 1;      //0- Select interal BG 1-Íâ²¿²Î¿¼
     EDIS;
 
     DELAY_US(ADC_usDELAY);         // Delay before converting ADC channels

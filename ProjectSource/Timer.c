@@ -47,9 +47,7 @@ uint8_t IsOverTime(uint32_t startTime, uint32_t delayTime)
 __interrupt void Cpu_timer0_isr(void)
 {
    CpuTimer0.InterruptCount++;
-   TOGGLE_LED2;
-   TOGGLE_LED1;
-   TOGGLE_LED3;
+
    //if (FirstTrig)
    //{
 	//   FirstTrig = 0;

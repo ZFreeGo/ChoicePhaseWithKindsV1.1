@@ -159,6 +159,7 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 			 }
 			 ECanaRegs.CANTA.all = 0x000000001;   // Clear all TAn
 		 }
+		 return len;
 	 }
 	 return 0xFF;
 
@@ -201,6 +202,7 @@ __interrupt void Can0Recive_ISR(void)
     	ReceiveData[7] = GET_BIT24_31( ECanaMboxes.MBOX16.MDH.all);
 
     	DeviceNetReciveCenter(&id, ReceiveData, len);
+    	PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
     	return;
 
 	}
@@ -212,7 +214,7 @@ __interrupt void Can0Recive_ISR(void)
 		 k = 0;
 		while(k++ < 100)
 		{
-			TOGGLE_LED3;
+			ON_LED3;
 			DelayMs(100);
 		}
 		ECanaRegs.CANGIF0.bit.BOIF0 = 1;
@@ -222,7 +224,7 @@ __interrupt void Can0Recive_ISR(void)
 		 k = 0;
 		while(k++ < 100)
 		{
-			TOGGLE_LED3;
+			ON_LED3;
 			DelayMs(100);
 		}
 		ECanaRegs.CANGIF0.bit.RMLIF0 = 1;
@@ -233,7 +235,7 @@ __interrupt void Can0Recive_ISR(void)
 		 k = 0;
 		while(k++ < 100)
 		{
-			TOGGLE_LED3;
+			ON_LED3;
 			DelayMs(100);
 		}
 		ECanaRegs.CANGIF0.bit.EPIF0 = 1;

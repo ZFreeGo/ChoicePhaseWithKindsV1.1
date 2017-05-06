@@ -129,6 +129,6 @@ void InitDeviceIO(void)
 
 	ON_LED1;
 	OFF_LED2;
-	ON_LED3;
+	OFF_LED3;
 }
 
