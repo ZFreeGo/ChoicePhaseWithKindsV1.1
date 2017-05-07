@@ -77,7 +77,7 @@ extern "C" {
 #endif
 
 void InitDeviceIO(void);
-Uint16 GetKeyValue(void);
+
 
 
 #ifdef	__cplusplus

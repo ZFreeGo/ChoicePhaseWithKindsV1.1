@@ -56,6 +56,8 @@
 
 #include "CAN.h"
 #include "DeviceNet.h"
+#include "stdType.h"
+#include "SoftI2C.h"
 
 //#include"CLAmath.h"
 #define NOP()   __asm(" NOP")

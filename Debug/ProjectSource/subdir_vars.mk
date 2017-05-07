@@ -16,6 +16,7 @@ C_SRCS += \
 ../ProjectSource/PwmTimer.c \
 ../ProjectSource/RefParameter.c \
 ../ProjectSource/SampleProcess.c \
+../ProjectSource/SoftI2C.c \
 ../ProjectSource/Timer.c 
 
 OBJS += \
@@ -29,6 +30,7 @@ OBJS += \
 ./ProjectSource/PwmTimer.obj \
 ./ProjectSource/RefParameter.obj \
 ./ProjectSource/SampleProcess.obj \
+./ProjectSource/SoftI2C.obj \
 ./ProjectSource/Timer.obj 
 
 C_DEPS += \
@@ -41,6 +43,7 @@ C_DEPS += \
 ./ProjectSource/PwmTimer.d \
 ./ProjectSource/RefParameter.d \
 ./ProjectSource/SampleProcess.d \
+./ProjectSource/SoftI2C.d \
 ./ProjectSource/Timer.d 
 
 C_UPPER_DEPS += \
@@ -56,6 +59,7 @@ C_DEPS__QUOTED += \
 "ProjectSource\PwmTimer.d" \
 "ProjectSource\RefParameter.d" \
 "ProjectSource\SampleProcess.d" \
+"ProjectSource\SoftI2C.d" \
 "ProjectSource\Timer.d" 
 
 C_UPPER_DEPS__QUOTED += \
@@ -72,6 +76,7 @@ OBJS__QUOTED += \
 "ProjectSource\PwmTimer.obj" \
 "ProjectSource\RefParameter.obj" \
 "ProjectSource\SampleProcess.obj" \
+"ProjectSource\SoftI2C.obj" \
 "ProjectSource\Timer.obj" 
 
 C_SRCS__QUOTED += \
@@ -84,6 +89,7 @@ C_SRCS__QUOTED += \
 "../ProjectSource/PwmTimer.c" \
 "../ProjectSource/RefParameter.c" \
 "../ProjectSource/SampleProcess.c" \
+"../ProjectSource/SoftI2C.c" \
 "../ProjectSource/Timer.c" 
 
 C_UPPER_SRCS__QUOTED += \

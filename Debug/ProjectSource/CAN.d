@@ -53,6 +53,7 @@ ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/Pro
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/DeviceNet.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h
+ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SoftI2C.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/DSP28x_Project.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/BasicModule.h
 
@@ -109,5 +110,6 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/RefParameter
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/DeviceNet.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SoftI2C.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/DSP28x_Project.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/BasicModule.h: 

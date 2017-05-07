@@ -229,7 +229,7 @@ void UpdateFrequency(void)
 			//理论上将是20ms一个循环
 	//Todo:浮点数等于比较是个隐患
 	if (SampleDataSavefloat[SAMPLE_LEN] == SAMPLE_COMPLTE) //采样完成
-		{
+	{
 		//计算频率
 		CalFreq(SampleDataSavefloat);
 		CalEffectiveValue();
@@ -244,8 +244,8 @@ void UpdateFrequency(void)
 			g_SystemVoltageParameter.frequencyCollect.FreqMean = g_SystemCalibrationCoefficient.frequencyCoefficient * MidMeanFilter(freqArray, 7); //
 		}
 
-		 g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqMean;
-		 g_SystemVoltageParameter.period = 1e6/g_SystemVoltageParameter.frequencyCollect.FreqMean;
+		g_SystemVoltageParameter.frequencyCollect.FreqReal = g_SystemVoltageParameter.frequencyCollect.FreqMean;
+		g_SystemVoltageParameter.period = 1e6/g_SystemVoltageParameter.frequencyCollect.FreqMean;
 		samplePriod = 15625.0f / g_SystemVoltageParameter.frequencyCollect.FreqMean; //计算实时采样周期 1e6/64
 
 		SetSamplePriod(samplePriod);

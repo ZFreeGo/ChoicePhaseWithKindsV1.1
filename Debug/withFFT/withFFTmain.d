@@ -54,6 +54,7 @@ withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/P
 withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h
 withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h
 withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/CAN.h
+withFFT/withFFTmain.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SoftI2C.h
 
 ../withFFT/withFFTmain.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/DSP28x_Project.h: 
@@ -109,3 +110,4 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/DeviceNet.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/CAN.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SoftI2C.h: 

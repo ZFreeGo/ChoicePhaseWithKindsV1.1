@@ -53,6 +53,7 @@ AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseW
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h
 AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/CAN.h
+AlgorithmSource/FrequencyCalutate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SoftI2C.h
 
 ../AlgorithmSource/FrequencyCalutate.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/AlgorithmInclude/FrequrncyCaluate.h: 
@@ -107,3 +108,4 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/DeviceNet.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/CAN.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SoftI2C.h: 

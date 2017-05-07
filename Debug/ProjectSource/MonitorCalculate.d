@@ -54,6 +54,7 @@ ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWith
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/CAN.h
+ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SoftI2C.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Action.h
 
 ../ProjectSource/MonitorCalculate.c: 
@@ -110,4 +111,5 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/DeviceNet.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/CAN.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SoftI2C.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Action.h: 

@@ -14,7 +14,9 @@
 *******************************************************/
 
 #include "RefParameter.h"
-
+#include "SoftI2C.h"
+#include "BasicModule.h"
+#include "DeviceIO.h"
 /**
  * 获取有效位数
  */
@@ -37,6 +39,12 @@ static void GetValueUint16(PointUint8* pPoint, ConfigData* pConfig);
 static void SetValueUint16(PointUint8* pPoint, ConfigData* pConfig);
 static void GetValueUint8(PointUint8* pPoint, ConfigData* pConfig);
 static void SetValueUint8(PointUint8* pPoint, ConfigData* pConfig);
+
+static uint8_t EEPROMReadData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pPoint);
+static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pPoint);
+
+static uint8_t ReadLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum);
+static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum);
 
 /**
  * 用于三相控制的延时参数
@@ -68,6 +76,11 @@ LimitValue g_SystemLimit;
  *本地MAC
  */
 uint8_t g_LocalMac;
+/**
+ *工作模式
+ */
+uint8_t g_WorkMode;
+
 
 /**
  *CAN错误
@@ -79,9 +92,13 @@ volatile uint32_t g_CANErrorStatus;
 uint8_t  BufferData[10];//接收缓冲数据
 struct DefFrameData  g_NetSendFrame; //发送帧处理
 
+/**
+ *设置值累加和
+ */
+uint16_t CumulativeSum = 0;
 
 
-#define PARAMETER_LEN 29  //设置参数列表
+#define PARAMETER_LEN 30  //设置参数列表
 #define READONLY_PARAMETER_LEN 15  //读取参数列表
 #define READONLY_START_ID 0x41
 /**
@@ -89,8 +106,6 @@ struct DefFrameData  g_NetSendFrame; //发送帧处理
  */
 ConfigData g_SetParameterCollect[PARAMETER_LEN]; //配置参数列表--可读可写
 ConfigData g_ReadOnlyParameterCollect[READONLY_PARAMETER_LEN]; //参数合集--只读列表
-
-
 
 
 /**
@@ -479,19 +494,27 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fSetValue = SetValueUint8;
 	g_SetParameterCollect[index].fGetValue = GetValueUint8;
 	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &CumulativeSum;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
 
-	if (PARAMETER_LEN < index)
+	if (PARAMETER_LEN != index)
 	{
-		while(1);
+
+		while(1)
+		{
+			ON_LED1; //LED1常亮指示错误
+		}
 	}
 
 }
-
-
 /**
- * 初始化全局变量参数
+ *  使用默认值进行初始化
  */
-void RefParameterInit(void)
+void DefaultInit(void)
 {
 	//A相
 	g_ProcessDelayTime[PHASE_A].actionDelay = 0;
@@ -580,11 +603,50 @@ void RefParameterInit(void)
 
 	 g_LocalMac = 0x0D;
 
-	 InitSetParameterCollect();
-	 InitReadonlyParameterCollect();
+
 
 	 //缓冲数据发送
 	 g_NetSendFrame.pBuffer = BufferData;
+}
+/**
+ * 初始化全局变量参数
+ */
+void RefParameterInit(void)
+{
+	 uint16_t sum = 0, sumOne = 0;
+	 uint8_t result = 0;
+	 InitSetParameterCollect();
+	 InitReadonlyParameterCollect();
+
+	 DefaultInit();
+
+	 result = ReadLocalSaveData(1, PARAMETER_LEN-1, &sum);
+	 if (result)
+	 {
+		 DefaultInit();//重新用默认值初始化
+	 }
+	 else
+	 {
+		 //获取累加和,最后一个
+		 result = ReadLocalSaveData(PARAMETER_LEN-1, 1, &sumOne);
+		 if(result)
+		 {
+			 DefaultInit();//重新用默认值初始化
+		 }
+		 else
+		 {
+			 if (CumulativeSum != sum)
+			 {
+				 DefaultInit();//重新用默认值初始化
+			 }
+		 }
+	 }
+
+
+	 g_WorkMode = 0;
+
+
+
 
 
 }
@@ -818,3 +880,247 @@ static void GetValueUint8(PointUint8* pPoint, ConfigData* pConfig)
 }
 
 
+/**
+ * 将数据写入EEPROM指定的地址,最大长度小于等于4；写后重新读取进行验证写入正确性。
+ *
+ * @param   hightAddr    高字节地址
+ * @param   lowAddr   低字节地址
+ * @param pPoint 要保存的数据长度
+ *
+ * @return 0--正确  非0--写入错误
+ *
+ * @brif EEPROM写数据
+ */
+
+static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pPoint)
+{
+	uint8_t i = 0, readData = 0, result = 0, overCount = 0;
+	if(pPoint->len == 0) //不能等于0
+	{
+		return 0xA0;
+	}
+	if (pPoint->len > 4) //不能大于4
+	{
+		return 0xA1;
+	}
+	for( i = 0; i < pPoint->len; i++)
+	{
+		overCount = 0;
+		do
+		{
+			result = EEPROMWriteByte(EEPROM_ADDRESS, hightAddr, lowAddr,  pPoint->pData[i]);
+			if(!result )
+			{
+				if(overCount++ > 3)
+				{
+					return (0xB0 + i);
+				}
+				 DelayMs(10);//延时10ms，再次尝试
+			}
+			else
+			{
+				break;		//正常退出		
+			}
+		}
+		while(1);
+		
+		DelayMs(50);
+		 
+		overCount = 0;
+		do
+		{
+			result =  EEPROMReadByte(EEPROM_ADDRESS, hightAddr, lowAddr,  &readData);
+			if(!result )
+			{
+				if(overCount++ > 3)
+				{
+					return (0xC0 + i);
+				}
+				 DelayMs(10);//延时10ms，再次尝试
+			}
+			else
+			{
+				break;		//正常退出		
+			}
+		}
+		while(1);
+		 if (readData != pPoint->pData[i])
+		 {
+			 return (0xF0 + i);
+		 }
+	}
+	return 0;
+
+}
+
+/**
+ * 从指定EEPROM地址读数据
+ *
+ * @param   hightAddr    高字节地址
+ * @param   lowAddr   低字节地址
+ * @param  pPoint 要保存的数据长空间
+ *
+ * @return 0--正确  非0--读取错误
+ *
+ * @brif EEPROM读数据
+ */
+static uint8_t EEPROMReadData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pPoint)
+{
+	uint8_t i = 0, readData = 0, result = 0, overCount = 0;
+	if(pPoint->len == 0) //不能等于0
+	{
+		return 0xA0;
+	}
+	if (pPoint->len > 4) //不能大于4
+	{
+		return 0xA1;
+	}
+	for( i = 0; i < pPoint->len; i++)
+	{
+		overCount = 0;
+		do
+		{
+			result =  EEPROMReadByte(EEPROM_ADDRESS, hightAddr, lowAddr,  &readData);
+			if(!result )
+			{
+				if(overCount++ > 3)
+				{
+					return (0xC0 + i);
+				}
+				 DelayMs(10);//延时10ms，再次尝试
+			}
+			else
+			{
+				pPoint->pData[i] = readData;
+				break;		//正常退出		
+			}
+		}
+		while(1);		
+		DelayMs(1);
+	}
+	return 0;
+}
+
+	PointUint8 tempPoint;
+	uint8_t testData[4];
+	uint8_t testResult;
+
+/**
+ * 从EEPROM中读取设定值,并计算累加和
+ *
+ * @param startId 开始ID号
+ * @param len  长度
+ * @param *pSum 累加和 
+ *
+ * @return 0--正确  非0--读取错误
+ *
+ * @brif 更新数据
+ */
+static uint8_t ReadLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
+{
+	uint8_t i = 0, k = 0;
+
+	 testData[0]= 0xAA;
+	 testData[1]= 0x55;
+	 testData[2]= 0xA5;
+	 testData[3]= 0x5A;
+	 tempPoint.pData = testData;
+	 tempPoint.len = 0;
+
+	 if ((4 * PARAMETER_LEN > 252) && (startId + len <= PARAMETER_LEN ) && (startId > 0))
+	 {
+		 return 0xA0;
+	 }
+	
+	for(i = startId - 1; i < len; i++)
+	{
+		tempPoint.len = g_SetParameterCollect[i].type >> 4;//获取字节数
+		testResult = EEPROMReadData( 0, 4* (g_SetParameterCollect[i].ID-1), &tempPoint);
+		if (testResult)
+		{
+			return 0xB0 + i;
+		}
+		else
+		{
+			g_SetParameterCollect[i].fSetValue(&tempPoint, g_SetParameterCollect + i);
+		}
+		if (tempPoint.len == 0) //长度为0，说明设置错误返回
+		{
+			return 0xE0 + i;
+		}
+		for(k = 0; k <  tempPoint.len; k++)//计算累加和,按字节累加
+		{
+			*pSum += tempPoint.pData[k];
+		}
+	}
+	return 0;
+}
+/**
+ *将值写入本地存储
+ *
+ * @param startId 开始ID号
+ * @param len  长度
+ * @param *pSum 累加和 
+ *
+ * @return 0--正确  非0--读取错误
+ *
+ * @brif 更新EEPROm数据
+ */
+static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
+{
+	uint8_t i = 0,  k = 0;
+
+	 testData[0]= 0xAA;
+	 testData[1]= 0x55;
+	 testData[2]= 0xA5;
+	 testData[3]= 0x5A;
+	 tempPoint.pData = testData;
+	 tempPoint.len = 4;
+
+	 if ((4 * PARAMETER_LEN > 252) && (startId + len <= PARAMETER_LEN ) && (startId > 0))
+	 {
+		 return 0xA0;
+	 }
+	
+	for(i = startId-1; i < len; i++)
+	{		
+	
+		g_SetParameterCollect[i].fGetValue(&tempPoint, g_SetParameterCollect + i);
+		if (tempPoint.len == 0) //长度为0，说明设置错误返回
+		{
+			return 0xB0 + i;
+		}	
+	
+		testResult = EEPROMWriteData( 0, 4* (g_SetParameterCollect[i].ID-1), &tempPoint);		
+		if (testResult)
+		{
+			return 0xE0 + i;
+		}
+		
+		for(k = 0; k <  tempPoint.len; k++)//计算累加和,按字节累加
+		{
+			*pSum += tempPoint.pData[k];
+		}
+		
+		
+	}
+	return 0;
+}
+/**
+ *更新数据
+ *
+ * @brif 更新系统参数数据
+ */
+uint8_t UpdateSystemSetData(void)
+{
+	uint16_t sum = 0;
+	uint8_t result;
+	result = UpdateLocalSaveData(1,  PARAMETER_LEN - 1, &sum);
+	if (!result)
+	{
+		CumulativeSum = sum;
+		result = UpdateLocalSaveData(PARAMETER_LEN - 1, 1, &sum);//单独更新校验和
+		
+	}
+	return result;
+}

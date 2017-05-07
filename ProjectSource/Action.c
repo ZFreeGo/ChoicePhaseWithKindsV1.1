@@ -58,8 +58,8 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	uint8_t codeStart = 0;
 	uint8_t codeEnd = 0;
 
-	uint8_t remain = 0;
-	uint16_t temp = 0;
+	//uint8_t remain = 0;
+	//uint16_t temp = 0;
 	//最小长度必须大于0,且小于8对于单帧
 	if ((pReciveFrame->len == 0) || (pReciveFrame->len > 8))
 	{
@@ -127,6 +127,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			}
 			break;
 		}
+		
 		case 0x13://参数读取非顺序结构
 		{
 			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
@@ -150,6 +151,47 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				return 0;
 			}
 
+			break;
+		}
+		case 0x15:// 配置模式
+		{
+			if (pReciveFrame->len == 4) //ID+配置号 至少2字节
+			{
+				if (pReciveFrame->pBuffer[1] != g_LocalMac)
+				{
+					return 0xB0;
+				}
+				if (pReciveFrame->pBuffer[2] != DeviceNetObj.assign_info.master_MACID)
+				{
+					return 0xB1;
+				}
+				if (pReciveFrame->pBuffer[3] == 0x55)//离开配置模式
+				{
+
+					result = UpdateSystemSetData();
+					 g_WorkMode = pReciveFrame->pBuffer[3];
+					 //应答回复
+					 pSendFrame->pBuffer[0] = id| 0x80;
+
+		 			 memcpy(pSendFrame->pBuffer + 1, pReciveFrame->pBuffer + 1,
+		 					 pReciveFrame->len-1);
+		 			pSendFrame->pBuffer[pSendFrame->len] = result;
+					pSendFrame->len = pReciveFrame->len + 1;
+					return 0;
+
+				}
+				else if (pReciveFrame->pBuffer[3] == 0xAA)//进入配置模式
+				{
+					g_WorkMode = pReciveFrame->pBuffer[3];
+					//应答回复
+					pSendFrame->pBuffer[0] = id| 0x80;
+					memcpy(pSendFrame->pBuffer + 1, pReciveFrame->pBuffer,
+	 					 pReciveFrame->len - 1);
+					pSendFrame->len = pReciveFrame->len;
+					return 0;
+				}
+
+			}
 			break;
 		}
 		case 0x1B://超过一帧数据读取结构

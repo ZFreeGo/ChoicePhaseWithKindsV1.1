@@ -21,8 +21,8 @@
 extern "C" {
 #endif
 
-void DelayMs(Uint16 ms);  //MS 延时
-void DelayUs(Uint16 us);  //us 延时
+extern void DelayMs(Uint16 ms);  //MS 延时
+extern void DelayUs(Uint16 us);  //us 延时
 
 #ifdef	__cplusplus
 }

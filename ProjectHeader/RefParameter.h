@@ -11,6 +11,9 @@
 #include "StdType.h"
 #include "DeviceNet.h"
 
+//EEPROM地址
+#define EEPROM_ADDRESS  0xA0
+
 /**
  * 用于电压控制
  */
@@ -151,13 +154,17 @@ extern SystemVoltageParameter g_SystemVoltageParameter;
 extern ActionRad g_PhaseActionRad[3];
 extern LimitValue g_SystemLimit;
 extern volatile uint32_t g_CANErrorStatus;
-
-
+extern uint8_t g_LocalMac;
+extern uint8_t g_WorkMode;
 
 extern uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint);
 extern uint8_t SetParamValue(uint8_t id, PointUint8* pPoint);
 extern void RefParameterInit(void);
-
+extern uint8_t UpdateSystemSetData(void);
 
 extern struct DefFrameData  g_NetSendFrame;
+
+
+
+
 #endif /* PROJECTHEADER_REFPARAMETER_H_ */

@@ -21,6 +21,7 @@ ORDERED_OBJS += \
 "./ProjectSource/PwmTimer.obj" \
 "./ProjectSource/RefParameter.obj" \
 "./ProjectSource/SampleProcess.obj" \
+"./ProjectSource/SoftI2C.obj" \
 "./ProjectSource/Timer.obj" \
 "./source/F2806x_Adc.obj" \
 "./source/F2806x_CodeStartBranch.obj" \
@@ -197,9 +198,9 @@ ChoicePhaseWithKindsV1.2.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "AlgorithmSource\FrequencyCalutate.d" "ProjectSource\Action.d" "ProjectSource\BasicModule.d" "ProjectSource\CAN.d" "ProjectSource\ConfigADC.d" "ProjectSource\DeviceNet.d" "ProjectSource\MonitorCalculate.d" "ProjectSource\PwmTimer.d" "ProjectSource\RefParameter.d" "ProjectSource\SampleProcess.d" "ProjectSource\Timer.d" "source\F2806x_Adc.d" "source\F2806x_CpuTimers.d" "source\F2806x_DefaultIsr.d" "source\F2806x_ECan.d" "source\F2806x_GlobalVariableDefs.d" "source\F2806x_OscComp.d" "source\F2806x_PieCtrl.d" "source\F2806x_PieVect.d" "source\F2806x_Sci.d" "source\F2806x_SysCtrl.d" "withFFT\withFFTmain.d" 
+	-$(RM) "AlgorithmSource\FrequencyCalutate.d" "ProjectSource\Action.d" "ProjectSource\BasicModule.d" "ProjectSource\CAN.d" "ProjectSource\ConfigADC.d" "ProjectSource\DeviceNet.d" "ProjectSource\MonitorCalculate.d" "ProjectSource\PwmTimer.d" "ProjectSource\RefParameter.d" "ProjectSource\SampleProcess.d" "ProjectSource\SoftI2C.d" "ProjectSource\Timer.d" "source\F2806x_Adc.d" "source\F2806x_CpuTimers.d" "source\F2806x_DefaultIsr.d" "source\F2806x_ECan.d" "source\F2806x_GlobalVariableDefs.d" "source\F2806x_OscComp.d" "source\F2806x_PieCtrl.d" "source\F2806x_PieVect.d" "source\F2806x_Sci.d" "source\F2806x_SysCtrl.d" "withFFT\withFFTmain.d" 
 	-$(RM) "ProjectSource\DeviceIO.d" 
-	-$(RM) "AlgorithmSource\FrequencyCalutate.obj" "ProjectSource\Action.obj" "ProjectSource\BasicModule.obj" "ProjectSource\CAN.obj" "ProjectSource\ConfigADC.obj" "ProjectSource\DeviceIO.obj" "ProjectSource\DeviceNet.obj" "ProjectSource\MonitorCalculate.obj" "ProjectSource\PwmTimer.obj" "ProjectSource\RefParameter.obj" "ProjectSource\SampleProcess.obj" "ProjectSource\Timer.obj" "source\F2806x_Adc.obj" "source\F2806x_CodeStartBranch.obj" "source\F2806x_CpuTimers.obj" "source\F2806x_DefaultIsr.obj" "source\F2806x_DisInt.obj" "source\F2806x_ECan.obj" "source\F2806x_GlobalVariableDefs.obj" "source\F2806x_OscComp.obj" "source\F2806x_PieCtrl.obj" "source\F2806x_PieVect.obj" "source\F2806x_Sci.obj" "source\F2806x_SysCtrl.obj" "source\F2806x_usDelay.obj" "withFFT\withFFTmain.obj" 
+	-$(RM) "AlgorithmSource\FrequencyCalutate.obj" "ProjectSource\Action.obj" "ProjectSource\BasicModule.obj" "ProjectSource\CAN.obj" "ProjectSource\ConfigADC.obj" "ProjectSource\DeviceIO.obj" "ProjectSource\DeviceNet.obj" "ProjectSource\MonitorCalculate.obj" "ProjectSource\PwmTimer.obj" "ProjectSource\RefParameter.obj" "ProjectSource\SampleProcess.obj" "ProjectSource\SoftI2C.obj" "ProjectSource\Timer.obj" "source\F2806x_Adc.obj" "source\F2806x_CodeStartBranch.obj" "source\F2806x_CpuTimers.obj" "source\F2806x_DefaultIsr.obj" "source\F2806x_DisInt.obj" "source\F2806x_ECan.obj" "source\F2806x_GlobalVariableDefs.obj" "source\F2806x_OscComp.obj" "source\F2806x_PieCtrl.obj" "source\F2806x_PieVect.obj" "source\F2806x_Sci.obj" "source\F2806x_SysCtrl.obj" "source\F2806x_usDelay.obj" "withFFT\withFFTmain.obj" 
 	-$(RM) "source\F2806x_CodeStartBranch.d" "source\F2806x_DisInt.d" "source\F2806x_usDelay.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
