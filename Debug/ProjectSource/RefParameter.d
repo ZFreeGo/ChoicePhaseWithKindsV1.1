@@ -38,6 +38,23 @@ ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKind
 ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/F2806x_Cla_defines.h
 ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/F2806x_DefaultISR.h
 ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/DeviceIO.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Header.h
+ProjectSource/RefParameter.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/math.h
+ProjectSource/RefParameter.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/linkage.h
+ProjectSource/RefParameter.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/_defs.h
+ProjectSource/RefParameter.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdio.h
+ProjectSource/RefParameter.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdarg.h
+ProjectSource/RefParameter.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/string.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/fpu.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/C28x_FPU_FastRTS.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/ConfigADC.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/MonitorCalculate.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/AlgorithmInclude/FrequrncyCaluate.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SampleProcess.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Header.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h
+ProjectSource/RefParameter.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/CAN.h
 
 ../ProjectSource/RefParameter.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/RefParameter.h: 
@@ -77,3 +94,20 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/F2806x_Dma_defines
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/F2806x_Cla_defines.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/F2806x_DefaultISR.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/DeviceIO.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Header.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/math.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/linkage.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/_defs.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdio.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdarg.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/string.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/fpu.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include/C28x_FPU_FastRTS.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/ConfigADC.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/MonitorCalculate.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/AlgorithmInclude/FrequrncyCaluate.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/SampleProcess.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Header.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/PwmTimer.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/Timer.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader/CAN.h: 

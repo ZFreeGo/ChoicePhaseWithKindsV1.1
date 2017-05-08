@@ -169,14 +169,14 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				{
 
 					result = UpdateSystemSetData();
-					 g_WorkMode = pReciveFrame->pBuffer[3];
+					g_WorkMode = pReciveFrame->pBuffer[3];
 					 //Ó¦´ğ»Ø¸´
-					 pSendFrame->pBuffer[0] = id| 0x80;
-
-		 			 memcpy(pSendFrame->pBuffer + 1, pReciveFrame->pBuffer + 1,
-		 					 pReciveFrame->len-1);
-		 			pSendFrame->pBuffer[pSendFrame->len] = result;
-					pSendFrame->len = pReciveFrame->len + 1;
+					pSendFrame->pBuffer[0] = id| 0x80;
+					pSendFrame->pBuffer[1] = g_LocalMac;
+					pSendFrame->pBuffer[2] = DeviceNetObj.assign_info.master_MACID;
+					pSendFrame->pBuffer[3] = 0x55;
+		 			pSendFrame->pBuffer[4] = result;
+					pSendFrame->len = 5;
 					return 0;
 
 				}

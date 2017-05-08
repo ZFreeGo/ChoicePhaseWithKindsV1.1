@@ -17,6 +17,7 @@
 #include "SoftI2C.h"
 #include "BasicModule.h"
 #include "DeviceIO.h"
+#include "Header.h"
 /**
  * 获取有效位数
  */
@@ -611,33 +612,38 @@ void DefaultInit(void)
 /**
  * 初始化全局变量参数
  */
+uint8_t result = 0;
 void RefParameterInit(void)
 {
 	 uint16_t sum = 0, sumOne = 0;
-	 uint8_t result = 0;
+	 result = 0;
 	 InitSetParameterCollect();
 	 InitReadonlyParameterCollect();
 
 	 DefaultInit();
 
 	 result = ReadLocalSaveData(1, PARAMETER_LEN-1, &sum);
+	 NOP();
 	 if (result)
 	 {
 		 DefaultInit();//重新用默认值初始化
+		 NOP();
 	 }
 	 else
 	 {
 		 //获取累加和,最后一个
-		 result = ReadLocalSaveData(PARAMETER_LEN-1, 1, &sumOne);
+		 result = ReadLocalSaveData(PARAMETER_LEN, 1, &sumOne);
 		 if(result)
 		 {
 			 DefaultInit();//重新用默认值初始化
+			 NOP();
 		 }
 		 else
 		 {
 			 if (CumulativeSum != sum)
 			 {
 				 DefaultInit();//重新用默认值初始化
+				 NOP();
 			 }
 		 }
 	 }
@@ -710,9 +716,9 @@ static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
 
 		uint32_t result = (uint32_t)(*(float*)pConfig->pData * ration);
 		pPoint->pData[0] = (uint8_t)(result & 0x00FF);
-		pPoint->pData[1] = (uint8_t)(result >> 8);
-		pPoint->pData[2] = (uint8_t)(result >> 16);
-		pPoint->pData[3] = (uint8_t)(result >> 24);
+		pPoint->pData[1] = (uint8_t)((result >> 8)& 0x00FF);
+		pPoint->pData[2] = (uint8_t)((result >> 16)& 0x00FF);
+		pPoint->pData[3] = (uint8_t)((result >> 24)& 0x00FF);
 		pPoint->len = 4;
 	}
 	else
@@ -765,7 +771,7 @@ static void SetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig)
  */
 static void GetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig)
 {
-	if (pPoint->len >= 4)
+	if (pPoint->len >= 2)
 	{
 		//Todo: 更具ID选择保留有效位数
 		float ration = 1000.0f;
@@ -894,7 +900,7 @@ static void GetValueUint8(PointUint8* pPoint, ConfigData* pConfig)
 
 static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pPoint)
 {
-	uint8_t i = 0, readData = 0, result = 0, overCount = 0;
+	uint8_t k = 0, readData = 0, result = 0, overCount = 0;
 	if(pPoint->len == 0) //不能等于0
 	{
 		return 0xA0;
@@ -903,17 +909,17 @@ static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* p
 	{
 		return 0xA1;
 	}
-	for( i = 0; i < pPoint->len; i++)
+	for( k = 0; k < pPoint->len; k++)
 	{
 		overCount = 0;
 		do
 		{
-			result = EEPROMWriteByte(EEPROM_ADDRESS, hightAddr, lowAddr,  pPoint->pData[i]);
+			result = EEPROMWriteByte(EEPROM_ADDRESS, hightAddr, lowAddr + k,  pPoint->pData[k]);
 			if(!result )
 			{
 				if(overCount++ > 3)
 				{
-					return (0xB0 + i);
+					return (0xB0 + k);
 				}
 				 DelayMs(10);//延时10ms，再次尝试
 			}
@@ -929,12 +935,12 @@ static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* p
 		overCount = 0;
 		do
 		{
-			result =  EEPROMReadByte(EEPROM_ADDRESS, hightAddr, lowAddr,  &readData);
+			result =  EEPROMReadByte(EEPROM_ADDRESS, hightAddr, lowAddr +k,  &readData);
 			if(!result )
 			{
 				if(overCount++ > 3)
 				{
-					return (0xC0 + i);
+					return (0xC0 + k);
 				}
 				 DelayMs(10);//延时10ms，再次尝试
 			}
@@ -944,9 +950,9 @@ static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* p
 			}
 		}
 		while(1);
-		 if (readData != pPoint->pData[i])
+		 if (readData != (pPoint->pData[k] & 0x00FF))//屏蔽未用的高位
 		 {
-			 return (0xF0 + i);
+			 return (0xF0 + k);
 		 }
 	}
 	return 0;
@@ -980,7 +986,7 @@ static uint8_t EEPROMReadData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pP
 		overCount = 0;
 		do
 		{
-			result =  EEPROMReadByte(EEPROM_ADDRESS, hightAddr, lowAddr,  &readData);
+			result =  EEPROMReadByte(EEPROM_ADDRESS, hightAddr, lowAddr + i,  &readData);
 			if(!result )
 			{
 				if(overCount++ > 3)
@@ -1020,10 +1026,6 @@ static uint8_t ReadLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 {
 	uint8_t i = 0, k = 0;
 
-	 testData[0]= 0xAA;
-	 testData[1]= 0x55;
-	 testData[2]= 0xA5;
-	 testData[3]= 0x5A;
 	 tempPoint.pData = testData;
 	 tempPoint.len = 0;
 
@@ -1032,7 +1034,7 @@ static uint8_t ReadLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 		 return 0xA0;
 	 }
 	
-	for(i = startId - 1; i < len; i++)
+	for(i = startId - 1; i <startId + len - 1; i++)
 	{
 		tempPoint.len = g_SetParameterCollect[i].type >> 4;//获取字节数
 		testResult = EEPROMReadData( 0, 4* (g_SetParameterCollect[i].ID-1), &tempPoint);
@@ -1070,10 +1072,6 @@ static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 {
 	uint8_t i = 0,  k = 0;
 
-	 testData[0]= 0xAA;
-	 testData[1]= 0x55;
-	 testData[2]= 0xA5;
-	 testData[3]= 0x5A;
 	 tempPoint.pData = testData;
 	 tempPoint.len = 4;
 
@@ -1082,7 +1080,7 @@ static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 		 return 0xA0;
 	 }
 	
-	for(i = startId-1; i < len; i++)
+	for(i = startId-1; i <startId + len -1; i++)
 	{		
 	
 		g_SetParameterCollect[i].fGetValue(&tempPoint, g_SetParameterCollect + i);
@@ -1103,6 +1101,7 @@ static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 		}
 		
 		
+
 	}
 	return 0;
 }
@@ -1111,16 +1110,21 @@ static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
  *
  * @brif 更新系统参数数据
  */
+uint8_t resultUpdate;
 uint8_t UpdateSystemSetData(void)
 {
 	uint16_t sum = 0;
-	uint8_t result;
-	result = UpdateLocalSaveData(1,  PARAMETER_LEN - 1, &sum);
-	if (!result)
+
+	resultUpdate = UpdateLocalSaveData(1,  PARAMETER_LEN - 1, &sum);
+	NOP() ;
+	if (!resultUpdate)
 	{
 		CumulativeSum = sum;
-		result = UpdateLocalSaveData(PARAMETER_LEN - 1, 1, &sum);//单独更新校验和
-		
+		resultUpdate = UpdateLocalSaveData(PARAMETER_LEN, 1, &sum);//单独更新校验和
+		NOP() ;
+
 	}
-	return result;
+	NOP() ;
+	resultUpdate = ReadLocalSaveData(1, PARAMETER_LEN, &sum);
+	return resultUpdate;
 }

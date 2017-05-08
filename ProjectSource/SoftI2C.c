@@ -39,8 +39,8 @@ I2C 型号： 总线驱动 I2C 模块名：
 #include "SoftI2C.h"
 #include "DeviceIO.h"
 //
-#define  _Nop() {DSP28x_usDelay(2);}
-#define  SomeNOP() {DSP28x_usDelay(8);} //定义空指令 //
+#define  _Nop() { DELAY_US(1);}
+#define  SomeNOP() { DELAY_US(4);} //定义空指令 //
 
 #define  SDA   GpioDataRegs.GPBDAT.bit.GPIO32 //数据传输位 I2C 模拟 //
 #define  SCL   GpioDataRegs.GPBDAT.bit.GPIO33  //时钟控制位 I2C 模拟 //
@@ -446,7 +446,7 @@ uint8_t EEPROMReadByte(uint8_t deviceAddr, uint8_t hightAddr, uint8_t lowAddr, u
 	     return(0);
 	   }
 	   b1 =  I2C_RcvB(); //读取数据 //
-	   I2C_Ackn(0);      //发送应答位 //
+	   I2C_Ackn(1);      //发送应答位 //
 	   I2C_Stop();       //结束总线 //
 	   *pData = b1;
 	   return(1);

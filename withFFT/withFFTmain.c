@@ -48,13 +48,7 @@ extern Uint16 RamfuncsLoadSize;
 /*=============================全局变量定义 End=============================*/
 
 
-uint16_t PassCount;
-uint16_t FailCount;
 
-uint8_t TestData;
-uint8_t result = 0;
-uint16_t readCount;
-uint16_t writeCount;
 
 int main(void)
 {
@@ -129,10 +123,7 @@ int main(void)
 	StartSample();//用于启动采样
 
 
-	PassCount = 0;
-	FailCount = 0;
-	readCount = 0;
-	writeCount = 0;
+
 	while (1)
 	{
 		 UpdateFrequency();
@@ -142,30 +133,9 @@ int main(void)
 			 TOGGLE_LED1;
 			 cnTime = 0;
 			 
-			 TestData = 0;
-			result = EEPROMWriteByte(0xA0, 0,0, 0xA5);
-			if (!result)
-			{
-			   writeCount ++;
-			   continue;
-			}
 
-			result = EEPROMReadByte(0xA0, 0,0, &TestData);
-			if (! result)
-			{
-			   readCount ++;
-			   continue;
-			}
-
-			if (TestData == 0xA5)
-			{
-			   PassCount++;
-			}
-			else
-			{
-			   FailCount++;
-			}
 		 }
+
 	}
 
 	
