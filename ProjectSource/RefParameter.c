@@ -18,6 +18,9 @@
 #include "BasicModule.h"
 #include "DeviceIO.h"
 #include "Header.h"
+
+
+
 /**
  * 获取有效位数
  */
@@ -27,6 +30,10 @@
 */
 #define GET_BYTE_NUM(type) ((uint8_t)(type>>4) & 0x0F)
 
+
+#define BIG_MAX 3
+#define NORMOL_VALUE 2
+#define LESS_MIN 1
 
 /*
  * 局部函数定义
@@ -81,6 +88,8 @@ uint8_t g_LocalMac;
  *工作模式
  */
 uint8_t g_WorkMode;
+
+
 
 
 /**
@@ -1127,4 +1136,95 @@ uint8_t UpdateSystemSetData(void)
 	NOP() ;
 	resultUpdate = ReadLocalSaveData(1, PARAMETER_LEN, &sum);
 	return resultUpdate;
+}
+
+/**
+ * @brif 检测系统电压
+ */
+uint8_t CheckVoltageStatus(void)
+{
+	uint8_t statusA = 0, statusB = 0, statusC = 0, status0 = 0;
+
+	//A相
+	if (g_SystemVoltageParameter.voltageA <  g_SystemLimit.inportVoltage.min)
+	{
+		statusA = LESS_MIN;
+	}
+	else if (g_SystemVoltageParameter.voltageA >  g_SystemLimit.inportVoltage.max)
+	{
+		statusA = BIG_MAX;
+	}
+	else
+	{
+		statusA = NORMOL_VALUE;
+	}
+
+	//B相
+	if (g_SystemVoltageParameter.voltageB <  g_SystemLimit.inportVoltage.min)
+	{
+		statusB = LESS_MIN;
+	}
+	else if (g_SystemVoltageParameter.voltageB >  g_SystemLimit.inportVoltage.max)
+	{
+		statusB = BIG_MAX;
+	}
+	else
+	{
+		statusB = NORMOL_VALUE;
+	}
+
+	//C相
+	if (g_SystemVoltageParameter.voltageC <  g_SystemLimit.inportVoltage.min)
+	{
+		statusC = LESS_MIN;
+	}
+	else if (g_SystemVoltageParameter.voltageC >  g_SystemLimit.inportVoltage.max)
+	{
+		statusC = BIG_MAX;
+	}
+	else
+	{
+		statusC = NORMOL_VALUE;
+	}
+
+	//备用相
+	if (g_SystemVoltageParameter.voltage0 <  g_SystemLimit.inportVoltage.min)
+	{
+		status0 = LESS_MIN;
+	}
+	else if (g_SystemVoltageParameter.voltage0 >  g_SystemLimit.inportVoltage.max)
+	{
+		status0 = BIG_MAX;
+	}
+	else
+	{
+		status0 = NORMOL_VALUE;
+	}
+
+	return ((status0<<6)|(statusC<<4)|(statusB<<2)|(statusA))&0x00FF;
+
+
+}
+
+/**
+ * @brif 检测系统频率状态
+ */
+uint8_t CheckFrequencyStatus(void)
+{
+	uint8_t statusA = 0;
+
+	//A相
+	if (g_SystemVoltageParameter.frequencyCollect.FreqMean < 49)
+	{
+		statusA = LESS_MIN;
+	}
+	else if (g_SystemVoltageParameter.frequencyCollect.FreqMean >  51)
+	{
+		statusA = BIG_MAX;
+	}
+	else
+	{
+		statusA = NORMOL_VALUE;
+	}
+	return statusA;
 }

@@ -1323,12 +1323,10 @@ void AckMsgService(void)
 		if(IsOverTime(LoopStatusSend.startTime, LoopStatusSend.delayTime) )
 		{
 			DeviceNetSendFrame.pBuffer[0] = 0x1A | 0x80;
-			DeviceNetSendFrame.pBuffer[1] = 0xA1; //测试
-			DeviceNetSendFrame.pBuffer[2] = 0xA2; //测试
-			DeviceNetSendFrame.pBuffer[3] = 0xA3; //测试
-			DeviceNetSendFrame.pBuffer[4] = 0xA4; //测试
-			DeviceNetSendFrame.pBuffer[5] = 0xA5; //测试
-			DeviceNetSendFrame.len = 6;
+			DeviceNetSendFrame.pBuffer[1] = 0;  //通讯故障
+			DeviceNetSendFrame.pBuffer[2] = CheckVoltageStatus();//电压越限制检测
+			DeviceNetSendFrame.pBuffer[3] = CheckFrequencyStatus();
+			DeviceNetSendFrame.len = 4;
 			PacktIOMessageStatus(&DeviceNetSendFrame);
 			LoopStatusSend.startTime =  CpuTimer0.InterruptCount; //重新设置新的延时
 		}
@@ -1340,7 +1338,7 @@ void AckMsgService(void)
 	{
 		return;
 	}
-	if ((g_DeviceNetRequstData & 0x0003)==0x0003)//轮询消息
+	 if ((g_DeviceNetRequstData & 0x0003)==0x0003)//轮询消息
 	{
 		AckCycleInquireMsgService();
 		g_DeviceNetRequstData &= 0xFFFC; //清除标志位

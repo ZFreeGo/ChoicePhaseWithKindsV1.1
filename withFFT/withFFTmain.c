@@ -132,8 +132,6 @@ int main(void)
 		 {
 			 TOGGLE_LED1;
 			 cnTime = 0;
-			 
-
 		 }
 
 	}

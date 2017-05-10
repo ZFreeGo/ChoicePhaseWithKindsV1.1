@@ -163,8 +163,8 @@ extern void RefParameterInit(void);
 extern uint8_t UpdateSystemSetData(void);
 
 extern struct DefFrameData  g_NetSendFrame;
-
-
+extern uint8_t CheckVoltageStatus(void);
+extern uint8_t CheckFrequencyStatus(void);
 
 
 #endif /* PROJECTHEADER_REFPARAMETER_H_ */
