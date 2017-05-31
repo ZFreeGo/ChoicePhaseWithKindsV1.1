@@ -28,19 +28,19 @@
 #define  MODE_STOP        0xA8  //停止模式
 
 ////////////////////////////////////////////////////////////可考虑存入EEPROM
-UINT  providerID = 0X1234;               // 供应商ID
-UINT  device_type = 0;                   // 通用设备
-UINT  product_code = 0X00d2;             // 产品代码
-USINT  major_ver = 0X01;
-USINT  minor_ver = 0X01;                 // 版本
-UDINT  serialID = 0x001169BC;            // 序列号
+uint16_t  providerID = 0X1234;               // 供应商ID
+uint16_t  device_type = 0;                   // 通用设备
+uint16_t  product_code = 0X00d2;             // 产品代码
+uint8_t  major_ver = 0X01;
+uint8_t  minor_ver = 0X01;                 // 版本
+uint32_t  serialID = 0x001169BC;            // 序列号
 SHORT_STRING  product_name = {8, (unsigned char *)"YongCi"};// 产品名称
 ////////////////////////////////////////////////////////////////////////////////
 
 
 //////////////////////函数申明/////////////////////////////////
-void ResponseMACID(struct DefFrameData* pSendFrame, BYTE config);
-void VisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
+void ResponseMACID(struct DefFrameData* pSendFrame, uint8_t config);
+
 static void CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 static void AckCycleInquireMsgService(void);
@@ -67,12 +67,12 @@ volatile uint16_t g_DeviceNetRequstData = 0;
 
 //////////////////////文件变量///////////////////////////////////////////
 
-BYTE  SendBufferData[10];//接收缓冲数据
-BYTE  ReciveBufferData[10];//接收缓冲数据
+uint8_t  SendBufferData[10];//接收缓冲数据
+uint8_t  ReciveBufferData[10];//接收缓冲数据
 struct DefFrameData  DeviceNetReciveFrame; //接收帧处理
 struct DefFrameData  DeviceNetSendFrame; //接收帧处理
 
-static volatile USINT WorkMode = 0; //
+static volatile uint8_t WorkMode = 0; //
 
 static volatile uint8_t StartTime = 0;
 
@@ -212,8 +212,8 @@ void InitStatusChangedConnectionObj(void)
 *******************************************************************************/
 void CANFrameFilter(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 {
-    BYTE mac = GET_GROUP2_MAC(pReciveFrame->ID);
-    BYTE function = GET_GROUP2_FUNCTION(pReciveFrame->ID);
+    uint8_t mac = GET_GROUP2_MAC(pReciveFrame->ID);
+    uint8_t function = GET_GROUP2_FUNCTION(pReciveFrame->ID);
 	
 	if(mac == DeviceNetObj.MACID)  //仅限组2设备
 	{	        
@@ -251,12 +251,12 @@ void CANFrameFilter(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	}
 }
 /******************************************************************************
-* 函数名:	void ResponseMACID(struct DefFrameData* pSendFrame, BYTE config)
+* 函数名:	void ResponseMACID(struct DefFrameData* pSendFrame, uint8_t config)
 * 形参:	无
 * 返回值:    	无
 * 功能描述:	检查重复MACID响应函数
 ******************************************************************************/
-void ResponseMACID(struct DefFrameData* pSendFrame, BYTE config)
+void ResponseMACID(struct DefFrameData* pSendFrame, uint8_t config)
 {                        //重复MACID检查
     pSendFrame->ID =  MAKE_GROUP2_ID( GROUP2_REPEAT_MACID, DeviceNetObj.MACID); 
 	pSendFrame->pBuffer[0] = config;	                        //请求/响应标志=1，表示响应，端口号0
@@ -293,8 +293,8 @@ BOOL CheckMACID(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFra
         {
             if ( pReciveFrame->complteFlag)//判断是否有未发送的数据
             {
-                BYTE mac = GET_GROUP2_MAC(pReciveFrame->ID);
-                BYTE function = GET_GROUP2_FUNCTION(pReciveFrame->ID);
+                uint8_t mac = GET_GROUP2_MAC(pReciveFrame->ID);
+                uint8_t function = GET_GROUP2_FUNCTION(pReciveFrame->ID);
                 if (function == GROUP2_REPEAT_MACID)
                 {                  
                     if (mac == DeviceNetObj.MACID)
@@ -318,13 +318,13 @@ BOOL CheckMACID(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFra
 /********************************************************************************
 ** 函数名:	void CheckAllocateCode(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 ** 形参:	struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame，接收的报文数组
-** 返回值:      BYTE 0-溢出 非零为检测通过
+** 返回值:      uint8_t 0-溢出 非零为检测通过
 ** 功能描述:j检测非连接显式信息服务设置连接代码
 ********************************************************************************/
 BOOL CheckAllocateCode(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 {  
-    BYTE error = 0; //错误
-    BYTE errorAdd = 0; //附加错误描述
+    uint8_t error = 0; //错误
+    uint8_t errorAdd = 0; //附加错误描述
     
     //如果已分配主站,则检查是否来自同一主站
     if((IdentifierObj.device_state & 0x01) && (pReciveFrame->pBuffer[5] != DeviceNetObj.assign_info.master_MACID))	//验证主站
@@ -366,14 +366,14 @@ BOOL CheckAllocateCode(struct DefFrameData* pReciveFrame, struct DefFrameData* p
 /********************************************************************************
 ** 函数名:	void CheckReleaseCode(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 ** 形参:	struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame，接收的报文数组
-** 返回值:      BYTE 0-溢出 非零为检测通过
+** 返回值:      uint8_t 0-溢出 非零为检测通过
 ** 功能描述:检测非连接显式信息服务释放连接代码
 ********************************************************************************/
 BOOL CheckReleaseCode(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 {  
-    BYTE error = 0; //错误
-    BYTE errorAdd = 0; //附加错误描述
-    USINT config = pReciveFrame->pBuffer[4];
+    uint8_t error = 0; //错误
+    uint8_t errorAdd = 0; //附加错误描述
+    uint8_t config = pReciveFrame->pBuffer[4];
     if(config == 0)   //如果配置字节为0
     {	
         pSendFrame->ID =  MAKE_GROUP2_ID(GROUP2_VISIBLE_UCN, DeviceNetObj.MACID);      
@@ -427,7 +427,7 @@ void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameDa
         }        
         
 		DeviceNetObj.assign_info.master_MACID = pReciveFrame->pBuffer[5];  //主站告诉从站：主站的地址
-        USINT config = pReciveFrame->pBuffer[4];
+        uint8_t config = pReciveFrame->pBuffer[4];
 		DeviceNetObj.assign_info.select |= config;       //配置字节
         
 
@@ -477,17 +477,7 @@ void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameDa
 
 			return ;
 		}
-		if(config &  BIT_STROKE) //分配位选通连接
-		{	
-		
-//			pSendFrame->ID =  MAKE_GROUP2_ID(GROUP2_VISIBLE_UCN, DeviceNetObj.MACID);   
-//			pSendFrame->pBuffer[0] = pReciveFrame->pBuffer[0] & 0x7F;
-//			pSendFrame->pBuffer[1]= (0x80 | SVC_AllOCATE_MASTER_SlAVE_CONNECTION_SET);
-//			pSendFrame->pBuffer[2] = 0;	//信息体格式0,8/8
-//            pSendFrame->len = 3;
-//			SendData(pSendFrame);
-			return ;
-		}
+
 		IdentifierObj.device_state |= 0x01;	//设备已和主站连接
 		return ;
 	}
@@ -498,7 +488,7 @@ void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameDa
             return;
         }
 		//释放连接
-        USINT config = pReciveFrame->pBuffer[4];
+        uint8_t config = pReciveFrame->pBuffer[4];
         
 		DeviceNetObj.assign_info.select |= (config^0xff); //取反释放相应的连接
         if(config & CYC_INQUIRE)    
@@ -554,23 +544,9 @@ static void  CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct De
 
     if(CycleInquireConnedctionObj.state != STATE_LINKED )	//轮询I/O连接没建立
 		return ;
-
     g_DeviceNetRequstData |= 0x0003; //置位请求标志
-   // result = FrameServer(pReciveFrame,  pSendFrame);
-    //if (result !=0)
-   // {
-    //	   pSendFrame->pBuffer[0] = 0x14;
-    //	   pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[0];
-    //	   pSendFrame->pBuffer[2] = result;
-    //	   pSendFrame->pBuffer[3] = 0xFF;
-    //	   pSendFrame->len = 4;
-    //}
-   // pReciveFrame->complteFlag = 0;
-    
-   // pSendFrame->ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
-
-  	//SendData(pSendFrame);
 	return ;
+
 }
 
 /**
@@ -654,11 +630,11 @@ void DeviceMonitorPluse(void)
 * 函数名:	void DeviceNetReciveCenter(uint16* id, uint8 * pdata)
 * 功能描述: 从缓冲中获取数据并解析
 * 形  参: uint16* pID  11bitID标识, uint8 * pbuff 缓冲数据, uint8 len 数据长度
-* 返回值:      BYTE  0-信息未进行处理  1-信息进行处理
+* 返回值:      uint8_t  0-信息未进行处理  1-信息进行处理
 ********************************************************************************/
-BOOL DeviceNetReciveCenter(UINT* pID, USINT * pbuff,USINT len)
+BOOL DeviceNetReciveCenter(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 {   
-    BYTE i= 0;
+    uint8_t i= 0;
     //判断是否为仅限组2---可以在滤波器设置屏蔽
     if( ((*pID) & 0x0600) != 0x0400)  //不是仅限组2报文处理
 	{       

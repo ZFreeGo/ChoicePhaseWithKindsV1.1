@@ -27,11 +27,9 @@ extern "C" {
 typedef uint8_t BOOL;         //1BYTE
 typedef int8_t SINT;          //1BYTE
 typedef int16_t INT;          //2BYTE
-//typedef int32_t  int32_t;        //4BYTE
+
 typedef struct{int32_t a; int32_t b;} LINT;
-typedef uint8_t USINT;       //1BYTE
-typedef uint16_t UINT;       //2BYTE
-typedef uint32_t Uint32_t;      //4BYTE
+
 typedef struct{uint32_t a; uint32_t b;} ULINT;
 typedef float32_t  REAL;              //4BYTE
 typedef float32_t  LREAL;             //4BYTE
@@ -39,18 +37,16 @@ typedef INT ITIME;
 typedef int32_t TIME;
 typedef int32_t FTIME;
 typedef LINT LTIME;
-typedef UINT DATE;
-typedef Uint32_t UDINT;
-typedef struct{UINT length; uint8_t *ucdata;} STRING;
-typedef struct{UINT length; int16_t *undata;} STRING2;
-typedef	struct{UINT length; uint8_t *ucdata;} STRINGN;
-typedef struct{UINT length; uint8_t *ucdata;} SHORT_STRING;
-typedef uint8_t BYTE;
-typedef uint32_t WORD;
-typedef uint32_t DWORD;
+typedef uint16_t DATE;
+
+typedef struct{uint16_t length; uint8_t *ucdata;} STRING;
+typedef struct{uint16_t length; int16_t *undata;} STRING2;
+typedef	struct{uint16_t length; uint8_t *ucdata;} STRINGN;
+typedef struct{uint16_t length; uint8_t *ucdata;} SHORT_STRING;
+
 typedef struct{ uint32_t a;  uint32_t b;} LWORD;
-typedef struct{BYTE type; BYTE value;} EPATH;
-typedef UINT ENGUNITS;
+typedef struct{uint8_t type; uint8_t value;} EPATH;
+typedef uint16_t ENGUNITS;
 ///////////////服务代码定义/////////////////////////
 #define SVC_Get_Attributes_All	0x01
 #define SVC_Set_Attributes_All	0x02
@@ -123,47 +119,47 @@ typedef UINT ENGUNITS;
 /////////标示符结构体/////////////////////////////////////
 struct DefIdentifierObject
 {
-	UINT providerID;	//供应商ID=1
-	UINT device_type;	//设备类型ID=2
-	UINT product_code;	//产品代码ID=3
+	uint16_t providerID;	//供应商ID=1
+	uint16_t device_type;	//设备类型ID=2
+	uint16_t product_code;	//产品代码ID=3
 	struct{				//版本ID=4
-		USINT major_ver;
-		USINT minor_ver;
+		uint8_t major_ver;
+		uint8_t minor_ver;
 	}version;
-	WORD device_state;	//设备状态ID=5
-	Uint32_t serialID;		//序列号ID=6
+	uint32_t device_state;	//设备状态ID=5
+	uint32_t serialID;		//序列号ID=6
 	SHORT_STRING product_name;	//产品名称ID=7
 };
 /////////对象类结构体/////////////////////////////////////
 struct DefDeviceNetClass
 {
-	UINT version;	//ID=1,分类定义修正版本，当前为2
+	uint16_t version;	//ID=1,分类定义修正版本，当前为2
 };
 /////////DeviceNet对象结构体/////////////////////////////////////
 struct DefDeviceNetObj
 {
-	USINT MACID;	//ID=1,节点地址，缺省值63
-	USINT baudrate;	//ID=2,波特率，缺省值125k
-	struct {BYTE select; USINT master_MACID;}assign_info;	//ID=5,分配信息。支持预定义主从连接，则必须支持该属性。master_MACID缺省值为255
+	uint8_t MACID;	//ID=1,节点地址，缺省值63
+	uint8_t baudrate;	//ID=2,波特率，缺省值125k
+	struct {uint8_t select; uint8_t master_MACID;}assign_info;	//ID=5,分配信息。支持预定义主从连接，则必须支持该属性。master_MACID缺省值为255
 };
 /////////连接结构体/////////////////////////////////////
 struct DefConnectionObj
 {
-	USINT state;					//ID=1,对象状态
-	USINT instance_type;			//ID=2,区分I/O和显式信息连接
-	BYTE transportClass_trigger;	//ID=3,定义连接行为
-	UINT produced_connection_id;	//ID=4,发送时,放置在CAN标识区中
-	UINT consumed_connection_id;	//ID=5,CAN标识区中的值,指示要接受的数据
-	BYTE initial_comm_characteristics;	//ID=6,定义信息组
-	UINT produced_connection_size;	//ID=7,最大发送字节数
-	UINT consumed_connection_size;	//ID=8,最大接受字节数
-	UINT expected_packet_rate;		//ID=9,与连接有关的定时
-	USINT watchdog_timeout_action;	//ID=12,定义如何处理休眠/看门狗超时
-	UINT produced_connection_path_length;	//ID=13,produced_connection_path字节数
+	uint8_t state;					//ID=1,对象状态
+	uint8_t instance_type;			//ID=2,区分I/O和显式信息连接
+	uint8_t transportClass_trigger;	//ID=3,定义连接行为
+	uint16_t produced_connection_id;	//ID=4,发送时,放置在CAN标识区中
+	uint16_t consumed_connection_id;	//ID=5,CAN标识区中的值,指示要接受的数据
+	uint8_t initial_comm_characteristics;	//ID=6,定义信息组
+	uint16_t produced_connection_size;	//ID=7,最大发送字节数
+	uint16_t consumed_connection_size;	//ID=8,最大接受字节数
+	uint16_t expected_packet_rate;		//ID=9,与连接有关的定时
+	uint8_t watchdog_timeout_action;	//ID=12,定义如何处理休眠/看门狗超时
+	uint16_t produced_connection_path_length;	//ID=13,produced_connection_path字节数
 	EPATH produced_connection_path[6];	//ID=14,指定通过该连接生成数据的应用对象
-	UINT consumed_connection_path_length;	//ID=15,consumed_connection_path字节数
+	uint16_t consumed_connection_path_length;	//ID=15,consumed_connection_path字节数
 	EPATH consumed_connection_path[6];	//ID=16,指定通过该连接消费数据的应用对象
-	UINT produced_inhibit_time;		//ID=17,定义产生新数据的最小间隔
+	uint16_t produced_inhibit_time;		//ID=17,定义产生新数据的最小间隔
 };
 
 //DeviceNet对象
@@ -201,9 +197,9 @@ struct DefConnectionObj
 struct DefFrameData
 {
       int32_t ID;     //11bitID标识
-      BYTE len;    //数据长度
-      BYTE* pBuffer; //缓冲数据
-      volatile BYTE complteFlag; //处理完成标志 非0--未处理完成；0--处理已经完成，可以重复使用
+      uint8_t len;    //数据长度
+      uint8_t* pBuffer; //缓冲数据
+      volatile uint8_t complteFlag; //处理完成标志 非0--未处理完成；0--处理已经完成，可以重复使用
 };
 
 #define GET_GROUP_NUM(id)  ((((id) >> 9))&0x0003)
@@ -230,7 +226,7 @@ typedef struct TagRunTimeStamp
 extern void CANFrameFilter(struct DefFrameData * pReciveBuf, struct DefFrameData * pSendBuf);
 extern unsigned char CheckMACID(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 extern void DeviceMonitorPluse(void);
-extern BOOL DeviceNetReciveCenter(UINT* pID, USINT * pbuff,USINT len);
+extern BOOL DeviceNetReciveCenter(uint16_t* pID, uint8_t * pbuff,uint8_t len);
 extern void InitDeviceNet();
 
 extern void AckMsgService(void);

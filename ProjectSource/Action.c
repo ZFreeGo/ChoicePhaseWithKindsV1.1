@@ -13,7 +13,7 @@
 #include "DeviceNet.h"
 #include "RefParameter.h"
 #include "SampleProcess.h"
-
+#include "Action.h"
 
 //Ôİ´æÉÏÒ»´ÎÃüÁî×Ö
 uint8_t LastFlag = 0;
