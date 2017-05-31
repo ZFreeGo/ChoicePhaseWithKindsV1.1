@@ -20,7 +20,6 @@
  * @bref   比较时间是否达到设定值，对溢出进行超时判断
  */
 uint8_t IsOverTime(uint32_t startTime, uint32_t delayTime)
-
 {
     if (UINT32_MAX - delayTime < startTime) //判断是否溢出,若溢出则进行则先判断是否超出一个周期
     {

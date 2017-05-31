@@ -490,12 +490,22 @@ void SynchronizTrigger(float* pData)
 			}
 			DELAY_US(g_ProcessDelayTime[PHASE_A].calDelay);
 
+			//产生序列动作，可以考虑在之前进行删去。
 			//输出动作
 			//
-			SET_OUTA1_H;
-			DELAY_US(1000000);
-			SET_OUTA1_L;
-
+			SET_OUTB4_H;
+			SET_OUTB4_H;
+			SET_OUTB4_H;
+			DELAY_US(50);
+			SET_OUTB4_H;
+			DELAY_US(50);
+			SET_OUTB4_H;
+			DELAY_US(50);
+			SET_OUTB4_H;
+			DELAY_US(50);
+			SET_OUTB4_L;
+			SET_OUTB4_L;
+			SET_OUTB4_L;
 			SendMultiFrame(&g_NetSendFrame);
 		}
 		else
