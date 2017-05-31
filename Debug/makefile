@@ -48,8 +48,8 @@ ORDERED_OBJS += \
 "../lib/rts2800_fpu32_fast_supplement.lib" \
 $(GEN_CMDS__FLAG) \
 -lrts2800_fpu32.lib \
--l"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/lib/rts2800_fpu32_fast_supplement.lib" \
--l"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/lib/C28x_FPU_Lib.lib" \
+-l"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/lib/rts2800_fpu32_fast_supplement.lib" \
+-l"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/lib/C28x_FPU_Lib.lib" \
 
 -include ../makefile.init
 
@@ -166,32 +166,32 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-ChoicePhaseWithKindsV1.2.out \
+Copy\ of\ ChoicePhaseWithKindsV1.3.out \
 
 EXE_OUTPUTS__QUOTED += \
-"ChoicePhaseWithKindsV1.2.out" \
+"Copy of ChoicePhaseWithKindsV1.3.out" \
 
 BIN_OUTPUTS += \
-ChoicePhaseWithKindsV1.2.hex \
+Copy\ of\ ChoicePhaseWithKindsV1.3.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"ChoicePhaseWithKindsV1.2.hex" \
+"Copy of ChoicePhaseWithKindsV1.3.hex" \
 
 
 # All Target
-all: ChoicePhaseWithKindsV1.2.out
+all: Copy\ of\ ChoicePhaseWithKindsV1.3.out
 
 # Tool invocations
-ChoicePhaseWithKindsV1.2.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
+Copy\ of\ ChoicePhaseWithKindsV1.3.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: C2000 Linker'
-	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla0 --vcu_support=vcu0 --float_support=fpu32 -O3 --opt_for_speed=1 --advice:performance=all -g --c99 --relaxed_ansi --display_error_number --diag_warning=225 -z -m"ChoicePhaseWithKindsV1.2.map" --stack_size=0x400 --warn_sections -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/lib" -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/lib" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectSource" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/ProjectHeader" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/source" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.2/include" --priority --reread_libs --display_error_number --xml_link_info="ChoicePhaseWithKindsV1.2_linkInfo.xml" --rom_model -o "ChoicePhaseWithKindsV1.2.out" $(ORDERED_OBJS)
+	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla0 --vcu_support=vcu0 --float_support=fpu32 -O3 --opt_for_speed=1 --advice:performance=all -g --c99 --relaxed_ansi --display_error_number --diag_warning=225 -z -m"Copy of ChoicePhaseWithKindsV1.3.map" --stack_size=0x400 --warn_sections -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/lib" -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/lib" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/ProjectSource" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/ProjectHeader" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/source" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/include" --priority --reread_libs --display_error_number --xml_link_info="Copy of ChoicePhaseWithKindsV1.3_linkInfo.xml" --rom_model -o "Copy of ChoicePhaseWithKindsV1.3.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-ChoicePhaseWithKindsV1.2.hex: $(EXE_OUTPUTS)
+Copy\ of\ ChoicePhaseWithKindsV1.3.hex: $(EXE_OUTPUTS)
 	@echo 'Invoking: C2000 Hex Utility'
-	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/hex2000"  -o "ChoicePhaseWithKindsV1.2.hex" $(EXE_OUTPUTS__QUOTED)
+	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/hex2000"  -o "Copy of ChoicePhaseWithKindsV1.3.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $@'
 	@echo ' '
 
