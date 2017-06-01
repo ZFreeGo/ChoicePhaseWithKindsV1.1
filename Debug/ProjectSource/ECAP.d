@@ -37,6 +37,7 @@ ProjectSource/ECAP.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/in
 ProjectSource/ECAP.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Dma_defines.h
 ProjectSource/ECAP.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Cla_defines.h
 ProjectSource/ECAP.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_DefaultISR.h
+ProjectSource/ECAP.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h
 
 ../ProjectSource/ECAP.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h: 
@@ -75,3 +76,4 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_I2c_defines
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Dma_defines.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Cla_defines.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_DefaultISR.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h: 

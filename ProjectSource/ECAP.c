@@ -8,16 +8,22 @@
 #include "ECAP.h"
 #include "RefParameter.h"
 #include "DSP28x_Project.h"     // Device Headerfile and Examples Include File
+#include "stdType.h"
+#include "FrequrncyCaluate.h"
 
+static float CapFreqArray[7] = { 0 };
+static uint8_t CapFreqIndex = 0;
 
-
-void InitECapture2(void);
+static void InitECapture2(void);
 
 
 void ConfigECapFrquency(void)
 {
      InitECap2Gpio();
      InitECapture2();
+
+     CapFreqIndex = 0;
+
 }
 
 static void InitECapture2(void)
@@ -58,6 +64,18 @@ __interrupt void ecap2_isr(void)
 
 	g_SystemVoltageParameter.perodCap = (ECap2Regs.CAP2 +
 			ECap2Regs.CAP4) * 0.0125;
+
+	if (CapFreqIndex < 7) //计数长度 每7求取平均值计算周期
+	{
+		CapFreqArray[CapFreqIndex++] = g_SystemVoltageParameter.perodCap;
+
+	}
+	else
+	{
+		CapFreqIndex = 0;
+		g_SystemVoltageParameter.perodMeanCap =  MidMeanFilter(CapFreqArray, 7); //计算平均值
+	}
+
 
    ECap2Regs.ECCLR.bit.CEVT4 = 1;
    ECap2Regs.ECCLR.bit.INT = 1;

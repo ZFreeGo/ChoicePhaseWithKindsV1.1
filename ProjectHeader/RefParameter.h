@@ -79,7 +79,8 @@ typedef struct TagSystemVoltageParameter
 
 
 
-	float perodCap;//通过硬件捕捉计算周期
+	float perodCap;//通过硬件捕捉计算实时周期
+	float perodMeanCap;//通过硬件捕捉计算平均周期
 
 }SystemVoltageParameter;
 /**

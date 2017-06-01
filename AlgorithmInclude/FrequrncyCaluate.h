@@ -37,4 +37,5 @@ typedef struct
 
 
 extern void UpdateFrequency(void);
+extern float  MidMeanFilter(float *pData, Uint8 len);
 #endif /* ALGORITHMINCLUDE_FREQURNCYCALUATE_H_ */
