@@ -17,6 +17,7 @@ ORDERED_OBJS += \
 "./ProjectSource/ConfigADC.obj" \
 "./ProjectSource/DeviceIO.obj" \
 "./ProjectSource/DeviceNet.obj" \
+"./ProjectSource/ECAP.obj" \
 "./ProjectSource/MonitorCalculate.obj" \
 "./ProjectSource/PwmTimer.obj" \
 "./ProjectSource/RefParameter.obj" \
@@ -29,6 +30,7 @@ ORDERED_OBJS += \
 "./source/F2806x_DefaultIsr.obj" \
 "./source/F2806x_DisInt.obj" \
 "./source/F2806x_ECan.obj" \
+"./source/F2806x_ECap.obj" \
 "./source/F2806x_GlobalVariableDefs.obj" \
 "./source/F2806x_OscComp.obj" \
 "./source/F2806x_PieCtrl.obj" \
@@ -48,8 +50,8 @@ ORDERED_OBJS += \
 "../lib/rts2800_fpu32_fast_supplement.lib" \
 $(GEN_CMDS__FLAG) \
 -lrts2800_fpu32.lib \
--l"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/lib/rts2800_fpu32_fast_supplement.lib" \
--l"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/lib/C28x_FPU_Lib.lib" \
+-l"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/lib/rts2800_fpu32_fast_supplement.lib" \
+-l"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/lib/C28x_FPU_Lib.lib" \
 
 -include ../makefile.init
 
@@ -166,41 +168,41 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-Copy\ of\ ChoicePhaseWithKindsV1.3.out \
+ChoicePhaseWithKindsV1.3.out \
 
 EXE_OUTPUTS__QUOTED += \
-"Copy of ChoicePhaseWithKindsV1.3.out" \
+"ChoicePhaseWithKindsV1.3.out" \
 
 BIN_OUTPUTS += \
-Copy\ of\ ChoicePhaseWithKindsV1.3.hex \
+ChoicePhaseWithKindsV1.3.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"Copy of ChoicePhaseWithKindsV1.3.hex" \
+"ChoicePhaseWithKindsV1.3.hex" \
 
 
 # All Target
-all: Copy\ of\ ChoicePhaseWithKindsV1.3.out
+all: ChoicePhaseWithKindsV1.3.out
 
 # Tool invocations
-Copy\ of\ ChoicePhaseWithKindsV1.3.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
+ChoicePhaseWithKindsV1.3.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: C2000 Linker'
-	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla0 --vcu_support=vcu0 --float_support=fpu32 -O3 --opt_for_speed=1 --advice:performance=all -g --c99 --relaxed_ansi --display_error_number --diag_warning=225 -z -m"Copy of ChoicePhaseWithKindsV1.3.map" --stack_size=0x400 --warn_sections -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/lib" -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/lib" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/ProjectSource" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/ProjectHeader" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/source" -i"J:/MyCode/CCS/workspace_v6_3/Copy of ChoicePhaseWithKindsV1.3/include" --priority --reread_libs --display_error_number --xml_link_info="Copy of ChoicePhaseWithKindsV1.3_linkInfo.xml" --rom_model -o "Copy of ChoicePhaseWithKindsV1.3.out" $(ORDERED_OBJS)
+	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla0 --vcu_support=vcu0 --float_support=fpu32 -O3 --opt_for_speed=1 --advice:performance=all -g --c99 --relaxed_ansi --display_error_number --diag_warning=225 -z -m"ChoicePhaseWithKindsV1.3.map" --stack_size=0x400 --warn_sections -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/lib" -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/lib" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectSource" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/source" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include" --priority --reread_libs --display_error_number --xml_link_info="ChoicePhaseWithKindsV1.3_linkInfo.xml" --rom_model -o "ChoicePhaseWithKindsV1.3.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-Copy\ of\ ChoicePhaseWithKindsV1.3.hex: $(EXE_OUTPUTS)
+ChoicePhaseWithKindsV1.3.hex: $(EXE_OUTPUTS)
 	@echo 'Invoking: C2000 Hex Utility'
-	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/hex2000"  -o "Copy of ChoicePhaseWithKindsV1.3.hex" $(EXE_OUTPUTS__QUOTED)
+	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/hex2000"  -o "ChoicePhaseWithKindsV1.3.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "AlgorithmSource\FrequencyCalutate.d" "ProjectSource\Action.d" "ProjectSource\BasicModule.d" "ProjectSource\CAN.d" "ProjectSource\ConfigADC.d" "ProjectSource\DeviceNet.d" "ProjectSource\MonitorCalculate.d" "ProjectSource\PwmTimer.d" "ProjectSource\RefParameter.d" "ProjectSource\SampleProcess.d" "ProjectSource\SoftI2C.d" "ProjectSource\Timer.d" "source\F2806x_Adc.d" "source\F2806x_CpuTimers.d" "source\F2806x_DefaultIsr.d" "source\F2806x_ECan.d" "source\F2806x_GlobalVariableDefs.d" "source\F2806x_OscComp.d" "source\F2806x_PieCtrl.d" "source\F2806x_PieVect.d" "source\F2806x_Sci.d" "source\F2806x_SysCtrl.d" "withFFT\withFFTmain.d" 
+	-$(RM) "AlgorithmSource\FrequencyCalutate.d" "ProjectSource\Action.d" "ProjectSource\BasicModule.d" "ProjectSource\CAN.d" "ProjectSource\ConfigADC.d" "ProjectSource\DeviceNet.d" "ProjectSource\ECAP.d" "ProjectSource\MonitorCalculate.d" "ProjectSource\PwmTimer.d" "ProjectSource\RefParameter.d" "ProjectSource\SampleProcess.d" "ProjectSource\SoftI2C.d" "ProjectSource\Timer.d" "source\F2806x_Adc.d" "source\F2806x_CpuTimers.d" "source\F2806x_DefaultIsr.d" "source\F2806x_ECan.d" "source\F2806x_ECap.d" "source\F2806x_GlobalVariableDefs.d" "source\F2806x_OscComp.d" "source\F2806x_PieCtrl.d" "source\F2806x_PieVect.d" "source\F2806x_Sci.d" "source\F2806x_SysCtrl.d" "withFFT\withFFTmain.d" 
 	-$(RM) "ProjectSource\DeviceIO.d" 
-	-$(RM) "AlgorithmSource\FrequencyCalutate.obj" "ProjectSource\Action.obj" "ProjectSource\BasicModule.obj" "ProjectSource\CAN.obj" "ProjectSource\ConfigADC.obj" "ProjectSource\DeviceIO.obj" "ProjectSource\DeviceNet.obj" "ProjectSource\MonitorCalculate.obj" "ProjectSource\PwmTimer.obj" "ProjectSource\RefParameter.obj" "ProjectSource\SampleProcess.obj" "ProjectSource\SoftI2C.obj" "ProjectSource\Timer.obj" "source\F2806x_Adc.obj" "source\F2806x_CodeStartBranch.obj" "source\F2806x_CpuTimers.obj" "source\F2806x_DefaultIsr.obj" "source\F2806x_DisInt.obj" "source\F2806x_ECan.obj" "source\F2806x_GlobalVariableDefs.obj" "source\F2806x_OscComp.obj" "source\F2806x_PieCtrl.obj" "source\F2806x_PieVect.obj" "source\F2806x_Sci.obj" "source\F2806x_SysCtrl.obj" "source\F2806x_usDelay.obj" "withFFT\withFFTmain.obj" 
+	-$(RM) "AlgorithmSource\FrequencyCalutate.obj" "ProjectSource\Action.obj" "ProjectSource\BasicModule.obj" "ProjectSource\CAN.obj" "ProjectSource\ConfigADC.obj" "ProjectSource\DeviceIO.obj" "ProjectSource\DeviceNet.obj" "ProjectSource\ECAP.obj" "ProjectSource\MonitorCalculate.obj" "ProjectSource\PwmTimer.obj" "ProjectSource\RefParameter.obj" "ProjectSource\SampleProcess.obj" "ProjectSource\SoftI2C.obj" "ProjectSource\Timer.obj" "source\F2806x_Adc.obj" "source\F2806x_CodeStartBranch.obj" "source\F2806x_CpuTimers.obj" "source\F2806x_DefaultIsr.obj" "source\F2806x_DisInt.obj" "source\F2806x_ECan.obj" "source\F2806x_ECap.obj" "source\F2806x_GlobalVariableDefs.obj" "source\F2806x_OscComp.obj" "source\F2806x_PieCtrl.obj" "source\F2806x_PieVect.obj" "source\F2806x_Sci.obj" "source\F2806x_SysCtrl.obj" "source\F2806x_usDelay.obj" "withFFT\withFFTmain.obj" 
 	-$(RM) "source\F2806x_CodeStartBranch.d" "source\F2806x_DisInt.d" "source\F2806x_usDelay.d" 
 	-@echo 'Finished clean'
 	-@echo ' '

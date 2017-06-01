@@ -13,6 +13,7 @@ C_SRCS += \
 ../source/F2806x_CpuTimers.c \
 ../source/F2806x_DefaultIsr.c \
 ../source/F2806x_ECan.c \
+../source/F2806x_ECap.c \
 ../source/F2806x_GlobalVariableDefs.c \
 ../source/F2806x_OscComp.c \
 ../source/F2806x_PieCtrl.c \
@@ -27,6 +28,7 @@ OBJS += \
 ./source/F2806x_DefaultIsr.obj \
 ./source/F2806x_DisInt.obj \
 ./source/F2806x_ECan.obj \
+./source/F2806x_ECap.obj \
 ./source/F2806x_GlobalVariableDefs.obj \
 ./source/F2806x_OscComp.obj \
 ./source/F2806x_PieCtrl.obj \
@@ -45,6 +47,7 @@ C_DEPS += \
 ./source/F2806x_CpuTimers.d \
 ./source/F2806x_DefaultIsr.d \
 ./source/F2806x_ECan.d \
+./source/F2806x_ECap.d \
 ./source/F2806x_GlobalVariableDefs.d \
 ./source/F2806x_OscComp.d \
 ./source/F2806x_PieCtrl.d \
@@ -57,6 +60,7 @@ C_DEPS__QUOTED += \
 "source\F2806x_CpuTimers.d" \
 "source\F2806x_DefaultIsr.d" \
 "source\F2806x_ECan.d" \
+"source\F2806x_ECap.d" \
 "source\F2806x_GlobalVariableDefs.d" \
 "source\F2806x_OscComp.d" \
 "source\F2806x_PieCtrl.d" \
@@ -71,6 +75,7 @@ OBJS__QUOTED += \
 "source\F2806x_DefaultIsr.obj" \
 "source\F2806x_DisInt.obj" \
 "source\F2806x_ECan.obj" \
+"source\F2806x_ECap.obj" \
 "source\F2806x_GlobalVariableDefs.obj" \
 "source\F2806x_OscComp.obj" \
 "source\F2806x_PieCtrl.obj" \
@@ -89,6 +94,7 @@ C_SRCS__QUOTED += \
 "../source/F2806x_CpuTimers.c" \
 "../source/F2806x_DefaultIsr.c" \
 "../source/F2806x_ECan.c" \
+"../source/F2806x_ECap.c" \
 "../source/F2806x_GlobalVariableDefs.c" \
 "../source/F2806x_OscComp.c" \
 "../source/F2806x_PieCtrl.c" \

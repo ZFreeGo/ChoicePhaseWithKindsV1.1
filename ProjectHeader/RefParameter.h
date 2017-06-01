@@ -79,6 +79,8 @@ typedef struct TagSystemVoltageParameter
 
 
 
+	float perodCap;//通过硬件捕捉计算周期
+
 }SystemVoltageParameter;
 /**
  * 上下限值

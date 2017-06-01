@@ -318,7 +318,7 @@ void InitPeripheralClocks(void)
    SysCtrlRegs.PCLKCR1.bit.EQEP2ENCLK = 0;    // eQEP2
 
    SysCtrlRegs.PCLKCR1.bit.ECAP1ENCLK = 0;    // eCAP1
-   SysCtrlRegs.PCLKCR1.bit.ECAP2ENCLK = 0;    // eCAP2
+   SysCtrlRegs.PCLKCR1.bit.ECAP2ENCLK = 1;    // eCAP2
    SysCtrlRegs.PCLKCR1.bit.ECAP3ENCLK = 0;    // eCAP3
 
    SysCtrlRegs.PCLKCR2.bit.HRCAP1ENCLK = 0;	  // HRCAP1

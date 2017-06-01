@@ -58,6 +58,8 @@
 #include "DeviceNet.h"
 #include "stdType.h"
 #include "SoftI2C.h"
+#include "ECAP.h"
+
 
 //#include"CLAmath.h"
 #define NOP()   __asm(" NOP")

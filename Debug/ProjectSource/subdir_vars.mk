@@ -12,6 +12,7 @@ C_SRCS += \
 ../ProjectSource/CAN.c \
 ../ProjectSource/ConfigADC.c \
 ../ProjectSource/DeviceNet.c \
+../ProjectSource/ECAP.c \
 ../ProjectSource/MonitorCalculate.c \
 ../ProjectSource/PwmTimer.c \
 ../ProjectSource/RefParameter.c \
@@ -26,6 +27,7 @@ OBJS += \
 ./ProjectSource/ConfigADC.obj \
 ./ProjectSource/DeviceIO.obj \
 ./ProjectSource/DeviceNet.obj \
+./ProjectSource/ECAP.obj \
 ./ProjectSource/MonitorCalculate.obj \
 ./ProjectSource/PwmTimer.obj \
 ./ProjectSource/RefParameter.obj \
@@ -39,6 +41,7 @@ C_DEPS += \
 ./ProjectSource/CAN.d \
 ./ProjectSource/ConfigADC.d \
 ./ProjectSource/DeviceNet.d \
+./ProjectSource/ECAP.d \
 ./ProjectSource/MonitorCalculate.d \
 ./ProjectSource/PwmTimer.d \
 ./ProjectSource/RefParameter.d \
@@ -55,6 +58,7 @@ C_DEPS__QUOTED += \
 "ProjectSource\CAN.d" \
 "ProjectSource\ConfigADC.d" \
 "ProjectSource\DeviceNet.d" \
+"ProjectSource\ECAP.d" \
 "ProjectSource\MonitorCalculate.d" \
 "ProjectSource\PwmTimer.d" \
 "ProjectSource\RefParameter.d" \
@@ -72,6 +76,7 @@ OBJS__QUOTED += \
 "ProjectSource\ConfigADC.obj" \
 "ProjectSource\DeviceIO.obj" \
 "ProjectSource\DeviceNet.obj" \
+"ProjectSource\ECAP.obj" \
 "ProjectSource\MonitorCalculate.obj" \
 "ProjectSource\PwmTimer.obj" \
 "ProjectSource\RefParameter.obj" \
@@ -85,6 +90,7 @@ C_SRCS__QUOTED += \
 "../ProjectSource/CAN.c" \
 "../ProjectSource/ConfigADC.c" \
 "../ProjectSource/DeviceNet.c" \
+"../ProjectSource/ECAP.c" \
 "../ProjectSource/MonitorCalculate.c" \
 "../ProjectSource/PwmTimer.c" \
 "../ProjectSource/RefParameter.c" \

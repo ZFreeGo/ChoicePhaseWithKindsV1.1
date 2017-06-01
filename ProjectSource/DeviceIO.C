@@ -30,38 +30,24 @@ void InitDeviceIO(void)
     EALLOW;
 
    //LED1
-    GpioCtrlRegs.GPAMUX1.bit.GPIO6 = 0;
-    GpioCtrlRegs.GPADIR.bit.GPIO6= 1;
+    GpioCtrlRegs.GPAMUX1.bit.GPIO9 = 0;
+    GpioCtrlRegs.GPADIR.bit.GPIO9= 1;
     //LED2
-    GpioCtrlRegs.GPAMUX2.bit.GPIO16 = 0;
-    GpioCtrlRegs.GPADIR.bit.GPIO16= 1;
+    GpioCtrlRegs.GPAMUX2.bit.GPIO29 = 0;
+    GpioCtrlRegs.GPADIR.bit.GPIO29= 1;
     //LED3
-    GpioCtrlRegs.GPAMUX1.bit.GPIO7 = 0;
-    GpioCtrlRegs.GPADIR.bit.GPIO7= 1;
-
-    //TXD1-LASER RXD1-LASER
-    // A_TXDL11 A_RXDL11
-    // A_TXDL21 A_RXDL21
-    // A_TXDL31 A_RXDL31
-
-    //TXD1-LASER
-	GpioCtrlRegs.GPAMUX1.bit.GPIO12 = 0;
-	GpioCtrlRegs.GPADIR.bit.GPIO12= 1;
-//	GpioCtrlRegs.GPAPUD.bit.GPIO3 = 1;//禁止上拉
-
-	// RXD1-LASER
-	GpioCtrlRegs.GPAMUX1.bit.GPIO9 = 0;
-	GpioCtrlRegs.GPADIR.bit.GPIO9= 0;
+    GpioCtrlRegs.GPAMUX1.bit.GPIO12 = 0;
+    GpioCtrlRegs.GPADIR.bit.GPIO12= 1;
+    //LED4
+    GpioCtrlRegs.GPAMUX2.bit.GPIO18 = 0;
+    GpioCtrlRegs.GPADIR.bit.GPIO18 = 1;
+    //LED5
+    GpioCtrlRegs.GPAMUX2.bit.GPIO28 = 0;
+    GpioCtrlRegs.GPADIR.bit.GPIO28= 1;
 
 
-    //TXD2-LASER
-	GpioCtrlRegs.GPBMUX1.bit.GPIO39 = 0;
-	GpioCtrlRegs.GPBDIR.bit.GPIO39= 1;
-//	GpioCtrlRegs.GPAPUD.bit.GPIO3 = 1;//禁止上拉
 
-	// RXD2-LASER
-	GpioCtrlRegs.GPAMUX2.bit.GPIO19 = 0;
-	GpioCtrlRegs.GPADIR.bit.GPIO19= 0;
+
 
 	 // A_TXDL11
 	GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 0;

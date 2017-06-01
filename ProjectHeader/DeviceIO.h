@@ -16,20 +16,25 @@
 #define __CONFIGGPIO_H_
 
 //取反操作
-#define  TOGGLE_LED1  {GpioDataRegs.GPATOGGLE.bit.GPIO6 = 1;}
-#define  TOGGLE_LED2  {GpioDataRegs.GPATOGGLE.bit.GPIO16 = 1; }
-#define  TOGGLE_LED3  {GpioDataRegs.GPATOGGLE.bit.GPIO7 = 1; }
+#define  TOGGLE_LED1  {GpioDataRegs.GPATOGGLE.bit.GPIO9 = 1;}
+#define  TOGGLE_LED2  {GpioDataRegs.GPATOGGLE.bit.GPIO29 = 1; }
+#define  TOGGLE_LED3  {GpioDataRegs.GPATOGGLE.bit.GPIO12 = 1; }
+#define  TOGGLE_LED4  {GpioDataRegs.GPATOGGLE.bit.GPIO18 = 1; }
+#define  TOGGLE_LED5  {GpioDataRegs.GPATOGGLE.bit.GPIO28 = 1; }
 
 //熄灭
-#define  OFF_LED1  {GpioDataRegs.GPASET.bit.GPIO6 = 1;}
-#define  OFF_LED2  {GpioDataRegs.GPASET.bit.GPIO16 = 1;  }
-#define  OFF_LED3  {GpioDataRegs.GPASET.bit.GPIO7 = 1; }
+#define  OFF_LED1  {GpioDataRegs.GPASET.bit.GPIO9 = 1;}
+#define  OFF_LED2  {GpioDataRegs.GPASET.bit.GPIO29 = 1;  }
+#define  OFF_LED3  {GpioDataRegs.GPASET.bit.GPIO12 = 1; }
+#define  OFF_LED4  {GpioDataRegs.GPASET.bit.GPIO18 = 1;  }
+#define  OFF_LED5  {GpioDataRegs.GPASET.bit.GPIO28 = 1; }
 
 //点亮操作
-#define  ON_LED1  {GpioDataRegs.GPACLEAR.bit.GPIO6 = 1;}
-#define  ON_LED2  {GpioDataRegs.GPACLEAR.bit.GPIO16 = 1;}
-#define  ON_LED3  {GpioDataRegs.GPACLEAR.bit.GPIO7 = 1; }
-
+#define  ON_LED1  {GpioDataRegs.GPACLEAR.bit.GPIO9 = 1;}
+#define  ON_LED2  {GpioDataRegs.GPACLEAR.bit.GPIO29 = 1;}
+#define  ON_LED3  {GpioDataRegs.GPACLEAR.bit.GPIO12 = 1; }
+#define  ON_LED4  {GpioDataRegs.GPACLEAR.bit.GPIO18 = 1;}
+#define  ON_LED5  {GpioDataRegs.GPACLEAR.bit.GPIO28 = 1; }
 
 //永磁控制 同步端口控制
 #define SET_OUTA1_H {GpioDataRegs.GPASET.bit.GPIO12 = 1;}
