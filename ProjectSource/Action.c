@@ -32,6 +32,7 @@ void ActionDataInit(void)
 	LastLen = 0;
 }
 
+static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 
 /**
  * 引用帧服务
@@ -47,11 +48,11 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	uint8_t id = 0;
 
 
-	uint8_t count = 0;
+	//uint8_t count = 0;
 	uint8_t i = 0;
 
-	uint8_t ph[3] = {0};//三相选择
-	uint16_t rad[3] = {0};//弧度归一化值
+	//uint8_t ph[3] = {0};//三相选择
+	//uint16_t rad[3] = {0};//弧度归一化值
 	uint8_t tempData[8] = {0};
 	PointUint8 point;
 	uint8_t result = 0;
@@ -212,8 +213,40 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 
 		}
+		case 0x30: //同步合闸预制
+		case 0x31: //同步合闸执行
+		{
+			return SynHezha(pReciveFrame, pSendFrame);
+		}
+
+	}
+	return 0xFF;
 
 
+
+}
+/**
+ * 同步合闸动作--预制与执行
+ *
+ * @param  指向处理帧信息内容的指针
+ * @param  指向发送帧信息的指针
+ *
+ * @retrun 错误代码
+ * @bref   对完整帧进行提取判断
+ */
+static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
+{
+	uint8_t id = 0;
+	uint8_t count = 0;
+	uint8_t i = 0;
+	uint8_t ph[3] = {0};//三相选择
+	uint16_t rad[3] = {0};//弧度归一化值
+	float lastRatio = 0; //上一次比率
+
+
+	id = pReciveFrame->pBuffer[0];
+	switch (id)
+	{
 		case 0x30://同步合闸预制
 		{
 			//必须不小于4
@@ -242,7 +275,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					return 0XF5;
 				}
 
-				//相数必须以此增大
+				//弧度必须以此增大
 				if(!((rad[2] >= rad[1] )&&(rad[1] >= rad[0] )))
 				{
 					return 0XF6;
@@ -290,6 +323,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					 {
 						 return 0XFA;
 					 }
+					 //比较执行指令与预制指令是否相同
 					 for(i = 1; i < pReciveFrame->len;i++)
 					 {
 						if (CommandData[i] != pReciveFrame->pBuffer[i])
@@ -299,13 +333,25 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					 }
 					 //设置同步合闸参数
 					 count = (pReciveFrame->len - 2)/2;
+					 lastRatio = 0;
 					 for(i = 0; i < count; i++)
 					 {
 						 g_PhaseActionRad[i].phase = (CommandData[1]>>(2*i));
 						 g_PhaseActionRad[i].actionRad =
 								 pReciveFrame->pBuffer[2*i + 2] + ((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8;
 						 g_PhaseActionRad[i].enable = 0xFF;
-						 g_PhaseActionRad[i].realRatio =   (float)g_PhaseActionRad[i].actionRad / 65536 ;
+
+						 g_PhaseActionRad[i].realRatio =  (float)g_PhaseActionRad[i].actionRad / 65536   ;//累加计算绝对比率
+
+						 //判断后一个相角不小于前一个
+						 if (g_PhaseActionRad[i].realRatio < lastRatio)
+						 {
+							return 0xFC;
+						 }
+						 g_PhaseActionRad[i].realDiffRatio =   g_PhaseActionRad[i].realRatio  - lastRatio;//相对上一级比率
+						 lastRatio = g_PhaseActionRad[i].realRatio;
+
+						 g_PhaseActionRad[i].count = count;//回路数量
 					 }
 					 //禁止合闸动作相角
 					 for (i = count; i < 3; i++)
@@ -322,13 +368,9 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				 }
 
 			 }
-			break;
-
 		}
 	}
 	return 0xFF;
-
-
 
 }
 /**

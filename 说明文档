@@ -1,3 +1,14 @@
+2017/6/5
+1.修正负数使用uint8_t---int8_t
+2.每次计算后 calDelayCheck = calDelay 
+3.calDelayCheck 与之求和
+4.sumTime1 + n * period - sumTime2 + diff; 1,2 错误导致花费大量时间 
+5.修改合闸预制幅值逻辑。
+
+2017/6/3
+1. 增加计算最大时间差值的函数 GetMaxActionTime(ActionRad* pActionRad)
+2.增加计算时间差的函数 GetTimeDiff(float sumTime1, float sumTime2, float period, float diff)
+
 2017/6/1
 1.更改采样通道换成ADCINB0
 2.修改相应的LED IO

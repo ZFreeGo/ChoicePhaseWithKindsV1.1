@@ -56,15 +56,15 @@ volatile  struct  OrderParamCollect SetParam;// 设定参数
 volatile Uint8 FirstTrig = 0;// 首次触发标志 0--不需要触发 非0--需要触发
 /*=============================全局变量定义 End=============================*/
 
-/*=============================引用变量 extern Start=============================*/
-
-
-/*=============================引用变量 extern End=============================*/
-
-
+/*=============================局部函数 Start=============================*/
+static uint8_t GetMaxActionTime(ActionRad* pActionRad);
+static int8_t GetTimeDiff(float sumTime1, float sumTime2, float period, float diff);
+/*=============================局部函数 End=============================*/
 
 
 
+#define N_MAX  10 //最大计算次数
+#define ERROR_VALUE 10//单周期误差 10us
 
 /**************************************************
  *函数名：InitMonitorCalData ()
@@ -193,167 +193,8 @@ void CalEffectiveValue(void)
 
 
 
-/********************************************************************
- * 函数名：GetOVD()
- * 参数：
- * 返回值：NULL
- * 功能：基于 FFT，根据数据获取过零时刻
- ********************************************************************/
-float phase = 0.0,a = 0, b = 0;
-float tp = 0,tph = 0, tp4 = 0,tq = 0, t0 = 0, t1 = 0, sumt = 0;//相位时间差
-float tnow = 0; //当前时间折算
-Uint16 xiang = 0;
-Uint16 count = 0;
-void GetOVD(float* pData)
-{
-
-	FFT_Cal(pData);   //傅里叶变化计算相角 每个点间隔为312.5us
-	a = RFFToutBuff[1]; //实部
-	b = RFFToutBuff[RFFT_SIZE - 1]; //虚部
-	phase = atan( b/a ); //求取相位
-	//相位判断
-	if (phase >= -0.00001 ) //认为在第1,3象限   浮点数与零判断问题,是否需要特殊处理？
-	{
-		if (a >= -0.00001)
-		{
-			xiang = 1; //在第一象限
-
-		}
-		else
-		{
-			xiang = 3; //在第三象限
-		}
-	}
-	else
-	{
-		if (a >= 0)
-		{
-			xiang = 4; //在第四象限
-		}
-		else
-		{
-			xiang = 2; //在第二象限
-		}
-	}
-	//象限变换
-	switch (xiang)
-	{
-	case 1:
-	{
-		phase = phase;
-		break;
-	}
-	case 2:
-	{
-		phase += PI;
-		break;
-	}
-	case 3:
-	{
-		phase += PI;
-		break;
-	}
-	case 4:
-	{
-		phase += 2*PI;
-	}
-	}
-	//超阈值处理
-	tp = 1e6 / g_SystemVoltageParameter.frequencyCollect.FreqReal; //真实周期
-	tph = tp * 0.5f;  //半个周期
 
 
-	//phase 为cos值 cos
-	/*
-	 if (phase < PI3_2)// 时间t0; 距离下一个周期循环正过零点时间
-	 {
-	      //t0 = (3_2PI - phase)* tp * D2PI; //  1/2pi
-		 t0 = (0.75f - phase * D2PI) * tp;
-	 }
-	 else
-	 {
-	      //t0 = (3_2PI - phase + 2*PI)* tp * D2PI;
-		 t0 = (1.75f - phase * D2PI) * tp;
-	 }
-	*/
-	//t0 = (2*pi - phase) * tp *D2PI;
-	//t0 = (1.0f - phase * D2PI) * tp;
-
-	//按设定合闸求取
-	SetParam.SetPhaseTime = SetParam.SetPhase * tp * D2PI; //求取对应相角时间
-	tnow = phase * tp * D2PI;
-	sumt =   SetParam.SetPhaseTime - tnow - SetParam.HezhaTime;
-	count = 2;
-	do
-	{
-        t0 = count * tp + sumt;
-        count ++;
-	}
-	while(t0 < 0);
-
-
-
-
-
-
-#if WITH_FFT == 1
-
-	// t1 = 10; //内部延时 //修正采样调理电路延时，应该补偿于此。
-	t1 = 1713 + 10;
-#elif WITH_ZVD == 1
-	 t1 = 230;// %调入本函数开始进程   通过仿真获取指令周期数
-#endif
-
-	 if (t0 >= t1)
-	{
-		tq = t0 - t1 ;
-	}
-	else
-	{
-		tq =   t0 - t1 + tp; //%延迟一个周期
-	}
-
-	if (tq >= tp)
-	{
-		tq = tq - tp;
-	}
-
-	CalTimeMonitor.CalTimeDiff = tq; //赋值给时间差。
-
-	TOGGLE_LED1; //采样输出标志
-
-
-	DELAY_US(tq); //延时代替
-#if WITH_FFT == 1
-
-	DELAY_US(93); //1.修正固有延时，滞后时间 。 2.对于传输同步延时，应该在此处减去.140->80
-
-#elif WITH_ZVD == 1
-
-
-#endif
-
-
-	//延时为到实际过零点开始计算
-	//此目的为补偿实际计算等误差
-
-	FirstTrig = 0xff;// 准备首次触发
-	InitCpuTimers();
-
-
-	ConfigCpuTimer(&CpuTimer0, 80, tph);
-	//启动定时器
-	//SET_YONGCI_ACTION(); //同步合闸定时器
-	TOGGLE_LED2; //首次触发跳变
-	CpuTimer0Regs.TCR.all = 0x4000; // Use write-only instruction to set TSS bit = 0
-
-	//赋值以备调用
-	CalTimeMonitor.CalTp = tp;
-	CalTimeMonitor.CalT0 = t0;
-	CalTimeMonitor.CalPhase = phase;
-	pData[SAMPLE_LEN] = SAMPLE_NOT_FULL; //置为非满标志
-
-}
 
 /**
  * 同步触发器，利用采样数据计算同步触发动作时刻，发出触发命令,以A相为例
@@ -363,6 +204,10 @@ void GetOVD(float* pData)
  */
 void SynchronizTrigger(float* pData)
 {
+	float phase = 0.0,a = 0, b = 0;
+	uint16_t xiang = 0;
+	uint16_t count = 0;
+
 	float time = 0, difftime = 0;
 	FFT_Cal(pData);   //傅里叶变化计算相角 每个点间隔
 	a = RFFToutBuff[1]; //实部
@@ -423,6 +268,9 @@ void SynchronizTrigger(float* pData)
 			phase += 2*PI;
 		}
 		}
+
+
+
 		//计算开始时间
 	    g_PhaseActionRad[0].startTime = g_SystemVoltageParameter.period* phase* D2PI;
 	    //此处相乘，为了保证使用最新的周期
@@ -518,6 +366,390 @@ void SynchronizTrigger(float* pData)
 
 }
 
+/**
+ * 计算动作延时时间
+ *
+ * @param  *pData   指向采样数据的指针
+ * @brief  计算触发时刻，发布触发命令
+ */
+void CalculateDelayTime(ActionRad* pActionRad, float phase)
+{
+
+	uint16_t count = 0;
+	uint8_t selectPhase = 0;
+	float time = 0, difftime = 0;
+	//TODO:暂定内部延时为88us
+	g_ProcessDelayTime[selectPhase].innerDelay = 88;
+	selectPhase = pActionRad->phase;
+
+	//计算开始时间
+	pActionRad->startTime = g_SystemVoltageParameter.period * phase * D2PI;
+	//此处相乘，为了保证使用最新的周期
+	pActionRad->realTime = g_SystemVoltageParameter.period
+			* pActionRad->realRatio;
+	pActionRad->realDiffTime = g_SystemVoltageParameter.period
+			* pActionRad->realDiffRatio;
+	//计算延时之和
+	g_ProcessDelayTime[selectPhase].sumDelay =
+			(float)g_ProcessDelayTime[selectPhase].sampleDelay
+					+ (float)g_ProcessDelayTime[selectPhase].transmitDelay
+					+ (float)g_ProcessDelayTime[selectPhase].actionDelay
+					+ (float)g_ProcessDelayTime[selectPhase].innerDelay;
+	//总的时间和
+	time = (float)g_ProcessDelayTime[selectPhase].sumDelay + (float)pActionRad->startTime
+			- (float)pActionRad->realTime;
+
+	count = 1;
+	do
+	{
+		difftime = count *  g_SystemVoltageParameter.period - time;
+		//判断时间差是否大于0，若大于则跳出
+		if(difftime > 0)
+		{
+			break;
+		}
+		count++;
+
+	}while(count < 100); //TODO:添加异常判断
 
 
+
+
+	if (difftime > 0)
+	{
+		//若时间之和大于等于0，则正常补偿；否则添加一个周期的延时
+		time = difftime + g_ProcessDelayTime[selectPhase].compensationTime;
+		if ( time >= 0 )
+		{
+			g_ProcessDelayTime[selectPhase].calDelay =  (uint16_t)time;
+		}
+		else
+		{
+			time = g_SystemVoltageParameter.period + time;
+			if (time >= 0)
+			{
+				g_ProcessDelayTime[selectPhase].calDelay =  (uint16_t)time;
+			}
+			else
+			{
+				g_ProcessDelayTime[selectPhase].calDelay = difftime;//超限后不进行补偿。
+			}
+
+
+		}
+		//默认赋值
+		g_ProcessDelayTime[selectPhase].calDelayCheck = g_ProcessDelayTime[selectPhase].calDelay;
+		/*
+		DELAY_US(g_ProcessDelayTime[selectPhase].calDelay);
+
+		//产生序列动作，可以考虑在之前进行删去。
+		//输出动作
+		//
+		SET_OUTB4_H;
+		SET_OUTB4_H;
+		SET_OUTB4_H;
+		DELAY_US(50);
+		SET_OUTB4_H;
+		DELAY_US(50);
+		SET_OUTB4_H;
+		DELAY_US(50);
+		SET_OUTB4_H;
+		DELAY_US(50);
+		SET_OUTB4_L;
+		SET_OUTB4_L;
+		SET_OUTB4_L;
+		*/
+	}
+	else
+	{
+		//TODO: 异常处理
+	}
+}
+
+/**
+ * 校准计算动作时间
+ *
+ * @param  pActionRad   指向动作时序命令
+ *
+ * @return 0-计算正常 非0--有错误出现
+ * @brief  计算触发时刻，发布触发命令
+ */
+uint8_t maxIndex = 0;
+int8_t diff_result = 0;
+
+static uint8_t CheckActionTime(ActionRad* pActionRad)
+{
+	uint8_t  i = 0,select1 = 0, select2 = 0;
+	float t1 = 0, t2 = 0;
+	//获取最大索引
+	maxIndex = GetMaxActionTime(pActionRad);
+			//若相等或者count=1，表示不需要校准
+	if ((maxIndex == pActionRad->count) || ( pActionRad->count == 1) )
+	{
+		return 0;
+	}
+
+	//小于maxIndex索引进行校准
+	for ( i = maxIndex; i > 0; i--)
+	{
+		select1 = pActionRad[i-1].phase;
+		t1 = g_ProcessDelayTime[select1].sumDelay + g_ProcessDelayTime[select1].calDelayCheck ;//添加校准后的数据
+		select2 = pActionRad[i].phase;
+		t2 = g_ProcessDelayTime[select2].sumDelay + g_ProcessDelayTime[select2].calDelayCheck;
+		diff_result = GetTimeDiff(t1, t2, g_SystemVoltageParameter.period, pActionRad[i].realDiffTime);
+		NOP();
+		if (diff_result != (int8_t)N_MAX)
+		{
+			if (diff_result == 0)
+			{
+				continue;
+			}
+			else if (diff_result > 0)
+			{
+				g_ProcessDelayTime[select1].calDelayCheck = g_ProcessDelayTime[select1].calDelay + diff_result *g_SystemVoltageParameter.period;
+			}
+			else
+			{
+				g_ProcessDelayTime[select2].calDelayCheck = g_ProcessDelayTime[select2].calDelay - diff_result *g_SystemVoltageParameter.period;
+			}
+		}
+		else
+		{
+			return 0xFF;
+		}
+	}
+	//大于maxIndex索引进行校准
+	for ( i = maxIndex; i < pActionRad->count - 1; i++)
+	{
+		select1 = pActionRad[i].phase;
+		t1 = g_ProcessDelayTime[select1].sumDelay + g_ProcessDelayTime[select1].calDelayCheck ;
+		select2 = pActionRad[i + 1].phase;
+		t2 = g_ProcessDelayTime[select2].sumDelay + g_ProcessDelayTime[select2].calDelayCheck;
+		diff_result = GetTimeDiff(t1, t2, g_SystemVoltageParameter.period, pActionRad[i + 1].realDiffTime);
+		if (diff_result != N_MAX)
+		{
+			if (diff_result == 0)
+			{
+				g_ProcessDelayTime[select1].calDelayCheck = g_ProcessDelayTime[select1].calDelay;//直接赋值
+				continue;
+			}
+			else if (diff_result > 0)
+			{
+				g_ProcessDelayTime[select1].calDelayCheck = g_ProcessDelayTime[select1].calDelay + diff_result *g_SystemVoltageParameter.period;
+			}
+			else
+			{
+				g_ProcessDelayTime[select2].calDelayCheck = g_ProcessDelayTime[select2].calDelay - diff_result *g_SystemVoltageParameter.period;
+			}
+		}
+		else
+		{
+			return 0xFF;
+		}
+	}
+	return 0;
+}
+
+/**
+ * 计算时间差值
+ *
+ * @param sumTime1 累加计时1
+ * @param sumTime2 累加计时2
+ * @param period   周期
+ * @param diff     差值
+ *
+ * @return  n = N_MAX --计算错误
+		   n = 0—当前值不需要变动
+		   n > 0----SumTime1需要增加n*period
+		   n <0 ----SumTime2需要增加n*period
+		   
+   @brief 计算差值
+ */
+int8_t  n = 0;//循环计数
+float time = 0;
+static int8_t GetTimeDiff(float sumTime1, float sumTime2, float period, float diff)
+{
+	n = 0;
+    if((sumTime1 - sumTime2 + diff) > ERROR_VALUE)
+    {
+    	//T1 大于T2，T2需要周期数递增
+    	do
+    	{
+    		n++;
+			time = sumTime2 + n * period - sumTime1 - diff;
+    		if(time >= ( 0- ERROR_VALUE * n))
+    		{
+    			break;
+    		}
+    		if (n < N_MAX)
+    		{
+    			 continue;
+    		}
+    		else
+    	    {
+    			 return (int8_t)N_MAX;
+    	    }
+    	}
+    	while(n < N_MAX);
+		
+		if(time <=  ERROR_VALUE * n)
+		{
+			 return -n;
+		}
+    }
+    else if ((sumTime1 - sumTime2 + diff) < -ERROR_VALUE)
+    {
+		//T2 大于T1，T1需要周期数递增
+		do
+    	{
+    		n++;
+			time = sumTime1 + n * period - sumTime2 + diff;
+    		if(time >= ( 0- ERROR_VALUE * n))
+    		{
+    			break;
+
+    		}
+    		if (n < N_MAX)
+    		{
+    			 continue;
+    		}
+    		else
+    	    {
+    			 return (int8_t)N_MAX;
+    	    }
+    	}
+    	while(n < N_MAX);
+		
+		if(time <=  ERROR_VALUE * n)
+		{
+			 return n;
+		}
+
+    }
+    else
+    {
+    	return 0;
+    }
+    return N_MAX;
+}
+
+/**
+ * 计算时间差值
+ *
+ * @param pActionRad 动作弧度
+ *
+ * @return 最大的索引，若为count（数量）表示全部相等
+ * @brief 计算差值
+ */
+static uint8_t GetMaxActionTime(ActionRad* pActionRad)
+{
+	uint8_t i = 0;
+	uint8_t count = pActionRad->count;
+	uint8_t maxIndex = 0, maxFlag = 0;
+	uint8_t selectPhase = 0;
+	float sum = 0, maxSum = 0;
+
+
+	selectPhase = pActionRad[0].phase;
+	//时间之和=总延时 + 计算延时 + 相对于最后一个的提前时间
+	maxSum = g_ProcessDelayTime[selectPhase].sumDelay + g_ProcessDelayTime[selectPhase].calDelay + pActionRad[count - 1].realTime - pActionRad[0].realTime;
+
+	for (i = 1; i < count; i++)
+	{
+		selectPhase = pActionRad[i].phase;
+		//计算总时间
+		sum = g_ProcessDelayTime[selectPhase].sumDelay + g_ProcessDelayTime[selectPhase].calDelay + pActionRad[count - 1].realTime - pActionRad[i].realTime;
+		//是否大于MaxSum
+		if ((sum - maxSum ) > ERROR_VALUE)
+		{
+			maxFlag = 0xFF;
+			maxIndex = i;
+			maxSum = sum;
+		}
+		else if (( maxSum - sum) > ERROR_VALUE)
+		{
+			maxFlag = 0xFF;
+			maxSum = sum;
+		}
+	}
+	if (maxFlag == 0xFF)
+	{
+		return maxIndex;
+	}
+	else
+	{
+		return count;
+	}
+
+}
+
+uint8_t test_result = 0;
+float delayA = 0,delayB = 0,delayC = 0;
+float calTimeA = 0,calTimeB = 0,calTimeC = 0;
+uint8_t cn = 0;
+void TestCalculate(void)
+{
+	cn = 0;
+	do
+	{
+		delayA = 0.5*(100000 - 5000 * cn);
+		delayB = 20000;
+		delayC = 0.5* (1000 + 5000 * cn);
+
+
+		g_SystemVoltageParameter.period = 20000;
+
+		g_ProcessDelayTime[0].actionDelay = delayA;
+		g_ProcessDelayTime[0].compensationTime = 0;
+		g_ProcessDelayTime[0].sampleDelay = 0;
+		g_ProcessDelayTime[0].transmitDelay = delayA;
+
+		g_ProcessDelayTime[1].actionDelay = delayB;
+		g_ProcessDelayTime[1].compensationTime = 0;
+		g_ProcessDelayTime[1].sampleDelay = 0;
+		g_ProcessDelayTime[1].transmitDelay = delayB;
+
+		g_ProcessDelayTime[2].actionDelay = delayC;
+		g_ProcessDelayTime[2].compensationTime = 0;
+		g_ProcessDelayTime[2].sampleDelay = 0;
+		g_ProcessDelayTime[2].transmitDelay = delayC;
+
+		g_PhaseActionRad[0].actionRad = 0;
+		g_PhaseActionRad[0].phase = 0;
+		g_PhaseActionRad[0].count = 3;
+		g_PhaseActionRad[0].enable = 0xFF;
+		g_PhaseActionRad[0].realDiffRatio = 0;
+		g_PhaseActionRad[0].realRatio = g_PhaseActionRad[0].realDiffRatio;
+
+		g_PhaseActionRad[1].actionRad = 0;
+		g_PhaseActionRad[1].phase = 1;
+		g_PhaseActionRad[1].count = g_PhaseActionRad[0].count;
+		g_PhaseActionRad[1].enable = 0xFF;
+		g_PhaseActionRad[1].realDiffRatio = 0;
+		g_PhaseActionRad[1].realRatio = g_PhaseActionRad[0].realRatio + g_PhaseActionRad[1].realDiffRatio;
+
+		g_PhaseActionRad[2].actionRad = 0;
+		g_PhaseActionRad[2].phase = 2;
+		g_PhaseActionRad[2].count = g_PhaseActionRad[0].count;
+		g_PhaseActionRad[2].enable = 0xFF;
+		g_PhaseActionRad[2].realDiffRatio = 0;
+		g_PhaseActionRad[2].realRatio = g_PhaseActionRad[1].realRatio + g_PhaseActionRad[2].realDiffRatio;
+
+
+		CalculateDelayTime(g_PhaseActionRad, 0);
+		CalculateDelayTime(g_PhaseActionRad + 1, 0);
+		CalculateDelayTime(g_PhaseActionRad + 2, 0);
+
+
+
+
+		test_result = CheckActionTime(g_PhaseActionRad);
+
+		calTimeA = g_ProcessDelayTime[0].calDelayCheck + g_ProcessDelayTime[0].sumDelay;
+		calTimeB = g_ProcessDelayTime[1].calDelayCheck + g_ProcessDelayTime[1].sumDelay;
+		calTimeC = g_ProcessDelayTime[2].calDelayCheck + g_ProcessDelayTime[2].sumDelay;
+
+
+	} while (cn++ < 20);
+}
 
