@@ -18,6 +18,9 @@
 #include "Header.h"
 #include "RefParameter.h"
 #include "Action.h"
+
+#include <math.h>
+#include <stdlib.h>
 /*=============================全局变量定义 Start=============================*/
 //#define RFFT_STAGES 6
 //#define RFFT_SIZE (1 << RFFT_STAGES)
@@ -63,7 +66,7 @@ static int8_t GetTimeDiff(float sumTime1, float sumTime2, float period, float di
 
 
 
-#define N_MAX  10 //最大计算次数
+#define N_MAX  20 //最大计算次数
 #define ERROR_VALUE 10//单周期误差 10us
 
 /**************************************************
@@ -369,7 +372,8 @@ void SynchronizTrigger(float* pData)
 /**
  * 计算动作延时时间
  *
- * @param  *pData   指向采样数据的指针
+ * @param  pActionRad   动作弧度
+ * @param  phase	    开始相角
  * @brief  计算触发时刻，发布触发命令
  */
 void CalculateDelayTime(ActionRad* pActionRad, float phase)
@@ -683,73 +687,221 @@ static uint8_t GetMaxActionTime(ActionRad* pActionRad)
 
 }
 
+
+void pass_stop()
+{
+   __asm("   ESTOP0");
+    for(;;);
+}
+
+void fail_stop()
+{
+   __asm("   ESTOP0");
+    for(;;);
+}
+
 uint8_t test_result = 0;
 float delayA = 0,delayB = 0,delayC = 0;
 float calTimeA = 0,calTimeB = 0,calTimeC = 0;
-uint8_t cn = 0;
+uint8_t cn = 0, phase_cn = 0, period_cn = 0;;
+uint32_t pass = 0,fail = 0;
+float test_phase =0;
+float diffA = 0,diffB = 0;
+
 void TestCalculate(void)
 {
-	cn = 0;
+
+	pass = 0;
+	fail = 0;
+	period_cn = 0;
 	do
 	{
-		delayA = 0.5*(100000 - 5000 * cn);
-		delayB = 20000;
-		delayC = 0.5* (1000 + 5000 * cn);
+		phase_cn = 0;
+		do
+		{
+			 test_phase = PI2*0.005*phase_cn; //不同相角
+			 cn = 0;
+			do
+			{
+				delayA = 0.5*(110000 - 500 * cn);
+				delayB = 0.5*(210000 - 1000 * cn);
+				delayC = 0.5* (1000 + 500 * cn);
 
 
-		g_SystemVoltageParameter.period = 20000;
+				g_SystemVoltageParameter.period = 10000.3 + period_cn*100 ;
 
-		g_ProcessDelayTime[0].actionDelay = delayA;
-		g_ProcessDelayTime[0].compensationTime = 0;
-		g_ProcessDelayTime[0].sampleDelay = 0;
-		g_ProcessDelayTime[0].transmitDelay = delayA;
+				g_ProcessDelayTime[0].actionDelay = delayA;
+				g_ProcessDelayTime[0].compensationTime = 0;
+				g_ProcessDelayTime[0].sampleDelay = 0;
+				g_ProcessDelayTime[0].transmitDelay = delayA;
 
-		g_ProcessDelayTime[1].actionDelay = delayB;
-		g_ProcessDelayTime[1].compensationTime = 0;
-		g_ProcessDelayTime[1].sampleDelay = 0;
-		g_ProcessDelayTime[1].transmitDelay = delayB;
+				g_ProcessDelayTime[1].actionDelay = delayB;
+				g_ProcessDelayTime[1].compensationTime = 0;
+				g_ProcessDelayTime[1].sampleDelay = 0;
+				g_ProcessDelayTime[1].transmitDelay = delayB;
 
-		g_ProcessDelayTime[2].actionDelay = delayC;
-		g_ProcessDelayTime[2].compensationTime = 0;
-		g_ProcessDelayTime[2].sampleDelay = 0;
-		g_ProcessDelayTime[2].transmitDelay = delayC;
+				g_ProcessDelayTime[2].actionDelay = delayC;
+				g_ProcessDelayTime[2].compensationTime = 0;
+				g_ProcessDelayTime[2].sampleDelay = 0;
+				g_ProcessDelayTime[2].transmitDelay = delayC;
 
-		g_PhaseActionRad[0].actionRad = 0;
-		g_PhaseActionRad[0].phase = 0;
-		g_PhaseActionRad[0].count = 3;
-		g_PhaseActionRad[0].enable = 0xFF;
-		g_PhaseActionRad[0].realDiffRatio = 0;
-		g_PhaseActionRad[0].realRatio = g_PhaseActionRad[0].realDiffRatio;
+				g_PhaseActionRad[0].actionRad = 0;
+				g_PhaseActionRad[0].phase = 0;
+				g_PhaseActionRad[0].count = 3;
+				g_PhaseActionRad[0].enable = 0xFF;
+				g_PhaseActionRad[0].realDiffRatio = (float)phase_cn*327/65536;
+				g_PhaseActionRad[0].realRatio =  g_PhaseActionRad[0].realDiffRatio;
 
-		g_PhaseActionRad[1].actionRad = 0;
-		g_PhaseActionRad[1].phase = 1;
-		g_PhaseActionRad[1].count = g_PhaseActionRad[0].count;
-		g_PhaseActionRad[1].enable = 0xFF;
-		g_PhaseActionRad[1].realDiffRatio = 0;
-		g_PhaseActionRad[1].realRatio = g_PhaseActionRad[0].realRatio + g_PhaseActionRad[1].realDiffRatio;
+				g_PhaseActionRad[1].actionRad = 0;
+				g_PhaseActionRad[1].phase = 1;
+				g_PhaseActionRad[1].count = 3;
+				g_PhaseActionRad[1].enable = 0xFF;
+				g_PhaseActionRad[1].realDiffRatio = (float)(65535 - g_PhaseActionRad[0].realRatio)/2/65536;
+				g_PhaseActionRad[1].realRatio = g_PhaseActionRad[0].realRatio + g_PhaseActionRad[1].realDiffRatio;
 
-		g_PhaseActionRad[2].actionRad = 0;
-		g_PhaseActionRad[2].phase = 2;
-		g_PhaseActionRad[2].count = g_PhaseActionRad[0].count;
-		g_PhaseActionRad[2].enable = 0xFF;
-		g_PhaseActionRad[2].realDiffRatio = 0;
-		g_PhaseActionRad[2].realRatio = g_PhaseActionRad[1].realRatio + g_PhaseActionRad[2].realDiffRatio;
-
-
-		CalculateDelayTime(g_PhaseActionRad, 0);
-		CalculateDelayTime(g_PhaseActionRad + 1, 0);
-		CalculateDelayTime(g_PhaseActionRad + 2, 0);
+				g_PhaseActionRad[2].actionRad = 0;
+				g_PhaseActionRad[2].phase = 2;
+				g_PhaseActionRad[2].count = 3;
+				g_PhaseActionRad[2].enable = 0xFF;
+				g_PhaseActionRad[2].realDiffRatio = (float)(65535 - g_PhaseActionRad[0].realRatio)/4/65536;
+				g_PhaseActionRad[2].realRatio = g_PhaseActionRad[1].realRatio + g_PhaseActionRad[2].realDiffRatio;
 
 
+				CalculateDelayTime(g_PhaseActionRad, test_phase);
+				CalculateDelayTime(g_PhaseActionRad + 1, test_phase);
+				CalculateDelayTime(g_PhaseActionRad + 2, test_phase);
 
 
-		test_result = CheckActionTime(g_PhaseActionRad);
-
-		calTimeA = g_ProcessDelayTime[0].calDelayCheck + g_ProcessDelayTime[0].sumDelay;
-		calTimeB = g_ProcessDelayTime[1].calDelayCheck + g_ProcessDelayTime[1].sumDelay;
-		calTimeC = g_ProcessDelayTime[2].calDelayCheck + g_ProcessDelayTime[2].sumDelay;
 
 
-	} while (cn++ < 20);
+				test_result = CheckActionTime(g_PhaseActionRad);
+				if (test_result != 0)
+				{
+					fail ++;
+					 __asm("   ESTOP0");
+					continue;
+				}
+
+				calTimeA = g_ProcessDelayTime[0].calDelayCheck + g_ProcessDelayTime[0].sumDelay;
+				calTimeB = g_ProcessDelayTime[1].calDelayCheck + g_ProcessDelayTime[1].sumDelay;
+				calTimeC = g_ProcessDelayTime[2].calDelayCheck + g_ProcessDelayTime[2].sumDelay;
+
+				diffA = fabsf(calTimeB - calTimeA - (g_PhaseActionRad[1].realTime  - g_PhaseActionRad[0].realTime));
+
+				if (diffA <= 3)
+				{
+					pass++;
+				}
+				else
+				{
+					fail++;
+					 __asm("   ESTOP0");
+				}
+				diffB = fabsf(calTimeC - calTimeB   - (g_PhaseActionRad[2].realTime - g_PhaseActionRad[1].realTime));
+				if (diffB <= 3)
+				{
+					pass++;
+				}
+				else
+				{
+					fail++;
+					 __asm("   ESTOP0");
+				}
+
+			} while (cn++ < 200);
+		}while(phase_cn++ <200);
+	}while(period_cn++ <200);
+	 __asm("   ESTOP0");
 }
+#ifdef TEST_EXA_A
+void TestCalculate(void)
+{
 
+	pass = 0;
+	fail = 0;
+	phase_cn = 0;
+	do
+	{
+		 test_phase = PI2*0.005*phase_cn; //不同相角
+		 cn = 0;
+		do
+		{
+			delayA = 0.5*(100000 - 500 * cn);
+			delayB = 40000;
+			delayC = 0.5* (1000 + 500 * cn);
+
+
+			g_SystemVoltageParameter.period = 19666;
+
+			g_ProcessDelayTime[0].actionDelay = delayA;
+			g_ProcessDelayTime[0].compensationTime = 0;
+			g_ProcessDelayTime[0].sampleDelay = 0;
+			g_ProcessDelayTime[0].transmitDelay = delayA;
+
+			g_ProcessDelayTime[1].actionDelay = delayB;
+			g_ProcessDelayTime[1].compensationTime = 0;
+			g_ProcessDelayTime[1].sampleDelay = 0;
+			g_ProcessDelayTime[1].transmitDelay = delayB;
+
+			g_ProcessDelayTime[2].actionDelay = delayC;
+			g_ProcessDelayTime[2].compensationTime = 0;
+			g_ProcessDelayTime[2].sampleDelay = 0;
+			g_ProcessDelayTime[2].transmitDelay = delayC;
+
+			g_PhaseActionRad[0].actionRad = 0;
+			g_PhaseActionRad[0].phase = 0;
+			g_PhaseActionRad[0].count = 3;
+			g_PhaseActionRad[0].enable = 0xFF;
+			g_PhaseActionRad[0].realDiffRatio = 0;
+			g_PhaseActionRad[0].realRatio = g_PhaseActionRad[0].realDiffRatio;
+
+			g_PhaseActionRad[1].actionRad = 0;
+			g_PhaseActionRad[1].phase = 1;
+			g_PhaseActionRad[1].count = g_PhaseActionRad[0].count;
+			g_PhaseActionRad[1].enable = 0xFF;
+			g_PhaseActionRad[1].realDiffRatio = 0;
+			g_PhaseActionRad[1].realRatio = g_PhaseActionRad[0].realRatio + g_PhaseActionRad[1].realDiffRatio;
+
+			g_PhaseActionRad[2].actionRad = 0;
+			g_PhaseActionRad[2].phase = 2;
+			g_PhaseActionRad[2].count = g_PhaseActionRad[0].count;
+			g_PhaseActionRad[2].enable = 0xFF;
+			g_PhaseActionRad[2].realDiffRatio = 0;
+			g_PhaseActionRad[2].realRatio = g_PhaseActionRad[1].realRatio + g_PhaseActionRad[2].realDiffRatio;
+
+
+			CalculateDelayTime(g_PhaseActionRad, test_phase);
+			CalculateDelayTime(g_PhaseActionRad + 1, test_phase);
+			CalculateDelayTime(g_PhaseActionRad + 2, test_phase);
+
+
+
+
+			test_result = CheckActionTime(g_PhaseActionRad);
+			if (test_result != 0)
+			{
+				fail ++;
+				 __asm("   ESTOP0");
+				continue;
+			}
+
+			calTimeA = g_ProcessDelayTime[0].calDelayCheck + g_ProcessDelayTime[0].sumDelay;
+			calTimeB = g_ProcessDelayTime[1].calDelayCheck + g_ProcessDelayTime[1].sumDelay;
+			calTimeC = g_ProcessDelayTime[2].calDelayCheck + g_ProcessDelayTime[2].sumDelay;
+
+			if ((fabsf(calTimeA - calTimeB) <= 1) && ((fabsf(calTimeB - calTimeC) <= 1)))
+			{
+				pass++;
+			}
+			else
+			{
+				fail++;
+				 __asm("   ESTOP0");
+			}
+
+
+		} while (cn++ < 200);
+	}
+	while(phase_cn++ <200);
+}
+#endif

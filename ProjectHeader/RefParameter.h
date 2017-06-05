@@ -116,7 +116,7 @@ typedef struct TagActionParameter
     uint8_t phase; //相A-1,B-2,C-3
     uint16_t  actionRad; //设定弧度归一化值r = M/65536 *2*PI
     float realRad; // 对应相对上一项角差
-    float realDiffRatio;//差值比率，程序设定值
+    float realDiffRatio;//差值比率，程序设定值.与前一项的差值，首相的前一项差值为0
     float realRatio;//以周期为对应时间COS，如PI/6 为1/12
     float realTime; //realRatio * 周期
     float realDiffTime; //realRatio * 周期

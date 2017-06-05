@@ -103,6 +103,7 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 		 uint32_t data1 = 0;
 		 uint32_t data2 = 0;
 		 uint32_t data3 = 0;
+		 uint32_t sendCount= 0 ;//发送计数
 
 		 ECanaRegs.CANME.all = 0x00010000;
 		 ECanaMboxes.MBOX0.MSGID.bit.IDE = 0; //标准帧 When AMI = 0:
@@ -129,6 +130,12 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 				{
 					return 0xFF;
 				}
+				//错误超限
+				if(sendCount++ > 10000)
+				{
+					return 0xFF;
+				}
+
 			 }  // Wait for all TAn bits to be set..
 			 ECanaRegs.CANTA.all = 0x000000001;   // Clear all TAn
 		 }
@@ -155,7 +162,13 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 				 if( g_CANErrorStatus != 0)
 				 {
 	 				return 0xFF;
+	 				//TODO:超时报警
 	 			 }
+				 //错误超限
+				if(sendCount++ > 10000)
+				{
+					return 0xFF;
+				}
 			 }
 			 ECanaRegs.CANTA.all = 0x000000001;   // Clear all TAn
 		 }
