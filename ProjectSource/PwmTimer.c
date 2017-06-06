@@ -14,19 +14,24 @@
 ************************************************************/
 #include "DSP28x_Project.h"
 #include "PwmTimer.h"
+#include "DeviceIO.h"
 
-Uint32  EPwm1TimerIntCount;
-Uint32  EPwm2TimerIntCount;
-Uint32  EPwm3TimerIntCount;
-Uint32  EPwm4TimerIntCount;
-
-
+uint32_t  EPwm2TimerIntCount;
+uint32_t  EPwm3TimerIntCount;
+uint32_t  EPwm4TimerIntCount;
 
 
-void InitEPwmTimer()
+uint32_t  EPwm2TimerPeriod;
+uint32_t  EPwm3TimerPeriod;
+/**
+ *  EPwm4Timer周期
+ */
+uint32_t  EPwm4TimerPeriod;
+
+void InitEPwmTimer(void)
 {
 
-   EPwm1TimerIntCount = 0;
+
    EPwm2TimerIntCount = 0;
    EPwm3TimerIntCount = 0;
    EPwm4TimerIntCount = 0;
@@ -36,28 +41,25 @@ void InitEPwmTimer()
    EDIS;
 
    // Setup Sync
-   EPwm1Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;  // Pass through
+
    EPwm2Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;  // Pass through
    EPwm3Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;  // Pass through
    EPwm4Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;  // Pass through
 
    // Allow each timer to be sync'ed
 
-  // EPwm1Regs.TBCTL.bit.PHSEN = TB_ENABLE;
-  // EPwm2Regs.TBCTL.bit.PHSEN = TB_ENABLE;
-  // EPwm3Regs.TBCTL.bit.PHSEN = TB_ENABLE;
-   EPwm4Regs.TBCTL.bit.PHSEN = TB_ENABLE;
 
-   EPwm1Regs.TBPHS.half.TBPHS = 100;
+   //禁止相位，忽略TBPHS.half.TBPHS值
+   EPwm2Regs.TBCTL.bit.PHSEN = TB_DISABLE;
+   EPwm3Regs.TBCTL.bit.PHSEN = TB_DISABLE;
+   EPwm4Regs.TBCTL.bit.PHSEN = TB_DISABLE;
+
+
    EPwm2Regs.TBPHS.half.TBPHS = 200;
    EPwm3Regs.TBPHS.half.TBPHS = 300;
    EPwm4Regs.TBPHS.half.TBPHS = 400;
 
-/*   EPwm1Regs.TBPRD = PWM1_TIMER_TBPRD;
-   EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;    // Count up
-   EPwm1Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;     // Select INT on Zero event
-   EPwm1Regs.ETSEL.bit.INTEN = PWM1_INT_ENABLE;  // Enable INT
-   EPwm1Regs.ETPS.bit.INTPRD = ET_1ST;           // Generate INT on 1st event
+
 
 
    EPwm2Regs.TBPRD = PWM2_TIMER_TBPRD;
@@ -72,13 +74,20 @@ void InitEPwmTimer()
    EPwm3Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;      // Enable INT on Zero event
    EPwm3Regs.ETSEL.bit.INTEN = PWM3_INT_ENABLE;   // Enable INT
    EPwm3Regs.ETPS.bit.INTPRD = ET_3RD;            // Generate INT on 3rd event
-*/
+
+
+
    EPwm4Regs.TBPRD = PWM4_TIMER_TBPRD;
    EPwm4Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // Count up
-   EPwm4Regs.TBCTL.bit.CLKDIV = 0b110;  //64 分频  64*2
+
+   //65536*1/80*10*32= 65536*4= 262 144 us(最大定时长度)
+   EPwm4Regs.TBCTL.bit.CLKDIV = 0b101;  //32分频 TBCLK = SYSCLKOUT / (HSPCLKDIV × CLKDIV)
+   EPwm4Regs.TBCTL.bit.HSPCLKDIV = 0b101;// /10分频 10
    EPwm4Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;      // Enable INT on Zero event
    EPwm4Regs.ETSEL.bit.INTEN = PWM4_INT_ENABLE;   // Enable INT
    EPwm4Regs.ETPS.bit.INTPRD = ET_1ST;            // Generate INT on 1st event
+
+
 
  //  EPwm4Regs.TBCTL.bit.FREE_SOFT = 2; //Free Run
 
@@ -87,14 +96,42 @@ void InitEPwmTimer()
    EDIS;
 
 }
-void EPwm4TimerInit(void)
+
+/**
+ * PwmTimer4 初始化
+ *
+ * @param pulse 定时长度
+ * @param base  时基TIME_BASE_2US/TIME_BASE_4US
+ *
+ * @return 最大的索引，若为count（数量）表示全部相等
+ * @brief 计算差值
+ */
+uint8_t  EPwm4TimerInit(uint32_t pulse, uint16_t base)
 {
+	uint16_t div = 0;
+
+   if ( base == TIME_BASE_2US) //TimeBase  1/80*10*16=2us
+   {
+	   div = CLKDIV_16;
+	   EPwm4TimerPeriod = pulse >> 1;
+   }
+   else  if ( base  == TIME_BASE_4US) //TimeBase  1/80*10*32=4us
+   {
+	   div = CLKDIV_32;
+	   EPwm4TimerPeriod = pulse >> 2;
+   }
+   else
+   {
+	   return 0xFF;
+   }
 
    EPwm4TimerIntCount = 0;
+   EPwm4Regs.TBCTL.bit.CTRMODE = 3;//停止计数器
 
    EALLOW;
-   SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 0;      // Stop all the TB clocks
+  // SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 0;      // Stop all the TB clocks
    EDIS;
+
 
    // Setup Sync
 
@@ -102,27 +139,169 @@ void EPwm4TimerInit(void)
 
    // Allow each timer to be sync'ed
 
-   EPwm4Regs.TBCTL.bit.PHSEN = TB_ENABLE;
-
+   EPwm4Regs.TBCTL.bit.PHSEN = TB_DISABLE;
    EPwm4Regs.TBPHS.half.TBPHS = 400;
 
-   EPwm4Regs.TBPRD = PWM4_TIMER_TBPRD;
-   EPwm4Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // Count up
-   EPwm4Regs.TBCTL.bit.CLKDIV = 0b110;  //64 分频  64*2
+
+
+   //65536*1/80*10*32= 65536*4= 262 144 us(最大定时长度)
+   EPwm4Regs.TBCTL.bit.CLKDIV = div;  //32分频 TBCLK = SYSCLKOUT / (HSPCLKDIV × CLKDIV)
+   EPwm4Regs.TBCTL.bit.HSPCLKDIV = 0b101;// /10分频 10
    EPwm4Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;      // Enable INT on Zero event
    EPwm4Regs.ETSEL.bit.INTEN = PWM4_INT_ENABLE;   // Enable INT
    EPwm4Regs.ETPS.bit.INTPRD = ET_1ST;            // Generate INT on 1st event
 
+   EPwm4Regs.TBPRD = EPwm4TimerPeriod;
+   EPwm4Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // Count up
+   EPwm4Regs.TBCTR = 0;//清空计数
 
    EALLOW;
-   SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;         // Start all the timers synced
+   if (SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC == 0)
+   {
+	   SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;//Start all the timers synced
+   }
    EDIS;
+   return 0;
+
+}
+/**
+ * PwmTimer3 初始化
+ *
+ * @param pulse 定时长度
+ * @param base  时基TIME_BASE_2US/TIME_BASE_4US
+ *
+ * @return 最大的索引，若为count（数量）表示全部相等
+ * @brief 计算差值
+ */
+uint8_t  EPwm3TimerInit(uint32_t pulse, uint16_t base)
+{
+	uint16_t div = 0;
+
+   if ( base == TIME_BASE_2US) //TimeBase  1/80*10*16=2us
+   {
+	   div = CLKDIV_16;
+	   EPwm3TimerPeriod = pulse >> 1;
+   }
+   else  if ( base  == TIME_BASE_4US) //TimeBase  1/80*10*32=4us
+   {
+	   div = CLKDIV_32;
+	   EPwm3TimerPeriod = pulse >> 2;
+   }
+   else
+   {
+	   return 0xFF;
+   }
+   EPwm3TimerIntCount = 0;
+
+   EPwm3Regs.TBCTL.bit.CTRMODE = 3;//停止计数器
+
+   EALLOW;
+  // SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 0;      // Stop all the TB clocks
+   EDIS;
+
+
+   // Setup Sync
+
+   EPwm3Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;  // Pass through
+
+   // Allow each timer to be sync'ed
+
+   EPwm3Regs.TBCTL.bit.PHSEN = TB_DISABLE;
+   EPwm3Regs.TBPHS.half.TBPHS = 400;
+
+
+
+   //65536*1/80*10*32= 65536*4= 262 144 us(最大定时长度)
+   EPwm3Regs.TBCTL.bit.CLKDIV = div;  //32分频 TBCLK = SYSCLKOUT / (HSPCLKDIV × CLKDIV)
+   EPwm3Regs.TBCTL.bit.HSPCLKDIV = 0b101;// /10分频 10
+   EPwm3Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;      // Enable INT on Zero event
+   EPwm3Regs.ETSEL.bit.INTEN = PWM3_INT_ENABLE;   // Enable INT
+   EPwm3Regs.ETPS.bit.INTPRD = ET_1ST;            // Generate INT on 1st event
+
+   EPwm3Regs.TBPRD = EPwm3TimerPeriod;
+   EPwm3Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // Count up
+   EPwm3Regs.TBCTR = 0;//清空计数
+
+   EALLOW;
+   if (SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC == 0)
+   {
+	   SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;//Start all the timers synced
+   }
+   EDIS;
+   return 0;
+
+}
+/**
+ * PwmTimer2 初始化
+ *
+ * @param pulse 定时长度
+ * @param base  时基TIME_BASE_2US/TIME_BASE_4US
+ *
+ * @return 最大的索引，若为count（数量）表示全部相等
+ * @brief 计算差值
+ */
+uint8_t  EPwm2TimerInit(uint32_t pulse, uint16_t base)
+{
+	uint16_t div = 0;
+
+   if ( base == TIME_BASE_2US) //TimeBase  1/80*10*16=2us
+   {
+	   div = CLKDIV_16;
+	   EPwm2TimerPeriod = pulse >> 1;
+   }
+   else  if ( base  == TIME_BASE_4US) //TimeBase  1/80*10*32=4us
+   {
+	   div = CLKDIV_32;
+	   EPwm2TimerPeriod = pulse >> 2;
+   }
+   else
+   {
+	   return 0xFF;
+   }
+
+   EPwm2TimerIntCount = 0;
+   EPwm2Regs.TBCTL.bit.CTRMODE = 3;//停止计数器
+
+   EALLOW;
+  // SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 0;      // Stop all the TB clocks
+   EDIS;
+
+
+   // Setup Sync
+
+   EPwm2Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;  // Pass through
+
+   // Allow each timer to be sync'ed
+
+   EPwm2Regs.TBCTL.bit.PHSEN = TB_DISABLE;
+   EPwm2Regs.TBPHS.half.TBPHS = 400;
+
+
+
+   //65536*1/80*10*32= 65536*4= 262 144 us(最大定时长度)
+   EPwm2Regs.TBCTL.bit.CLKDIV = div;  //32分频 TBCLK = SYSCLKOUT / (HSPCLKDIV × CLKDIV)
+   EPwm2Regs.TBCTL.bit.HSPCLKDIV = 0b101;// /10分频 10
+   EPwm2Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;      // Enable INT on Zero event
+   EPwm2Regs.ETSEL.bit.INTEN = PWM2_INT_ENABLE;   // Enable INT
+   EPwm2Regs.ETPS.bit.INTPRD = ET_1ST;            // Generate INT on 1st event
+
+   EPwm2Regs.TBPRD = EPwm2TimerPeriod;
+   EPwm2Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // Count up
+   EPwm2Regs.TBCTR = 0;//清空计数
+
+   EALLOW;
+   if (SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC == 0)
+   {
+	   SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;//Start all the timers synced
+   }
+   EDIS;
+   return 0;
 
 }
 // Interrupt routines uses in this example:
 __interrupt void epwm1_timer_isr(void)
 {
-   EPwm1TimerIntCount++;
+   //EPwm1TimerIntCount++;
 
    // Clear INT flag for this timer
    EPwm1Regs.ETCLR.bit.INT = 1;
@@ -135,6 +314,28 @@ __interrupt void epwm2_timer_isr(void)
 {
    EPwm2TimerIntCount++;
 
+	if (EPwm2TimerIntCount == 1) //首次进入改输出周期时间为100us
+	{
+		EPwm2TimerInit(100, TIME_BASE_2US);
+		EPwm2TimerIntCount = 1;
+	}
+
+	if (EPwm2TimerIntCount % 2 == 1)
+	{
+		SET_OUTB1_H;
+	}
+	else
+	{
+		SET_OUTB1_L;
+	}
+
+	if (EPwm2TimerIntCount >= 9)
+	{
+		EPwm2Regs.TBCTL.bit.CTRMODE = 3; //停止
+		EPwm2TimerIntCount = 0;
+		SET_OUTB1_L;
+	}
+
    // Clear INT flag for this timer
    EPwm2Regs.ETCLR.bit.INT = 1;
 
@@ -145,27 +346,61 @@ __interrupt void epwm2_timer_isr(void)
 __interrupt void epwm3_timer_isr(void)
 {
    EPwm3TimerIntCount++;
+   	if (EPwm3TimerIntCount == 1) //首次进入改输出周期时间为100us
+   	{
+   		EPwm3TimerInit(100, TIME_BASE_2US);
+   		EPwm3TimerIntCount = 1;
+   	}
+
+   	if (EPwm3TimerIntCount % 2 == 1)
+   	{
+   		SET_OUTB2_H;
+   	}
+   	else
+   	{
+   		SET_OUTB2_L;
+   	}
+
+     if (EPwm3TimerIntCount >= 9)
+     {
+		  EPwm3Regs.TBCTL.bit.CTRMODE = 3; //停止
+		  EPwm3TimerIntCount = 0;
+		  SET_OUTB2_L;
+     }
 
    // Clear INT flag for this timer
    EPwm3Regs.ETCLR.bit.INT = 1;
-
    // Acknowledge this interrupt to receive more interrupts from group 3
    PieCtrlRegs.PIEACK.all = PIEACK_GROUP3;
 }
 
-//使用次定时器作为超时检测  2倍关系 换算方式 104ms
-__interrupt void epwm4_timer_isr(void)
+__interrupt void epwm4_timer_isr(void) //40M
 {
-   //EPwm4TimerIntCount++;
-   //if (EPwm4TimerIntCount >= 100) //约163.8ms
-     //{
-   EPwm4TimerIntCount = 0;
-   EPwm4Regs.TBCTL.bit.CTRMODE = 3; //停止
-   //ReciveOverTimeFlag = 0xffff;
-    // }
+   EPwm4TimerIntCount++;
+   if (EPwm4TimerIntCount == 1) //首次进入改输出周期时间为100us
+   {
+	   EPwm4TimerInit(100, TIME_BASE_2US);
+	   EPwm4TimerIntCount = 1;
+   }
+
+   if (EPwm4TimerIntCount % 2 == 1)
+   {
+	   SET_OUTB3_H;
+   }
+   else
+   {
+	   SET_OUTB3_L;
+   }
+
+   if (EPwm4TimerIntCount >= 9)
+   {
+	   EPwm4Regs.TBCTL.bit.CTRMODE = 3; //停止
+	   EPwm4TimerIntCount = 0;
+	   SET_OUTB3_L;
+   }
+
    // Clear INT flag for this timer
    EPwm4Regs.ETCLR.bit.INT = 1;
-
    // Acknowledge this interrupt to receive more interrupts from group 3
    PieCtrlRegs.PIEACK.all = PIEACK_GROUP3;
 }

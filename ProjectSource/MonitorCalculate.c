@@ -253,7 +253,7 @@ void SynchronizTrigger(float* pData)
 		{
 		case 1:
 		{
-			phase = phase;
+
 			break;
 		}
 		case 2:
@@ -395,7 +395,7 @@ void CalculateDelayTime(ActionRad* pActionRad, float phase)
 			* pActionRad->realDiffRatio;
 	//计算延时之和
 	g_ProcessDelayTime[selectPhase].sumDelay =
-			(float)g_ProcessDelayTime[selectPhase].sampleDelay
+			(float)g_ProcessDelayTime[selectPhase].sampleDelay + (float)g_ProcessDelayTime[selectPhase].pulseDelay
 					+ (float)g_ProcessDelayTime[selectPhase].transmitDelay
 					+ (float)g_ProcessDelayTime[selectPhase].actionDelay
 					+ (float)g_ProcessDelayTime[selectPhase].innerDelay;
@@ -593,8 +593,7 @@ static int8_t GetTimeDiff(float sumTime1, float sumTime2, float period, float di
     	    {
     			 return (int8_t)N_MAX;
     	    }
-    	}
-    	while(n < N_MAX);
+    	}while(n < N_MAX);
 		
 		if(time <=  ERROR_VALUE * n)
 		{
@@ -686,6 +685,59 @@ static uint8_t GetMaxActionTime(ActionRad* pActionRad)
 	}
 
 }
+/**
+ * 同步输出脉冲触发
+ *
+ * @param pActionRad 动作参数
+ *
+ * @return 最大的索引，若为count（数量）表示全部相等
+ * @brief 计算差值
+ */
+static uint8_t PulseOutTrigger(ActionRad* pActionRad)
+{
+	uint8_t i = 0;
+	uint8_t count = pActionRad->count;
+	ActionRad* pAction;
+
+
+
+	for( i = 0; i < count; i++)
+	{
+		pAction = pActionRad+i;
+
+		if (g_ProcessDelayTime[PHASE_A].calDelayCheck > 200000)
+		{
+			return 0xff;
+		}
+
+		switch(pAction->phase)
+		{
+			case PHASE_A:
+			{
+
+				EPwm2TimerInit( g_ProcessDelayTime[PHASE_A].calDelayCheck, TIME_BASE_4US);
+				break;
+			}
+			case PHASE_B:
+			{
+				EPwm3TimerInit( g_ProcessDelayTime[PHASE_B].calDelayCheck, TIME_BASE_4US);
+				break;
+			}
+			case PHASE_C:
+			{
+				EPwm4TimerInit( g_ProcessDelayTime[PHASE_C].calDelayCheck, TIME_BASE_4US);
+				break;
+			}
+			default:
+			{
+				return 0xFE;
+			}
+		}
+	}
+
+	return 0;
+
+}
 
 
 void pass_stop()
@@ -708,6 +760,95 @@ uint32_t pass = 0,fail = 0;
 float test_phase =0;
 float diffA = 0,diffB = 0;
 
+void TestCalculate(void)
+{
+
+	pass = 0;
+	fail = 0;
+	phase_cn = 0;
+
+	do
+	{
+		delayA = 0.5*(100000 - 500 * cn);
+		delayB = 40000;
+		delayC = 0.5* (1000 + 500 * cn);
+
+
+		g_SystemVoltageParameter.period = 20000;
+
+		g_ProcessDelayTime[0].actionDelay = delayA;
+		g_ProcessDelayTime[0].compensationTime = 0;
+		g_ProcessDelayTime[0].sampleDelay = 0;
+		g_ProcessDelayTime[0].transmitDelay = delayA;
+
+		g_ProcessDelayTime[1].actionDelay = delayB;
+		g_ProcessDelayTime[1].compensationTime = 0;
+		g_ProcessDelayTime[1].sampleDelay = 0;
+		g_ProcessDelayTime[1].transmitDelay = delayB;
+
+		g_ProcessDelayTime[2].actionDelay = delayC;
+		g_ProcessDelayTime[2].compensationTime = 0;
+		g_ProcessDelayTime[2].sampleDelay = 0;
+		g_ProcessDelayTime[2].transmitDelay = delayC;
+
+		g_PhaseActionRad[0].actionRad = 0;
+		g_PhaseActionRad[0].phase = 0;
+		g_PhaseActionRad[0].count = 3;
+		g_PhaseActionRad[0].enable = 0xFF;
+		g_PhaseActionRad[0].realDiffRatio = 0;
+		g_PhaseActionRad[0].realRatio = g_PhaseActionRad[0].realDiffRatio;
+
+		g_PhaseActionRad[1].actionRad = 0;
+		g_PhaseActionRad[1].phase = 1;
+		g_PhaseActionRad[1].count = g_PhaseActionRad[0].count;
+		g_PhaseActionRad[1].enable = 0xFF;
+		g_PhaseActionRad[1].realDiffRatio = 0;
+		g_PhaseActionRad[1].realRatio = g_PhaseActionRad[0].realRatio + g_PhaseActionRad[1].realDiffRatio;
+
+		g_PhaseActionRad[2].actionRad = 0;
+		g_PhaseActionRad[2].phase = 2;
+		g_PhaseActionRad[2].count = g_PhaseActionRad[0].count;
+		g_PhaseActionRad[2].enable = 0xFF;
+		g_PhaseActionRad[2].realDiffRatio = 0;
+		g_PhaseActionRad[2].realRatio = g_PhaseActionRad[1].realRatio + g_PhaseActionRad[2].realDiffRatio;
+
+		CalculateDelayTime(g_PhaseActionRad, test_phase);
+		CalculateDelayTime(g_PhaseActionRad + 1, test_phase);
+		CalculateDelayTime(g_PhaseActionRad + 2, test_phase);
+
+
+
+
+		test_result = CheckActionTime(g_PhaseActionRad);
+		if (test_result != 0)
+		{
+			fail ++;
+			 __asm("   ESTOP0");
+			continue;
+		}
+
+		calTimeA = g_ProcessDelayTime[0].calDelayCheck + g_ProcessDelayTime[0].sumDelay;
+		calTimeB = g_ProcessDelayTime[1].calDelayCheck + g_ProcessDelayTime[1].sumDelay;
+		calTimeC = g_ProcessDelayTime[2].calDelayCheck + g_ProcessDelayTime[2].sumDelay;
+
+		if ((fabsf(calTimeA - calTimeB) <= 3) && ((fabsf(calTimeB - calTimeC) <= 3)))
+		{
+			pass++;
+			PulseOutTrigger(g_PhaseActionRad);
+			while(1);
+		}
+		else
+		{
+			fail++;
+			 __asm("   ESTOP0");
+		}
+
+	} while (cn++ < 1);
+}
+
+
+
+#ifdef TEST_EXA_B
 void TestCalculate(void)
 {
 
@@ -813,6 +954,8 @@ void TestCalculate(void)
 	}while(period_cn++ <200);
 	 __asm("   ESTOP0");
 }
+#endif
+
 #ifdef TEST_EXA_A
 void TestCalculate(void)
 {

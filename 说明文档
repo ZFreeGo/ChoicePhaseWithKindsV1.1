@@ -1,3 +1,6 @@
+2017/6/6
+1.添加脉冲输出，使用EPWM定时器。
+
 2017/6/5
 1.修正负数使用uint8_t---int8_t
 2.每次计算后 calDelayCheck = calDelay 

@@ -34,6 +34,8 @@ ProjectSource/PwmTimer.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.
 ProjectSource/PwmTimer.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Cla_defines.h
 ProjectSource/PwmTimer.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_DefaultISR.h
 ProjectSource/PwmTimer.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h
+ProjectSource/PwmTimer.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/stdType.h
+ProjectSource/PwmTimer.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h
 
 ../ProjectSource/PwmTimer.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/DSP28x_Project.h: 
@@ -69,3 +71,5 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Dma_defines
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Cla_defines.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_DefaultISR.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/stdType.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h: 

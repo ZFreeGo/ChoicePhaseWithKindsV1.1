@@ -57,6 +57,8 @@ int main(void)
 	//PieVectTable.SCITXINTB = &ScibTX_ISR;
 	//PieVectTable.SCIRXINTA = &SciaRX_ISR;
 	//PieVectTable.SCITXINTA = &SciaTX_ISR;
+	PieVectTable.EPWM2_INT = &epwm2_timer_isr;
+	PieVectTable.EPWM3_INT = &epwm3_timer_isr;
 	PieVectTable.EPWM4_INT = &epwm4_timer_isr;
 	PieVectTable.ECAN0INTA = &Can0Recive_ISR;
 	PieVectTable.ECAP2_INT = &ecap2_isr;
@@ -87,6 +89,12 @@ int main(void)
 	PieCtrlRegs.PIEIER3.bit.INTx4 = PWM4_INT_ENABLE;
 	PieCtrlRegs.PIEIER9.bit.INTx5 = 1; //ECAN0bits
 	PieCtrlRegs.PIEIER4.bit.INTx2 = 1; //ECAP2
+
+
+	PieCtrlRegs.PIEIER3.bit.INTx2 = PWM2_INT_ENABLE;
+	PieCtrlRegs.PIEIER3.bit.INTx3 = PWM3_INT_ENABLE;
+
+
 	IER |= M_INT1;		//TIMER0 ADCINT1 ADCINT2
 	IER |= M_INT3;        // Enable CPU INT3 which is connected to EPWM1-6 INT:
 	IER |= M_INT9;
@@ -101,6 +109,8 @@ int main(void)
 	ConfigADC_Monitor(12500);  //ADC 采样初始化 设定采样周期 12500属于定时器计数长度，每周波64点
 	ConfigECapFrquency();
 	InitDeviceNet();
+
+	//InitEPwmTimer();
 	//调试使用
 	StartSample();//用于启动采样
 

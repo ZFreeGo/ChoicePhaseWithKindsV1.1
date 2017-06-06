@@ -532,6 +532,7 @@ void DefaultInit(void)
 	g_ProcessDelayTime[PHASE_A].innerDelay =0 ;
 	g_ProcessDelayTime[PHASE_A].sampleDelay = 0;
 	g_ProcessDelayTime[PHASE_A].transmitDelay = 0;
+	g_ProcessDelayTime[PHASE_A].pulseDelay = 400;
 	g_ProcessDelayTime[PHASE_A].sumDelay = 0;
 	g_ProcessDelayTime[PHASE_A].calDelay = 0;
 	//Bœ‡
@@ -540,6 +541,7 @@ void DefaultInit(void)
 	g_ProcessDelayTime[PHASE_B].innerDelay =0 ;
 	g_ProcessDelayTime[PHASE_B].sampleDelay = 0;
 	g_ProcessDelayTime[PHASE_B].transmitDelay = 0;
+	g_ProcessDelayTime[PHASE_B].pulseDelay = 400;
 	g_ProcessDelayTime[PHASE_B].sumDelay = 0;
 	g_ProcessDelayTime[PHASE_B].calDelay = 0;
 	//Cœ‡
@@ -548,6 +550,7 @@ void DefaultInit(void)
 	g_ProcessDelayTime[PHASE_C].innerDelay =0 ;
 	g_ProcessDelayTime[PHASE_C].sampleDelay = 0;
 	g_ProcessDelayTime[PHASE_C].transmitDelay = 0;
+	g_ProcessDelayTime[PHASE_C].pulseDelay = 400;
 	g_ProcessDelayTime[PHASE_C].sumDelay = 0;
 	g_ProcessDelayTime[PHASE_C].calDelay = 0;
 

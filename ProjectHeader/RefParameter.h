@@ -38,6 +38,7 @@ typedef struct TagProcessDelayTime
 {
 	uint16_t sampleDelay; //采样延时时间 us
 	uint16_t innerDelay; //内部计算延时 us
+	uint16_t pulseDelay;  //同步脉冲序列延时us (400us)
 	float calDelay;    //内部计算得出的进行的延时 us
 	float calDelayCheck;    //校验后的内部计算得出的进行的延时 us
 	uint16_t transmitDelay;//传输延时 us

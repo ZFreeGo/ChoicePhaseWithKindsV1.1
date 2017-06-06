@@ -17,12 +17,21 @@
 
 #ifndef PWMTIMER_H_
 #define PWMTIMER_H_
+#include "stdType.h"
+
+
+#define TIME_BASE_2US 2 //时基2us
+#define TIME_BASE_4US 4 //时基4us
+
+#define CLKDIV_16 0b100 //16分频
+#define CLKDIV_32 0b101 //32分频
+
 
 // Configure which ePWM timer interrupts are enabled at the PIE level:
 // 1 = enabled,  0 = disabled
 #define PWM1_INT_ENABLE  0
-#define PWM2_INT_ENABLE  0
-#define PWM3_INT_ENABLE  0
+#define PWM2_INT_ENABLE  1
+#define PWM3_INT_ENABLE  1
 #define PWM4_INT_ENABLE  1
 
 
@@ -40,5 +49,7 @@ __interrupt void epwm3_timer_isr(void);
 __interrupt void epwm4_timer_isr(void);
 
 void InitEPwmTimer(void);
-void EPwm4TimerInit(void);
+uint8_t  EPwm2TimerInit(uint32_t pulse, uint16_t base);
+uint8_t  EPwm3TimerInit(uint32_t pulse, uint16_t base);
+uint8_t  EPwm4TimerInit(uint32_t pulse, uint16_t base);
 #endif /* PWMTIMER_H_ */

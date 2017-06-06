@@ -306,10 +306,10 @@ void InitPeripheralClocks(void)
    SysCtrlRegs.PCLKCR1.bit.EPWM2ENCLK = 1;    // ePWM2
    SysCtrlRegs.PCLKCR1.bit.EPWM3ENCLK = 1;    // ePWM3
    SysCtrlRegs.PCLKCR1.bit.EPWM4ENCLK = 1;    // ePWM4
-   SysCtrlRegs.PCLKCR1.bit.EPWM5ENCLK = 1;    // ePWM5
-   SysCtrlRegs.PCLKCR1.bit.EPWM6ENCLK = 1;    // ePWM6
-   SysCtrlRegs.PCLKCR1.bit.EPWM7ENCLK = 1;    // ePWM7
-   SysCtrlRegs.PCLKCR1.bit.EPWM8ENCLK = 1;    // ePWM8
+   SysCtrlRegs.PCLKCR1.bit.EPWM5ENCLK = 0;    // ePWM5
+   SysCtrlRegs.PCLKCR1.bit.EPWM6ENCLK = 0;    // ePWM6
+   SysCtrlRegs.PCLKCR1.bit.EPWM7ENCLK = 0;    // ePWM7
+   SysCtrlRegs.PCLKCR1.bit.EPWM8ENCLK = 0;    // ePWM8
 
    SysCtrlRegs.PCLKCR0.bit.HRPWMENCLK = 1;    // HRPWM
    SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;     // Enable TBCLK within the ePWM
