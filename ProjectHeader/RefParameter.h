@@ -43,7 +43,7 @@ typedef struct TagProcessDelayTime
 	float calDelayCheck;    //校验后的内部计算得出的进行的延时 us
 	uint16_t transmitDelay;//传输延时 us
 	uint16_t actionDelay;//动作延时--合闸 us
-	float sumDelay;   //总延时= sampleDelay + innerDelay + transmitDelay + actionDelay
+	float sumDelay;   //总延时= sampleDelay + innerDelay + transmitDelay + actionDelay  + pulseDelay
 	int16_t compensationTime;// 补偿时间 us
 
 

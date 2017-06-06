@@ -61,7 +61,7 @@ void FFT_Cal(float ADsample[]);
 
 void GetOVD(float* pData);
 extern void SynchronizTrigger(float* pData);
-extern void TestCalculate(void);
+//extern void TestCalculate(void);
 
 
 extern void CalEffectiveValue(void);

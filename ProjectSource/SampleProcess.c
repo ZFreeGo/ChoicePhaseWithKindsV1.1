@@ -134,7 +134,7 @@ __interrupt void  ADC_INT1_ISR(void)
 
         	   SampleLen = SAMPLE_LEN; //原始
         	   //最后恢复状态
-        	  // StartSample();
+        	   StartSample();
 
 #elif  WITH_ZVD == 1
         	   ZVDFlag = 0; //首先清空标志，防止重复进入

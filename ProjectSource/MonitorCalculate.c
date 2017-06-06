@@ -62,6 +62,9 @@ volatile Uint8 FirstTrig = 0;// 首次触发标志 0--不需要触发 非0--需要触发
 /*=============================局部函数 Start=============================*/
 static uint8_t GetMaxActionTime(ActionRad* pActionRad);
 static int8_t GetTimeDiff(float sumTime1, float sumTime2, float period, float diff);
+static uint8_t PulseOutTrigger(ActionRad* pActionRad);
+static uint8_t CheckActionTime(ActionRad* pActionRad);
+static void CalculateDelayTime(ActionRad* pActionRad, float phase);
 /*=============================局部函数 End=============================*/
 
 
@@ -193,12 +196,6 @@ void CalEffectiveValue(void)
 
 }
 
-
-
-
-
-
-
 /**
  * 同步触发器，利用采样数据计算同步触发动作时刻，发出触发命令,以A相为例
  *
@@ -208,10 +205,9 @@ void CalEffectiveValue(void)
 void SynchronizTrigger(float* pData)
 {
 	float phase = 0.0,a = 0, b = 0;
-	uint16_t xiang = 0;
-	uint16_t count = 0;
-
-	float time = 0, difftime = 0;
+	uint16_t xiang = 0, i = 0;
+	uint16_t  test_result = 0;
+	float   calTimeA = 0, calTimeB = 0,diffA = 0;
 	FFT_Cal(pData);   //傅里叶变化计算相角 每个点间隔
 	a = RFFToutBuff[1]; //实部
 	b = RFFToutBuff[RFFT_SIZE - 1]; //虚部
@@ -251,122 +247,55 @@ void SynchronizTrigger(float* pData)
 		//象限变换
 		switch (xiang)
 		{
-		case 1:
-		{
-
-			break;
-		}
-		case 2:
-		{
-			phase += PI;
-			break;
-		}
-		case 3:
-		{
-			phase += PI;
-			break;
-		}
-		case 4:
-		{
-			phase += 2*PI;
-		}
-		}
-
-
-
-		//计算开始时间
-	    g_PhaseActionRad[0].startTime = g_SystemVoltageParameter.period* phase* D2PI;
-	    //此处相乘，为了保证使用最新的周期
-	    g_PhaseActionRad[0].realTime =  g_SystemVoltageParameter.period * g_PhaseActionRad[0].realRatio;
-	    //计算延时之和
-	    g_ProcessDelayTime[PHASE_A].sumDelay = g_ProcessDelayTime[PHASE_A].sampleDelay +
-	    		g_ProcessDelayTime[PHASE_A].transmitDelay +g_ProcessDelayTime[PHASE_A].actionDelay;
-	    //总的时间和
-	    time =  g_ProcessDelayTime[PHASE_A].sumDelay +
-	    		g_PhaseActionRad[0].startTime - g_PhaseActionRad[0].realTime;
-
-	    count = 1;
-	    do
-	    {
-	    	difftime = count *  g_SystemVoltageParameter.period - time;
-	    	//判断时间差是否大于0，若大于则跳出
-	    	if(difftime > 0)
-	    	{
-	    		break;
-	    	}
-	    	count++;
-
-	    }while(count < 100); //TODO:添加异常判断
-
-
-
-
-	    //停止
-	  	    CpuTimer1Regs.TCR.bit.TSS = 1;//停止定时器，防止打断中断
-	  	    if (CpuTimer1Regs.TIM.all >= CpuTimer1Regs.TIM.all)
-	  	    {
-	  	    	 g_ProcessDelayTime[PHASE_A].innerDelay = (Uint16)(0.0125f *(CpuTimer1Regs.PRD.all - CpuTimer1Regs.TIM.all));
-
-	  	    }
-	  	    else
-	  	    {
-	  	    	g_ProcessDelayTime[PHASE_A].innerDelay = 88;
-	  	    }
-
-
-
-		if (difftime > 0)
-		{
-
-
-			//若时间之和大于等于0，则正常补偿；否则添加一个周期的延时
-			time = difftime - g_ProcessDelayTime[PHASE_A].innerDelay + g_ProcessDelayTime[PHASE_A].compensationTime;
-			if ( time >= 0 )
+			case 1:
 			{
-				g_ProcessDelayTime[PHASE_A].calDelay =  (Uint16)time;
+
+				break;
 			}
-			else
+			case 2:
 			{
-				time = g_SystemVoltageParameter.period + time;
-				if (time >= 0)
-				{
-					g_ProcessDelayTime[PHASE_A].calDelay =  (Uint16)time;
-				}
-				else
-				{
-					g_ProcessDelayTime[PHASE_A].calDelay = difftime;//超限后不进行补偿。
-				}
-
-
+				phase += PI;
+				break;
 			}
-			DELAY_US(g_ProcessDelayTime[PHASE_A].calDelay);
-
-			//产生序列动作，可以考虑在之前进行删去。
-			//输出动作
-			//
-			SET_OUTB4_H;
-			SET_OUTB4_H;
-			SET_OUTB4_H;
-			DELAY_US(50);
-			SET_OUTB4_H;
-			DELAY_US(50);
-			SET_OUTB4_H;
-			DELAY_US(50);
-			SET_OUTB4_H;
-			DELAY_US(50);
-			SET_OUTB4_L;
-			SET_OUTB4_L;
-			SET_OUTB4_L;
-			SendMultiFrame(&g_NetSendFrame);
+			case 3:
+			{
+				phase += PI;
+				break;
+			}
+			case 4:
+			{
+				phase += 2*PI;
+			}
 		}
-		else
+
+		CalculateDelayTime(g_PhaseActionRad, phase);
+		CalculateDelayTime(g_PhaseActionRad + 1, phase);
+		CalculateDelayTime(g_PhaseActionRad + 2, phase);
+
+
+
+
+		test_result = CheckActionTime(g_PhaseActionRad);
+		//TODO:计算错误报错
+		if (test_result != 0)
 		{
-			//TODO: 异常处理
+			return;
 		}
 
-
-
-
+		//计算时间差
+		for(i = 1; i < g_PhaseActionRad->count; i++)
+		{
+			calTimeA = g_ProcessDelayTime[0].calDelayCheck + g_ProcessDelayTime[0].sumDelay;
+			calTimeB = g_ProcessDelayTime[1].calDelayCheck + g_ProcessDelayTime[1].sumDelay;
+			diffA = fabsf(calTimeB - calTimeA - (g_PhaseActionRad[1].realTime  - g_PhaseActionRad[0].realTime));
+			if (diffA > 3)
+			{
+				//TODO:计算错误报错
+				return;//校验错误
+			}
+		}
+		PulseOutTrigger(g_PhaseActionRad);
+		SendMultiFrame(&g_NetSendFrame);
 }
 
 /**
@@ -376,12 +305,23 @@ void SynchronizTrigger(float* pData)
  * @param  phase	    开始相角
  * @brief  计算触发时刻，发布触发命令
  */
-void CalculateDelayTime(ActionRad* pActionRad, float phase)
+static void CalculateDelayTime(ActionRad* pActionRad, float phase)
 {
 
 	uint16_t count = 0;
 	uint8_t selectPhase = 0;
 	float time = 0, difftime = 0;
+
+	//未使能跳出
+	if (pActionRad->enable == 0)
+	{
+		return;
+	}
+	//phase 小于等于3
+	if ( pActionRad->phase >= 3)
+	{
+		return;
+	}
 	//TODO:暂定内部延时为88us
 	g_ProcessDelayTime[selectPhase].innerDelay = 88;
 	selectPhase = pActionRad->phase;
@@ -443,26 +383,7 @@ void CalculateDelayTime(ActionRad* pActionRad, float phase)
 		}
 		//默认赋值
 		g_ProcessDelayTime[selectPhase].calDelayCheck = g_ProcessDelayTime[selectPhase].calDelay;
-		/*
-		DELAY_US(g_ProcessDelayTime[selectPhase].calDelay);
 
-		//产生序列动作，可以考虑在之前进行删去。
-		//输出动作
-		//
-		SET_OUTB4_H;
-		SET_OUTB4_H;
-		SET_OUTB4_H;
-		DELAY_US(50);
-		SET_OUTB4_H;
-		DELAY_US(50);
-		SET_OUTB4_H;
-		DELAY_US(50);
-		SET_OUTB4_H;
-		DELAY_US(50);
-		SET_OUTB4_L;
-		SET_OUTB4_L;
-		SET_OUTB4_L;
-		*/
 	}
 	else
 	{
@@ -478,11 +399,12 @@ void CalculateDelayTime(ActionRad* pActionRad, float phase)
  * @return 0-计算正常 非0--有错误出现
  * @brief  计算触发时刻，发布触发命令
  */
-uint8_t maxIndex = 0;
-int8_t diff_result = 0;
+
 
 static uint8_t CheckActionTime(ActionRad* pActionRad)
 {
+	uint8_t maxIndex = 0;
+	int8_t diff_result = 0;
 	uint8_t  i = 0,select1 = 0, select2 = 0;
 	float t1 = 0, t2 = 0;
 	//获取最大索引
@@ -569,10 +491,11 @@ static uint8_t CheckActionTime(ActionRad* pActionRad)
 		   
    @brief 计算差值
  */
-int8_t  n = 0;//循环计数
-float time = 0;
+
 static int8_t GetTimeDiff(float sumTime1, float sumTime2, float period, float diff)
 {
+	int8_t  n = 0;//循环计数
+	float time = 0;
 	n = 0;
     if((sumTime1 - sumTime2 + diff) > ERROR_VALUE)
     {
@@ -738,7 +661,7 @@ static uint8_t PulseOutTrigger(ActionRad* pActionRad)
 	return 0;
 
 }
-
+#ifdef TEST_EXA_C
 
 void pass_stop()
 {
@@ -845,7 +768,7 @@ void TestCalculate(void)
 
 	} while (cn++ < 1);
 }
-
+#endif
 
 
 #ifdef TEST_EXA_B

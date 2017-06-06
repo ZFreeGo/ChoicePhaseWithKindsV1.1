@@ -242,7 +242,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 	uint8_t ph[3] = {0};//三相选择
 	uint16_t rad[3] = {0};//弧度归一化值
 	float lastRatio = 0; //上一次比率
-
+	uint8_t phase = 0;
 
 	id = pReciveFrame->pBuffer[0];
 	switch (id)
@@ -336,7 +336,17 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 					 lastRatio = 0;
 					 for(i = 0; i < count; i++)
 					 {
-						 g_PhaseActionRad[i].phase = (CommandData[1]>>(2*i));
+						 phase= (CommandData[1]>>(2*i))&(0x03);
+
+						 //phase 位于1-3之间
+						 if ((phase <= 3) && (phase >= 1))
+						 {
+							 g_PhaseActionRad[i].phase = phase - 1; //减1作为索引
+						 }
+						 else
+						 {
+							 return 0xF1;
+						 }
 						 g_PhaseActionRad[i].actionRad =
 								 pReciveFrame->pBuffer[2*i + 2] + ((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8;
 						 g_PhaseActionRad[i].enable = 0xFF;
