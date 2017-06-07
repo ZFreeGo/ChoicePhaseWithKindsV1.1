@@ -108,6 +108,7 @@ int main(void)
 	InitMonitorCalData(); //监控数据计算初始化
 	ConfigADC_Monitor(12500);  //ADC 采样初始化 设定采样周期 12500属于定时器计数长度，每周波64点
 	ConfigECapFrquency();
+	ActionInit();
 	InitDeviceNet();
 
 	//InitEPwmTimer();

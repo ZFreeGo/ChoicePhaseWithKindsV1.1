@@ -15,21 +15,37 @@
 #include "SampleProcess.h"
 #include "Action.h"
 
+
+/**
+ * 同步预制标志
+ */
+volatile uint8_t g_SynAcctionFlag = 0;
+/**
+ * 同步预制等待时间
+ */
+uint32_t g_ReadyHeLastTime = 0;
 //暂存上一次命令字
-uint8_t LastFlag = 0;
+
 uint8_t CommandData[10] = {0};
 uint8_t LastLen = 0;
-uint32_t LastTime = 0;
 uint8_t loopByte = 0;
+
+
+uint8_t  SendBufferDataAction[10];//接收缓冲数据
+struct DefFrameData  ActionSendFrame; //接收帧处理
+
 
 /**
  * 初始化使用的数据
  */
-void ActionDataInit(void)
+void ActionInit(void)
 {
-	LastFlag = 0;
-	LastTime = 0;
+	g_SynAcctionFlag = 0;
+	g_ReadyHeLastTime = 0;
 	LastLen = 0;
+
+	ActionSendFrame.complteFlag = 0xff;
+	ActionSendFrame.pBuffer = SendBufferDataAction;
 }
 
 static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
@@ -297,8 +313,8 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 
 			memcpy(CommandData,pReciveFrame->pBuffer, pReciveFrame->len );//暂存指令
 			LastLen = pReciveFrame->len;
-			LastFlag = 0xAA;//暂存指令标志
-			LastTime = CpuTimer0.InterruptCount;
+			g_SynAcctionFlag = SYN_HE_READY;//暂存指令标志
+			g_ReadyHeLastTime = CpuTimer0.InterruptCount;
 			memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 			pSendFrame->pBuffer[0] = id| 0x80;
 			pSendFrame->len = pReciveFrame->len;
@@ -309,11 +325,11 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 		case 0x31://同步合闸执行
 		{
 			 //判断是否超时
-			 if (!IsOverTime(LastTime, g_SystemLimit.syncReadyWaitTime))
+			 if (!IsOverTime(g_ReadyHeLastTime, g_SystemLimit.syncReadyWaitTime))
 			 {
-				 if (LastFlag == 0xAA)//是否已经预制
+				 if (g_SynAcctionFlag == SYN_HE_READY)//是否已经预制
 				 {
-					 LastFlag = 0; //清空预制
+					 g_SynAcctionFlag = 0; //清空预制
 					 if (pReciveFrame->len != LastLen)
 					 {
 						 return 0XF9;
@@ -369,20 +385,51 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 						 g_PhaseActionRad[i].enable = 0;
 					 }
 					 g_PhaseActionRad[0].loopByte = CommandData[1];
-					 memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
-					 pSendFrame->pBuffer[0] = id| 0x80;
-					 pSendFrame->len = pReciveFrame->len;
-					 ZVDFlag = 0xFF; //设置同步预制命令
+					 memcpy(ActionSendFrame.pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
+					 ActionSendFrame.pBuffer[0] = id| 0x80;
+					 ActionSendFrame.len = pReciveFrame->len;
+					 g_SynAcctionFlag = SYN_HE_ACTION;//置同步合闸动作标志
+					 g_SynAcctionFlag = SYN_HE_ACTION;//置同步合闸动作标志
+					 pSendFrame->len = 0;//取消底层发送
 					 return 0;
 
 				 }
 
+			 }
+			 else
+			 {
+				 g_SynAcctionFlag = 0;
 			 }
 		}
 	}
 	return 0xFF;
 
 }
+/**
+ * 同步执行应答
+ *
+ * @param  应答状态 0-正常，回复正常应答， 非0--一次代号
+ *
+ * @retrun null
+ */
+void SynActionAck(uint8_t state)
+{
+
+	if (state != 0)
+	{
+		ActionSendFrame.pBuffer[0] = 0x14;
+		ActionSendFrame.pBuffer[1] = 0x31;//同步执行
+		ActionSendFrame.pBuffer[2] = state;
+		ActionSendFrame.pBuffer[3] = 0xFF;
+		ActionSendFrame.len = 4;
+	}
+	PacktIOMessage( &ActionSendFrame);
+
+
+
+}
+
+
 /**
  * 发送帧数据
  *

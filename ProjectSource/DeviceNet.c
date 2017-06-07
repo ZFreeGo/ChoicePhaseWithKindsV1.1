@@ -750,11 +750,12 @@ void AckMsgService(void)
 		TOGGLE_LED3;
 		flashComCn = 0;
 	}
-	//已经建立后状态改变连接---周期性报告状态/或者突发报告
-	if (StatusChangedConnedctionObj.state == STATE_LINKED)
+	//已经建立后状态改变连接---周期性报告状态/或者突发报告--非预制状态
+	if ((StatusChangedConnedctionObj.state == STATE_LINKED) && ( g_SynAcctionFlag == 0))
 	{
 		if(IsOverTime(LoopStatusSend.startTime, LoopStatusSend.delayTime) )
 		{
+
 			DeviceNetSendFrame.pBuffer[0] = 0x1A | 0x80;
 			DeviceNetSendFrame.pBuffer[1] = 0;  //通讯故障
 			DeviceNetSendFrame.pBuffer[2] = CheckVoltageStatus();//电压越限制检测
@@ -771,11 +772,18 @@ void AckMsgService(void)
 	{
 		return;
 	}
-	 if ((g_DeviceNetRequstData & 0x0003)==0x0003)//轮询消息
+	if ((g_DeviceNetRequstData & 0x0003)==0x0003)//轮询消息
 	{
 		AckCycleInquireMsgService();
 		g_DeviceNetRequstData &= 0xFFFC; //清除标志位
 	}
+	if (g_SynAcctionFlag == SYN_HE_READY)
+	{
+		if (IsOverTime(g_ReadyHeLastTime, g_SystemLimit.syncReadyWaitTime))
+		{
+			g_SynAcctionFlag = 0;
+		}
+	 }
 
 
 

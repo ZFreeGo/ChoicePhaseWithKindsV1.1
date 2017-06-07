@@ -64,7 +64,7 @@ static uint8_t GetMaxActionTime(ActionRad* pActionRad);
 static int8_t GetTimeDiff(float sumTime1, float sumTime2, float period, float diff);
 static uint8_t PulseOutTrigger(ActionRad* pActionRad);
 static uint8_t CheckActionTime(ActionRad* pActionRad);
-static void CalculateDelayTime(ActionRad* pActionRad, float phase);
+static uint8_t CalculateDelayTime(ActionRad* pActionRad, float phase);
 /*=============================局部函数 End=============================*/
 
 
@@ -268,17 +268,33 @@ void SynchronizTrigger(float* pData)
 			}
 		}
 
-		CalculateDelayTime(g_PhaseActionRad, phase);
-		CalculateDelayTime(g_PhaseActionRad + 1, phase);
-		CalculateDelayTime(g_PhaseActionRad + 2, phase);
+		test_result = CalculateDelayTime(g_PhaseActionRad, phase);
+		if (test_result != 0)
+		{
+			SynActionAck(0xA1);
+			return;
+		}
 
+		test_result = CalculateDelayTime(g_PhaseActionRad + 1, phase);
+		if (test_result != 0)
+		{
+			SynActionAck(0xA1);
+			return;
+		}
+		test_result = CalculateDelayTime(g_PhaseActionRad + 2, phase);
+		if (test_result != 0)
+		{
+			SynActionAck(0xA1);
+			return;
+		}
 
 
 
 		test_result = CheckActionTime(g_PhaseActionRad);
-		//TODO:计算错误报错
+		//算错误报错
 		if (test_result != 0)
 		{
+			SynActionAck(0xA1);
 			return;
 		}
 
@@ -290,12 +306,17 @@ void SynchronizTrigger(float* pData)
 			diffA = fabsf(calTimeB - calTimeA - (g_PhaseActionRad[1].realTime  - g_PhaseActionRad[0].realTime));
 			if (diffA > 3)
 			{
-				//TODO:计算错误报错
+				SynActionAck(0xA2);
 				return;//校验错误
 			}
 		}
-		PulseOutTrigger(g_PhaseActionRad);
+		test_result = PulseOutTrigger(g_PhaseActionRad);
+		if (test_result!=0)
+		{
+			SynActionAck(0xA3);
+		}
 		SendMultiFrame(&g_NetSendFrame);
+		SynActionAck(0);
 }
 
 /**
@@ -303,9 +324,11 @@ void SynchronizTrigger(float* pData)
  *
  * @param  pActionRad   动作弧度
  * @param  phase	    开始相角
+ *
+ * @return 0-正常   非0-错误
  * @brief  计算触发时刻，发布触发命令
  */
-static void CalculateDelayTime(ActionRad* pActionRad, float phase)
+static uint8_t CalculateDelayTime(ActionRad* pActionRad, float phase)
 {
 
 	uint16_t count = 0;
@@ -315,12 +338,12 @@ static void CalculateDelayTime(ActionRad* pActionRad, float phase)
 	//未使能跳出
 	if (pActionRad->enable == 0)
 	{
-		return;
+		return 0;
 	}
 	//phase 小于等于3
 	if ( pActionRad->phase >= 3)
 	{
-		return;
+		return 0xF1;
 	}
 	//TODO:暂定内部延时为88us
 	g_ProcessDelayTime[selectPhase].innerDelay = 88;
@@ -354,8 +377,12 @@ static void CalculateDelayTime(ActionRad* pActionRad, float phase)
 		}
 		count++;
 
-	}while(count < 100); //TODO:添加异常判断
-
+	}while(count < 100);
+	//添加异常判断
+	if (count == 100)
+	{
+		return 0xF1;
+	}
 
 
 
@@ -383,11 +410,12 @@ static void CalculateDelayTime(ActionRad* pActionRad, float phase)
 		}
 		//默认赋值
 		g_ProcessDelayTime[selectPhase].calDelayCheck = g_ProcessDelayTime[selectPhase].calDelay;
-
+		return 0;
 	}
 	else
 	{
-		//TODO: 异常处理
+		//异常处理
+		return 0xF2;
 	}
 }
 
