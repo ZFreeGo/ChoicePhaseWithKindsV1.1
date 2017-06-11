@@ -363,8 +363,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 						 {
 							 return 0xF1;
 						 }
-						 g_PhaseActionRad[i].actionRad =
-								 pReciveFrame->pBuffer[2*i + 2] + ((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8;
+						 g_PhaseActionRad[i].actionRad =  CommandData[2*i + 2] + (((uint16_t)CommandData[2*i + 3])<<8);
 						 g_PhaseActionRad[i].enable = 0xFF;
 
 						 g_PhaseActionRad[i].realRatio =  (float)g_PhaseActionRad[i].actionRad / 65536   ;//累加计算绝对比率
