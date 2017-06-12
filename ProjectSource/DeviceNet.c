@@ -89,6 +89,7 @@ static RunTimeStamp OffLine;// 处于离线状态时超时复位
 *******************************************************************************/
 void InitDeviceNet()
 {    
+	ServiceDog();
     DeviceNetReciveFrame.complteFlag = 0xff;
     DeviceNetReciveFrame.pBuffer = ReciveBufferData;
     DeviceNetSendFrame.complteFlag = 0xff;
@@ -114,7 +115,7 @@ void InitDeviceNet()
     WorkMode = MODE_REPEAT_MAC;
     g_CANErrorStatus = 0;
     BOOL result = CheckMACID( &DeviceNetReciveFrame, &DeviceNetSendFrame);
-    
+    ServiceDog();
     if (result)
     {
     	 WorkMode = MODE_FAULT;
@@ -214,7 +215,7 @@ void CANFrameFilter(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 {
     uint8_t mac = GET_GROUP2_MAC(pReciveFrame->ID);
     uint8_t function = GET_GROUP2_FUNCTION(pReciveFrame->ID);
-	
+    ServiceDog();
 	if(mac == DeviceNetObj.MACID)  //仅限组2设备
 	{	        
         switch( function)
@@ -228,12 +229,14 @@ void CANFrameFilter(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
                 return; //MACID不匹配,丢弃
             }
             case GROUP2_VSILBLE_ONLY2: //1100 0000：非连接显示请求信息，预定义主从连接
-            {                
+            {
+            	ServiceDog();
 				UnconVisibleMsgService(pReciveFrame, pSendFrame);    //非连接显式信息服务
                 return;
             }
             case  GROUP2_POLL_STATUS_CYCLE: //主站I/O轮询命令/状态变化/循环信息
             {     
+            	ServiceDog();
                 CycleInquireMsgService(pReciveFrame, pSendFrame);     // I/O轮询信息服务
                 return ;    
             }
@@ -258,6 +261,7 @@ void CANFrameFilter(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 ******************************************************************************/
 void ResponseMACID(struct DefFrameData* pSendFrame, uint8_t config)
 {                        //重复MACID检查
+	 ServiceDog();
     pSendFrame->ID =  MAKE_GROUP2_ID( GROUP2_REPEAT_MACID, DeviceNetObj.MACID); 
 	pSendFrame->pBuffer[0] = config;	                        //请求/响应标志=1，表示响应，端口号0
 	pSendFrame->pBuffer[1]= IdentifierObj.providerID;	//制造商ID低字节
@@ -281,6 +285,7 @@ BOOL CheckMACID(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFra
     int sendCount = 0; 
     do
     {
+    	ServiceDog();
         pReciveFrame->complteFlag = 0;
            //发送请求
         ResponseMACID( pSendFrame, 0);
@@ -291,6 +296,7 @@ BOOL CheckMACID(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFra
         StartOverTimer();//启动超时定时器
         while( IsTimeRemain())
         {
+        	ServiceDog();
             if ( pReciveFrame->complteFlag)//判断是否有未发送的数据
             {
                 uint8_t mac = GET_GROUP2_MAC(pReciveFrame->ID);
@@ -325,7 +331,7 @@ BOOL CheckAllocateCode(struct DefFrameData* pReciveFrame, struct DefFrameData* p
 {  
     uint8_t error = 0; //错误
     uint8_t errorAdd = 0; //附加错误描述
-    
+    ServiceDog();
     //如果已分配主站,则检查是否来自同一主站
     if((IdentifierObj.device_state & 0x01) && (pReciveFrame->pBuffer[5] != DeviceNetObj.assign_info.master_MACID))	//验证主站
     {	//不是来自当前主站，错误响应
@@ -418,6 +424,7 @@ BOOL CheckReleaseCode(struct DefFrameData* pReciveFrame, struct DefFrameData* pS
 ********************************************************************************/
 void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 { 
+	ServiceDog();
     if(pReciveFrame->pBuffer[1] == SVC_AllOCATE_MASTER_SlAVE_CONNECTION_SET)//pReciveFrame->pBuffer[1]是收到的服务代码
 	{
         if (!CheckAllocateCode(pReciveFrame, pSendFrame))
@@ -430,7 +437,7 @@ void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameDa
         uint8_t config = pReciveFrame->pBuffer[4];
 		DeviceNetObj.assign_info.select |= config;       //配置字节
         
-
+		ServiceDog();
 		if(config & CYC_INQUIRE)                          //分配I/O轮询连接
 		{	
 			InitCycleInquireConnectionObj();                       //I/O轮询连接配置函数
@@ -446,6 +453,7 @@ void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameDa
 			SendData(pSendFrame);             //发送报文
 			return ;
 		}
+		ServiceDog();
 		if(config & VISIBLE_MSG)
 		{	
 			InitVisibleConnectionObj();//分配显式信息连接
@@ -461,18 +469,19 @@ void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameDa
 			//发送
 			SendData(pSendFrame);			
 		}
-      if(config & STATUS_CHANGE)                          //分配主从
-		{	
+		ServiceDog();
+		if(config & STATUS_CHANGE)                          //分配主从
+		{
 			InitStatusChangedConnectionObj();                       //状态改变连接配置函数
 			StatusChangedConnedctionObj.produced_connection_id = MAKE_GROUP1_ID( GROUP1_STATUS_CYCLE_ACK , DeviceNetObj.MACID) ;//	produced_connection_id ?
 			StatusChangedConnedctionObj.consumed_connection_id = MAKE_GROUP2_ID(GROUP2_POLL_STATUS_CYCLE, DeviceNetObj.MACID) ;// consumed_connection_id
- 	        //成功执行响应
-			pSendFrame->ID =  MAKE_GROUP2_ID(GROUP2_VISIBLE_UCN, DeviceNetObj.MACID);   
+			//成功执行响应
+			pSendFrame->ID =  MAKE_GROUP2_ID(GROUP2_VISIBLE_UCN, DeviceNetObj.MACID);
 			pSendFrame->pBuffer[0] = pReciveFrame->pBuffer[0] & 0x7F;   // 目的MAC ID(主站ID)
 			pSendFrame->pBuffer[1]= (0x80 | SVC_AllOCATE_MASTER_SlAVE_CONNECTION_SET);
 			pSendFrame->pBuffer[2] = 0;	               //信息体格式0,8/8：Class ID = 8 位整数，Instance ID = 8 位整数
-            pSendFrame->len = 3;
-            pReciveFrame->complteFlag = 0;
+			pSendFrame->len = 3;
+			pReciveFrame->complteFlag = 0;
 			SendData(pSendFrame);             //发送报文
 
 			return ;
@@ -540,8 +549,7 @@ void UnconVisibleMsgService(struct DefFrameData* pReciveFrame, struct DefFrameDa
 *********************************************************************************/
 static void  CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 {
-
-
+	ServiceDog();
     if(CycleInquireConnedctionObj.state != STATE_LINKED )	//轮询I/O连接没建立
 		return ;
     g_DeviceNetRequstData |= 0x0003; //置位请求标志
@@ -555,6 +563,8 @@ static void  CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct De
  */
 static void AckCycleInquireMsgService(void)
 {
+
+	ServiceDog();
 	uint8_t result = 0;
 	//不处理完整，不接收新的帧
 	result = FrameServer(&DeviceNetReciveFrame, &DeviceNetSendFrame);
@@ -567,7 +577,7 @@ static void AckCycleInquireMsgService(void)
 		DeviceNetSendFrame.len = 4;
 	}
 	DeviceNetReciveFrame.complteFlag = 0;
-
+	ServiceDog();
 	PacktIOMessage(&DeviceNetSendFrame);
 	//DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
 
@@ -579,6 +589,7 @@ static void AckCycleInquireMsgService(void)
  */
 void PacktIOMessage( struct DefFrameData* pSendFrame)
 {
+	ServiceDog();
 	if (pSendFrame->len == 0)
 	{
 		return;
@@ -592,6 +603,7 @@ void PacktIOMessage( struct DefFrameData* pSendFrame)
  */
 void PacktIOMessageStatus( struct DefFrameData* pSendFrame)
 {
+	ServiceDog();
 	if (pSendFrame->len == 0)
 	{
 		return;
@@ -636,6 +648,7 @@ BOOL DeviceNetReciveCenter(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 {   
     uint8_t i= 0;
     //判断是否为仅限组2---可以在滤波器设置屏蔽
+    ServiceDog();
     if( ((*pID) & 0x0600) != 0x0400)  //不是仅限组2报文处理
 	{       
         return FALSE;    
@@ -656,7 +669,7 @@ BOOL DeviceNetReciveCenter(uint16_t* pID, uint8_t * pbuff,uint8_t len)
         }
         DeviceNetReciveFrame.complteFlag = 0xff;
          
-         
+        ServiceDog();
         switch(WorkMode)
         {
             case MODE_NORMAL: //正常工作模式
@@ -682,7 +695,8 @@ BOOL DeviceNetReciveCenter(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 ********************************************************************************/
 void SendData(struct DefFrameData* pFrame)
 {
-     CANSendData(pFrame->ID, pFrame->pBuffer, pFrame->len);
+
+	  CANSendData(pFrame->ID, pFrame->pBuffer, pFrame->len);
       pFrame->complteFlag = 0;
 }
 /*******************************************************************************
@@ -723,6 +737,7 @@ uint32_t flashComCn = 0;
  */
 void AckMsgService(void)
 {
+	ServiceDog();
 	if (WorkMode == MODE_FAULT) //
 	{
 		ON_LED3;
@@ -744,6 +759,7 @@ void AckMsgService(void)
 		OffLine.delayTime = 5000;
 
 	}
+	ServiceDog();
 	//正常通讯指示灯
 	if (flashComCn++ >200000)
 	{
@@ -757,7 +773,7 @@ void AckMsgService(void)
 		{
 
 			DeviceNetSendFrame.pBuffer[0] = 0x1A | 0x80;
-			DeviceNetSendFrame.pBuffer[1] = 0;  //通讯故障
+			DeviceNetSendFrame.pBuffer[1] = g_WorkMode;  //工作模式
 			DeviceNetSendFrame.pBuffer[2] = CheckVoltageStatus();//电压越限制检测
 			DeviceNetSendFrame.pBuffer[3] = CheckFrequencyStatus();
 			DeviceNetSendFrame.len = 4;
@@ -774,6 +790,7 @@ void AckMsgService(void)
 	}
 	if ((g_DeviceNetRequstData & 0x0003)==0x0003)//轮询消息
 	{
+		ServiceDog();
 		AckCycleInquireMsgService();
 		g_DeviceNetRequstData &= 0xFFFC; //清除标志位
 	}

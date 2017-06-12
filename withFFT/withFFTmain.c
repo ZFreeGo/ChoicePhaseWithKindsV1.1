@@ -17,6 +17,7 @@
 #include "Header.h"
 #include "RefParameter.h"
 
+
 #define FLASH   1
 #ifdef FLASH
 extern Uint16 RamfuncsLoadStart;
@@ -72,6 +73,18 @@ int main(void)
 #endif
 
 	//Step 4. Initialize the Device Peripheral.
+	//若为看门狗复位
+	if (SysCtrlRegs.WDCNTR & 0x80)
+	{
+		g_WorkMode = WOKE_WATCH;
+	}
+	else
+	{
+		g_WorkMode = WOKE_NORMAL;
+	}
+	EnableatchDog();
+
+
 
 
 	InitStandardCAN(0, 0);
@@ -79,7 +92,7 @@ int main(void)
 	InitCpuTimers(); //初始化CPU寄存器
 	ConfigCpuTimer(&CpuTimer0, 80, 1000); //配置CPU在80M工作频率下，中断周期1000us
 	CpuTimer0Regs.TCR.all = 0x4000; // Use write-only instruction to set TSS bit = 0 启动定时器
-
+	ServiceDog();
 	//使能外PIE中断向量
 	PieCtrlRegs.PIECTRL.bit.ENPIE = 1;
 	PieCtrlRegs.PIEIER1.bit.INTx7 = 1; //TIMER0 	// Enable TINT0 in the PIE: Group 1 interrupt 7
@@ -103,22 +116,26 @@ int main(void)
 	// Enable Global interrupt INTM
 	ERTM;
 	// Enable Global realtime interrupt DBGM
-
+	ServiceDog();
 	InitSampleProcessData(); //采样数据初始化
+	ServiceDog();
 	InitMonitorCalData(); //监控数据计算初始化
+	ServiceDog();
 	ConfigADC_Monitor(12500);  //ADC 采样初始化 设定采样周期 12500属于定时器计数长度，每周波64点
 	ConfigECapFrquency();
+	ServiceDog();
 	ActionInit();
 	InitDeviceNet();
-
+	ServiceDog();
 	//InitEPwmTimer();
 	//调试使用
 	StartSample();//用于启动采样
 
-
+	ServiceDog();
 
 	while (1)
 	{
+		 ServiceDog();
 		 UpdateFrequency();
 		 AckMsgService();
 		 if(cnTime++ > 200000)

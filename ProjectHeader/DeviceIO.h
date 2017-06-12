@@ -81,8 +81,8 @@
 extern "C" {
 #endif
 
-void InitDeviceIO(void);
-
+extern void InitDeviceIO(void);
+extern void EnableatchDog(void);
 
 
 #ifdef	__cplusplus

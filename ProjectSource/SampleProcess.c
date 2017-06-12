@@ -102,7 +102,7 @@ __interrupt void  ADC_INT1_ISR(void)
        SampleIndex = 0;
 
        TOGGLE_LED1; //采样输出标志
-
+       ServiceDog();
        //判断数据是否已经处理   若没有处理 则不进行数据转存，丢弃本次数据.  浮点数据计算
        if (SampleDataSavefloat[SAMPLE_LEN] == SAMPLE_NOT_FULL)
          {
@@ -119,7 +119,7 @@ __interrupt void  ADC_INT1_ISR(void)
            if (g_SynAcctionFlag == SYN_HE_ACTION) //如果开始计算
            {
         		ConfigCpuTimer(&CpuTimer1, 80, 10000); //配置CPU在80M工作频率下，最大计时10ms
-        		//TODO:停止定时器，防止打断中断，凭借优先级设置
+        		//停止定时器，防止打断中断，凭借优先级设置
         		CpuTimer0Regs.TCR.bit.TSS = 1;
         		CpuTimer1Regs.TCR.all = 0x4000; // Use write-only instruction to set TSS bit = 0 启动定时器
 #if WITH_FFT == 1

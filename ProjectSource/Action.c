@@ -77,6 +77,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 	//uint8_t remain = 0;
 	//uint16_t temp = 0;
+	ServiceDog();
 	//最小长度必须大于0,且小于8对于单帧
 	if ((pReciveFrame->len == 0) || (pReciveFrame->len > 8))
 	{
@@ -88,12 +89,13 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	{
 		return 0XF2;
 	}
-
+	ServiceDog();
 	switch (id)
 	{
 
 		case 0x11: //主站参数设置
 		{
+			ServiceDog();
 			if (pReciveFrame->len >= 2) //ID+配置号+属性值 至少3字节
 			{
 				point.pData  = pReciveFrame->pBuffer + 2;
@@ -114,6 +116,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 		}
 		case 0x12:// 参数读取顺序结构
 		{
+			ServiceDog();
 			if (pReciveFrame->len == 3) //ID+配置号1+配置号1  为3个字节
 			{
 				codeStart = pReciveFrame->pBuffer[1];
@@ -125,6 +128,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 				for( ; codeStart <= codeEnd; codeStart++)
 				{
+					ServiceDog();
 					point.pData  = tempData;
 					point.len = 8;
 					result = ReadParamValue(codeStart, &point); //一次只获取1个属性
@@ -151,6 +155,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			{
 				for( i = 1; i < pReciveFrame->len; i++)
 				{
+					ServiceDog();
 					point.pData  = tempData;
 					point.len = 8;
 					result = ReadParamValue(pReciveFrame->pBuffer[i], &point); //一次只获取1个属性
@@ -172,6 +177,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 		}
 		case 0x15:// 配置模式
 		{
+			ServiceDog();
 			if (pReciveFrame->len == 4) //ID+配置号 至少2字节
 			{
 				if (pReciveFrame->pBuffer[1] != g_LocalMac)
@@ -202,7 +208,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					g_WorkMode = pReciveFrame->pBuffer[3];
 					//应答回复
 					pSendFrame->pBuffer[0] = id| 0x80;
-					memcpy(pSendFrame->pBuffer + 1, pReciveFrame->pBuffer,
+					memcpy(pSendFrame->pBuffer + 1, pReciveFrame->pBuffer + 1,
 	 					 pReciveFrame->len - 1);
 					pSendFrame->len = pReciveFrame->len;
 					return 0;
@@ -213,8 +219,10 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 		}
 		case 0x1B://超过一帧数据读取结构
 		{
+			ServiceDog();
 			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
 			{
+				ServiceDog();
 				if (pReciveFrame->pBuffer[1] != 0xAA)
 				{
 					return 0xE5;
@@ -259,12 +267,13 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 	uint16_t rad[3] = {0};//弧度归一化值
 	float lastRatio = 0; //上一次比率
 	uint8_t phase = 0;
-
+	ServiceDog();
 	id = pReciveFrame->pBuffer[0];
 	switch (id)
 	{
 		case 0x30://同步合闸预制
 		{
+			ServiceDog();
 			//必须不小于4
 			if (pReciveFrame->len < 4)
 			{
@@ -324,6 +333,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 		}
 		case 0x31://同步合闸执行
 		{
+			ServiceDog();
 			 //判断是否超时
 			 if (!IsOverTime(g_ReadyHeLastTime, g_SystemLimit.syncReadyWaitTime))
 			 {
@@ -413,7 +423,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
  */
 void SynActionAck(uint8_t state)
 {
-
+	ServiceDog();
 	if (state != 0)
 	{
 		ActionSendFrame.pBuffer[0] = 0x14;
@@ -446,7 +456,7 @@ void SendMultiFrame(struct DefFrameData* pSendFrame)
 
 	for (i = 0; i < count ;i++)
 	{
-
+		ServiceDog();
 		pSendFrame->pBuffer[0] = id| 0x80;
 		pSendFrame->pBuffer[1] = i;
 		temp =  (uint16_t)SampleDataSavefloat[3*i];
@@ -466,24 +476,25 @@ void SendMultiFrame(struct DefFrameData* pSendFrame)
 		pSendFrame->len = 8;
 		PacktIOMessage(pSendFrame);
 	}
+	ServiceDog();
 	if (remain !=0)
 	{
 
-	pSendFrame->pBuffer[0] = id| 0x80;
-	pSendFrame->pBuffer[1] =  i |0x80;
+		pSendFrame->pBuffer[0] = id| 0x80;
+		pSendFrame->pBuffer[1] =  i |0x80;
 
-	temp =  (uint16_t)SampleDataSavefloat[3*count];
-	pSendFrame->pBuffer[2] = (uint8_t)temp;
-	pSendFrame->pBuffer[3] = (uint8_t)(temp>>8);
+		temp =  (uint16_t)SampleDataSavefloat[3*count];
+		pSendFrame->pBuffer[2] = (uint8_t)temp;
+		pSendFrame->pBuffer[3] = (uint8_t)(temp>>8);
 
-	if (remain == 2)
-	{
-		temp =  (uint16_t)SampleDataSavefloat[3*i + 1];
-		pSendFrame->pBuffer[4] = (uint8_t)temp;
-		pSendFrame->pBuffer[5] = (uint8_t)(temp>>8);
-	}
-	pSendFrame->len = 2 + remain * 2;
-	PacktIOMessage(pSendFrame);
+		if (remain == 2)
+		{
+			temp =  (uint16_t)SampleDataSavefloat[3*i + 1];
+			pSendFrame->pBuffer[4] = (uint8_t)temp;
+			pSendFrame->pBuffer[5] = (uint8_t)(temp>>8);
+		}
+		pSendFrame->len = 2 + remain * 2;
+		PacktIOMessage(pSendFrame);
 	}
 
 

@@ -225,10 +225,13 @@ static Uint8 freqLen = 0;
 void UpdateFrequency(void)
 {
 	float samplePriod = 0;
+
+	ServiceDog();
 	//测频模块处理
 			//理论上将是20ms一个循环
-	//Todo:浮点数等于比较是个隐患
-	if (SampleDataSavefloat[SAMPLE_LEN] == SAMPLE_COMPLTE) //采样完成
+	//浮点数相等比较，转化为阈值为1的比较
+	if ((SampleDataSavefloat[SAMPLE_LEN] > (SAMPLE_COMPLTE - 1)) &&
+			(SampleDataSavefloat[SAMPLE_LEN] < (SAMPLE_COMPLTE + 1))) //采样完成
 	{
 		//计算频率
 		CalFreq(SampleDataSavefloat);

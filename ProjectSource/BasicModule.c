@@ -26,6 +26,7 @@ void DelayMs(Uint16 ms)
   for( ; ms>0; ms--)
     {
       DELAY_US(1000);
+      ServiceDog();
     }
 }
 

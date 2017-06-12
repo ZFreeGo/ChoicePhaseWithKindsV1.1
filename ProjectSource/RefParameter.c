@@ -130,15 +130,16 @@ uint8_t SetParamValue(uint8_t id, PointUint8* pPoint)
 
 	for(uint8_t i = 0; i < PARAMETER_LEN; i++)
 	{
+		ServiceDog();
 		if(g_SetParameterCollect[i].ID == id)
 		{
-			//TODO :添加错误处理——每一个Set/Get函数添加相应的处理内容。
+
 			g_SetParameterCollect[i].fSetValue(pPoint, g_SetParameterCollect + i);
 			if (pPoint->len == 0)
 			{
 				return 0xF1;
 			}
-
+			ServiceDog();
 			g_SetParameterCollect[i].fGetValue(pPoint, g_SetParameterCollect + i);
 			if (pPoint->len == 0)
 			{
@@ -163,9 +164,9 @@ uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint)
 	{
 		for(uint8_t i = 0; i < PARAMETER_LEN; i++)
 		{
+			ServiceDog();
 			if(g_SetParameterCollect[i].ID == id)
 			{
-				//TODO :添加错误处理——每一个Get函数添加相应的处理内容。
 
 				g_SetParameterCollect[i].fGetValue(pPoint, g_SetParameterCollect + i);
 				if (pPoint->len == 0)
@@ -185,7 +186,7 @@ uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint)
 		{
 			if(g_ReadOnlyParameterCollect[i].ID == id)
 			{
-				//TODO :添加错误处理——每一个et函数添加相应的处理内容。
+				//TODO :添加错误处理——每一个Get函数添加相应的处理内容。
 
 				g_ReadOnlyParameterCollect[i].fGetValue(pPoint, g_ReadOnlyParameterCollect + i);
 				if (pPoint->len == 0)
@@ -629,11 +630,12 @@ void RefParameterInit(void)
 {
 	 uint16_t sum = 0, sumOne = 0;
 	 result = 0;
+	 ServiceDog();
 	 InitSetParameterCollect();
 	 InitReadonlyParameterCollect();
 
 	 DefaultInit();
-
+	 ServiceDog();
 	 result = ReadLocalSaveData(1, PARAMETER_LEN-1, &sum);
 	 NOP();
 	 if (result)
@@ -645,6 +647,7 @@ void RefParameterInit(void)
 	 {
 		 //获取累加和,最后一个
 		 result = ReadLocalSaveData(PARAMETER_LEN, 1, &sumOne);
+		 ServiceDog();
 		 if(result)
 		 {
 			 DefaultInit();//重新用默认值初始化
@@ -659,13 +662,7 @@ void RefParameterInit(void)
 			 }
 		 }
 	 }
-
-
-	 g_WorkMode = 0;
-
-
-
-
+	 ServiceDog();
 
 }
 
@@ -695,7 +692,6 @@ static void SetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
 		float result = (float)data *  ration;
 	    *(float*)pConfig->pData = result;
 
-		//TODO:校准系数需考虑EEPROM存储
 	}
 	else
 	{
@@ -755,7 +751,7 @@ static void SetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig)
 {
 	if (pPoint->len >= 2)
 	{
-		//Todo: 更具ID选择保留有效位数
+		//TODO: 根据ID选择保留有效位数
 		float ration = 0.001f;
 		uint16_t data = pPoint->pData[1];
 		data =  (data << 8) | pPoint->pData[0];
@@ -785,7 +781,7 @@ static void GetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig)
 {
 	if (pPoint->len >= 2)
 	{
-		//Todo: 更具ID选择保留有效位数
+		//TODO:根据具ID选择保留有效位数
 		float ration = 1000.0f;
 
 		uint16_t result = (uint16_t)(*(float*)pConfig->pData * ration);
@@ -913,6 +909,7 @@ static void GetValueUint8(PointUint8* pPoint, ConfigData* pConfig)
 static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pPoint)
 {
 	uint8_t k = 0, readData = 0, result = 0, overCount = 0;
+	ServiceDog();
 	if(pPoint->len == 0) //不能等于0
 	{
 		return 0xA0;
@@ -985,6 +982,7 @@ static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* p
 static uint8_t EEPROMReadData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pPoint)
 {
 	uint8_t i = 0, readData = 0, result = 0, overCount = 0;
+	ServiceDog();
 	if(pPoint->len == 0) //不能等于0
 	{
 		return 0xA0;
@@ -1012,8 +1010,7 @@ static uint8_t EEPROMReadData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* pP
 				pPoint->pData[i] = readData;
 				break;		//正常退出		
 			}
-		}
-		while(1);		
+		}while(1);
 		DelayMs(1);
 	}
 	return 0;
@@ -1048,6 +1045,7 @@ static uint8_t ReadLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 	
 	for(i = startId - 1; i <startId + len - 1; i++)
 	{
+		ServiceDog();
 		tempPoint.len = g_SetParameterCollect[i].type >> 4;//获取字节数
 		testResult = EEPROMReadData( 0, 4* (g_SetParameterCollect[i].ID-1), &tempPoint);
 		if (testResult)
@@ -1120,6 +1118,8 @@ static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 /**
  *更新数据
  *
+ *@return 0--正常更新，非0--错误
+ *
  * @brif 更新系统参数数据
  */
 uint8_t resultUpdate;
@@ -1135,6 +1135,11 @@ uint8_t UpdateSystemSetData(void)
 		resultUpdate = UpdateLocalSaveData(PARAMETER_LEN, 1, &sum);//单独更新校验和
 		NOP() ;
 
+	}
+
+	else
+	{
+		return resultUpdate;
 	}
 	NOP() ;
 	resultUpdate = ReadLocalSaveData(1, PARAMETER_LEN, &sum);

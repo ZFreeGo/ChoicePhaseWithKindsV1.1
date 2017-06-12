@@ -118,7 +118,7 @@ void InitMonitorCalData(void)
   SetParam.SetPhase = 0; //此处以COS标准 弧度
   SetParam.SetPhaseTime = 20000 * 0.75f;
   SetParam.HeFenFlag = 0;//合闸
-
+  ServiceDog();
   RefParameterInit();
 }
 /**************************************************
@@ -208,12 +208,14 @@ void SynchronizTrigger(float* pData)
 	uint16_t xiang = 0, i = 0;
 	uint16_t  test_result = 0;
 	float   calTimeA = 0, calTimeB = 0,diffA = 0;
+
+	ServiceDog();
 	FFT_Cal(pData);   //傅里叶变化计算相角 每个点间隔
 	a = RFFToutBuff[1]; //实部
 	b = RFFToutBuff[RFFT_SIZE - 1]; //虚部
 	phase = atan( b/a ); //求取相位(-pi/2 pi/2)
 
-
+	ServiceDog();
 	//相位判断
 		if (phase >= 0 ) //认为在第1,3象限   浮点数与零判断问题,是否需要特殊处理？
 		{
@@ -243,7 +245,7 @@ void SynchronizTrigger(float* pData)
 		{
 			phase = phase - PI2;
 		}
-
+		ServiceDog();
 		//象限变换
 		switch (xiang)
 		{
@@ -268,6 +270,7 @@ void SynchronizTrigger(float* pData)
 			}
 		}
 
+		ServiceDog();
 		test_result = CalculateDelayTime(g_PhaseActionRad, phase);
 		if (test_result != 0)
 		{
@@ -275,21 +278,22 @@ void SynchronizTrigger(float* pData)
 			return;
 		}
 
+		ServiceDog();
 		test_result = CalculateDelayTime(g_PhaseActionRad + 1, phase);
 		if (test_result != 0)
 		{
 			SynActionAck(0xA1);
 			return;
 		}
+
+		ServiceDog();
 		test_result = CalculateDelayTime(g_PhaseActionRad + 2, phase);
 		if (test_result != 0)
 		{
 			SynActionAck(0xA1);
 			return;
 		}
-
-
-
+		ServiceDog();
 		test_result = CheckActionTime(g_PhaseActionRad);
 		//算错误报错
 		if (test_result != 0)
@@ -297,7 +301,7 @@ void SynchronizTrigger(float* pData)
 			SynActionAck(0xA1);
 			return;
 		}
-
+		ServiceDog();
 		//计算时间差
 		for(i = 1; i < g_PhaseActionRad->count; i++)
 		{
@@ -310,13 +314,17 @@ void SynchronizTrigger(float* pData)
 				return;//校验错误
 			}
 		}
+		ServiceDog();
 		test_result = PulseOutTrigger(g_PhaseActionRad);
 		if (test_result!=0)
 		{
 			SynActionAck(0xA3);
 		}
+		ServiceDog();
 		SendMultiFrame(&g_NetSendFrame);
+		ServiceDog();
 		SynActionAck(0);
+		ServiceDog();
 }
 
 /**

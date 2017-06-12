@@ -133,6 +133,8 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 				//错误超限
 				if(sendCount++ > 10000)
 				{
+					//TODO:超时报警
+					g_CANErrorStatus = 0xFFFF;
 					return 0xFF;
 				}
 
@@ -162,11 +164,13 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 				 if( g_CANErrorStatus != 0)
 				 {
 	 				return 0xFF;
-	 				//TODO:超时报警
+
 	 			 }
 				 //错误超限
 				if(sendCount++ > 10000)
 				{
+					//TODO:超时报警
+					g_CANErrorStatus = 0xFFFF;
 					return 0xFF;
 				}
 			 }

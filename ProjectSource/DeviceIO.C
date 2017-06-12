@@ -119,5 +119,22 @@ void InitDeviceIO(void)
 	OFF_LED1;
 	OFF_LED2;
 	OFF_LED3;
+
+
+
 }
+/**
+ * @brif 主频80M，配置看门狗为5.3ms
+ */
+void EnableatchDog(void)
+{
+	DisableDog();
+	EALLOW;
+
+	//SysCtrlRegs.WDCR = 0x002F;//0 0 101 111  使能WatchDog，64分频
+	SysCtrlRegs.WDCR = 0x0028; //1/10*512*256*1=13ms
+	EDIS;
+	ServiceDog();
+}
+
 

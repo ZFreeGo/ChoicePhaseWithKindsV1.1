@@ -22,6 +22,11 @@
 #define PHASE_C  2
 
 
+#define WOKE_WATCH  0xA1
+#define WOKE_CONFIG 0xAA
+#define WOKE_NORMAL 0x55
+
+
 //ÆµÂÊºÏ¼¯
 typedef struct RagFreqCollect
 {
