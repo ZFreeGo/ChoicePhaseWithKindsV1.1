@@ -294,7 +294,7 @@ BOOL CheckMACID(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFra
     		return TRUE;
     	}
         StartOverTimer();//启动超时定时器
-        while( IsTimeRemain())
+        while(IsTimeRemain())
         {
         	ServiceDog();
             if ( pReciveFrame->complteFlag)//判断是否有未发送的数据
@@ -306,7 +306,7 @@ BOOL CheckMACID(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFra
                     if (mac == DeviceNetObj.MACID)
                     {
                          pReciveFrame->complteFlag = 0;
-                          return TRUE; //只要有MACID一致，无论应答还是发出，均认为重复
+                         return TRUE; //只要有MACID一致，无论应答还是发出，均认为重复
                     }
                 }                
                 else
@@ -650,7 +650,9 @@ BOOL DeviceNetReciveCenter(uint16_t* pID, uint8_t * pbuff,uint8_t len)
     //判断是否为仅限组2---可以在滤波器设置屏蔽
     ServiceDog();
     if( ((*pID) & 0x0600) != 0x0400)  //不是仅限组2报文处理
-	{       
+	{
+
+    	SynCloseWaitAck(pID, pbuff, len);
         return FALSE;    
     }        
     
@@ -767,7 +769,7 @@ void AckMsgService(void)
 		flashComCn = 0;
 	}
 	//已经建立后状态改变连接---周期性报告状态/或者突发报告--非预制状态
-	if ((StatusChangedConnedctionObj.state == STATE_LINKED) && ( g_SynAcctionFlag == 0))
+	if ((StatusChangedConnedctionObj.state == STATE_LINKED) && ( g_SynCommandMessage.synActionFlag == 0))
 	{
 		if(IsOverTime(LoopStatusSend.startTime, LoopStatusSend.delayTime) )
 		{
@@ -783,7 +785,22 @@ void AckMsgService(void)
 
 
 	}
+	//同步合闸预制--等待应答/等待执行
+	if( (g_SynCommandMessage.synActionFlag == SYN_HE_READY) ||
+			(g_SynCommandMessage.synActionFlag == SYN_HE_WAIT_ACTION))
+	{
+		//检测是否超时
+		if (IsOverTime(g_SynCommandMessage.closeWaitAckTime.startTime, g_SynCommandMessage.closeWaitAckTime.delayTime))
+		{
+			g_SynCommandMessage.synActionFlag = 0;
+			g_PhaseActionRad[0].readyFlag = 0;
+			g_PhaseActionRad[1].readyFlag = 0;
+			g_PhaseActionRad[2].readyFlag = 0;
 
+		}
+	 }
+
+	//是否有请求数据
 	if(g_DeviceNetRequstData == 0)
 	{
 		return;
@@ -794,13 +811,7 @@ void AckMsgService(void)
 		AckCycleInquireMsgService();
 		g_DeviceNetRequstData &= 0xFFFC; //清除标志位
 	}
-	if (g_SynAcctionFlag == SYN_HE_READY)
-	{
-		if (IsOverTime(g_ReadyHeLastTime, g_SystemLimit.syncReadyWaitTime))
-		{
-			g_SynAcctionFlag = 0;
-		}
-	 }
+
 
 
 

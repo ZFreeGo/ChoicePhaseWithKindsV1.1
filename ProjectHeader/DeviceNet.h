@@ -202,6 +202,8 @@ struct DefFrameData
       volatile uint8_t complteFlag; //处理完成标志 非0--未处理完成；0--处理已经完成，可以重复使用
 };
 
+#define GET_GROUP1_MAC(id)   ( (uint8_t)(id)&0x003F )
+
 #define GET_GROUP_NUM(id)  ((((id) >> 9))&0x0003)
 //获取仅组2MAC地址 id为16bit
 #define GET_GROUP2_MAC(id)   ( (((id) >> 3))&0x003F ) 
@@ -211,6 +213,7 @@ struct DefFrameData
 #define MAKE_GROUP1_ID(function, mac_id) (int32_t)((((uint16_t)(function) &0x1F)<<6) | ((uint16_t)(mac_id) & 0x3F))
 //生成GROUP2 ID
 #define MAKE_GROUP2_ID(function, mac_id)  (int32_t)( (0x0400) | ((int32_t)((mac_id) &0x3F)<<3) | ((uint16_t)(function) & 0x07))
+
 
 
 /**

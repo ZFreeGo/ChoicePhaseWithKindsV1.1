@@ -118,6 +118,7 @@ typedef struct TagLimitValue
  */
 typedef struct TagActionParameter
 {
+	uint8_t readyFlag; //相应控制器应答 准备标志
 	uint8_t enable; //使能标志，0-禁止，非零使能
     uint8_t phase; //相A-1,B-2,C-3
     uint16_t  actionRad; //设定弧度归一化值r = M/65536 *2*PI
@@ -167,7 +168,7 @@ extern SystemVoltageParameter g_SystemVoltageParameter;
 extern ActionRad g_PhaseActionRad[3];
 extern LimitValue g_SystemLimit;
 extern volatile uint32_t g_CANErrorStatus;
-extern uint8_t g_LocalMac;
+extern uint8_t g_MacList[4];
 extern uint8_t g_WorkMode;
 
 extern uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint);

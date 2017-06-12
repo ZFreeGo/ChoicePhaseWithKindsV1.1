@@ -81,13 +81,15 @@ ActionRad g_PhaseActionRad[3];
 LimitValue g_SystemLimit;
 
 /**
- *本地MAC
+ *MAC列表  ，默认0-本地， 1-A，2-B,3-C
  */
-uint8_t g_LocalMac;
+uint8_t g_MacList[4];
+
 /**
  *工作模式
  */
 uint8_t g_WorkMode;
+
 
 
 
@@ -108,7 +110,7 @@ struct DefFrameData  g_NetSendFrame; //发送帧处理
 uint16_t CumulativeSum = 0;
 
 
-#define PARAMETER_LEN 30  //设置参数列表
+#define PARAMETER_LEN 33  //设置参数列表
 #define READONLY_PARAMETER_LEN 15  //读取参数列表
 #define READONLY_START_ID 0x41
 /**
@@ -500,7 +502,25 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fGetValue = GetValueUint8;
 	index++;
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_LocalMac;
+	g_SetParameterCollect[index].pData = g_MacList;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = g_MacList + 1;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = g_MacList + 2;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = g_MacList + 3;
 	g_SetParameterCollect[index].type = 0x10;
 	g_SetParameterCollect[index].fSetValue = SetValueUint8;
 	g_SetParameterCollect[index].fGetValue = GetValueUint8;
@@ -584,6 +604,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[0].realRatio = 0;
 	 g_PhaseActionRad[0].startTime = 0;
 	 g_PhaseActionRad[0].realTime = 0;
+	 g_PhaseActionRad[0].readyFlag = 0;
 
 	 g_PhaseActionRad[1].phase = PHASE_B;
 	 g_PhaseActionRad[1].actionRad = 0;
@@ -591,6 +612,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[1].realRatio = 0;
 	 g_PhaseActionRad[1].startTime = 0;
 	 g_PhaseActionRad[1].realTime = 0;
+	 g_PhaseActionRad[1].readyFlag = 0;
 
 	 g_PhaseActionRad[2].phase = PHASE_C;
 	 g_PhaseActionRad[2].actionRad = 0;
@@ -598,6 +620,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[2].realRatio = 0;
 	 g_PhaseActionRad[2].startTime = 0;
 	 g_PhaseActionRad[2].realTime = 0;
+	 g_PhaseActionRad[2].readyFlag = 0;
 
 
 	 //系统参数上下限
@@ -615,8 +638,10 @@ void DefaultInit(void)
 	 g_CANErrorStatus = 0;
 
 
-	 g_LocalMac = 0x0D;
-
+	 g_MacList[0] = 0x0D;
+	 g_MacList[1] = 0x10;
+	 g_MacList[2] = 0x12;
+	 g_MacList[3] = 0x14;
 
 
 	 //缓冲数据发送

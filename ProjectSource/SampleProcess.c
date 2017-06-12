@@ -116,14 +116,14 @@ __interrupt void  ADC_INT1_ISR(void)
 
 
            //计算时间差
-           if (g_SynAcctionFlag == SYN_HE_ACTION) //如果开始计算
+           if (g_SynCommandMessage.synActionFlag == SYN_HE_ACTION) //如果开始计算
            {
         		ConfigCpuTimer(&CpuTimer1, 80, 10000); //配置CPU在80M工作频率下，最大计时10ms
         		//停止定时器，防止打断中断，凭借优先级设置
         		CpuTimer0Regs.TCR.bit.TSS = 1;
         		CpuTimer1Regs.TCR.all = 0x4000; // Use write-only instruction to set TSS bit = 0 启动定时器
 #if WITH_FFT == 1
-        		g_SynAcctionFlag = 0; //首先清空标志，防止重复进入
+        		g_SynCommandMessage.synActionFlag = 0; //首先清空标志，防止重复进入
 
         	   //GetOVD(SampleDataSavefloat); //7825 7803cyc 80 10us
         	   SynchronizTrigger(SampleDataSavefloat);

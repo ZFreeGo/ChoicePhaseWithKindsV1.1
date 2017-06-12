@@ -15,20 +15,11 @@
 #include "SampleProcess.h"
 #include "Action.h"
 
-
 /**
- * 同步预制标志
+ * 同步预制命令信息
  */
-volatile uint8_t g_SynAcctionFlag = 0;
-/**
- * 同步预制等待时间
- */
-uint32_t g_ReadyHeLastTime = 0;
-//暂存上一次命令字
+RefSynCommandMessage g_SynCommandMessage;
 
-uint8_t CommandData[10] = {0};
-uint8_t LastLen = 0;
-uint8_t loopByte = 0;
 
 
 uint8_t  SendBufferDataAction[10];//接收缓冲数据
@@ -40,12 +31,17 @@ struct DefFrameData  ActionSendFrame; //接收帧处理
  */
 void ActionInit(void)
 {
-	g_SynAcctionFlag = 0;
-	g_ReadyHeLastTime = 0;
-	LastLen = 0;
 
 	ActionSendFrame.complteFlag = 0xff;
 	ActionSendFrame.pBuffer = SendBufferDataAction;
+
+	g_SynCommandMessage.synActionFlag = 0;
+	g_SynCommandMessage.closeWaitAckTime.delayTime =  g_SystemLimit.syncReadyWaitTime;
+	g_SynCommandMessage.closeWaitAckTime.startTime = 0;
+	g_SynCommandMessage.closeWaitActionTime.delayTime =  g_SystemLimit.syncReadyWaitTime;
+	g_SynCommandMessage.closeWaitActionTime.startTime = 0;
+	g_SynCommandMessage.lastLen = 0;
+
 }
 
 static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
@@ -180,7 +176,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			ServiceDog();
 			if (pReciveFrame->len == 4) //ID+配置号 至少2字节
 			{
-				if (pReciveFrame->pBuffer[1] != g_LocalMac)
+				if (pReciveFrame->pBuffer[1] != g_MacList[0])
 				{
 					return 0xB0;
 				}
@@ -195,7 +191,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					g_WorkMode = pReciveFrame->pBuffer[3];
 					 //应答回复
 					pSendFrame->pBuffer[0] = id| 0x80;
-					pSendFrame->pBuffer[1] = g_LocalMac;
+					pSendFrame->pBuffer[1] = g_MacList[0];
 					pSendFrame->pBuffer[2] = DeviceNetObj.assign_info.master_MACID;
 					pSendFrame->pBuffer[3] = 0x55;
 		 			pSendFrame->pBuffer[4] = result;
@@ -286,10 +282,10 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 			}
 			//计算容纳的路数
 			count = (pReciveFrame->len - 2)/2;
-			loopByte = pReciveFrame->pBuffer[1];
+			g_SynCommandMessage.loopByte = pReciveFrame->pBuffer[1];
 			for(i = 0; i < count; i++)
 			{
-				ph[i] = (uint8_t)((loopByte>>(2*i))&(0x03));
+				ph[i] = (uint8_t)((g_SynCommandMessage.loopByte>>(2*i))&(0x03));
 				rad[i] = pReciveFrame->pBuffer[2*i + 2] | ((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8;
 			}
 			if (count == 3)
@@ -320,10 +316,10 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 				}
 			}
 
-			memcpy(CommandData,pReciveFrame->pBuffer, pReciveFrame->len );//暂存指令
-			LastLen = pReciveFrame->len;
-			g_SynAcctionFlag = SYN_HE_READY;//暂存指令标志
-			g_ReadyHeLastTime = CpuTimer0.InterruptCount;
+			memcpy(g_SynCommandMessage.commandData, pReciveFrame->pBuffer, pReciveFrame->len );//暂存指令
+			g_SynCommandMessage.lastLen = pReciveFrame->len;
+			g_SynCommandMessage.synActionFlag = SYN_HE_READY;//暂存指令标志
+			g_SynCommandMessage.closeWaitAckTime.startTime = CpuTimer0.InterruptCount;
 			memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 			pSendFrame->pBuffer[0] = id| 0x80;
 			pSendFrame->len = pReciveFrame->len;
@@ -335,24 +331,24 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 		{
 			ServiceDog();
 			 //判断是否超时
-			 if (!IsOverTime(g_ReadyHeLastTime, g_SystemLimit.syncReadyWaitTime))
+			 if (!IsOverTime(g_SynCommandMessage.closeWaitAckTime.startTime, g_SynCommandMessage.closeWaitAckTime.delayTime))
 			 {
-				 if (g_SynAcctionFlag == SYN_HE_READY)//是否已经预制
+				 if (g_SynCommandMessage.synActionFlag == SYN_HE_READY)//是否已经预制
 				 {
-					 g_SynAcctionFlag = 0; //清空预制
-					 if (pReciveFrame->len != LastLen)
+					 g_SynCommandMessage.synActionFlag = 0; //清空预制
+					 if (pReciveFrame->len != g_SynCommandMessage.lastLen)
 					 {
 						 return 0XF9;
 					 }
 					 //上一条指令是否为合闸预制
-					 if (CommandData[i] != 0x30)
+					 if (g_SynCommandMessage.commandData[i] != 0x30)
 					 {
 						 return 0XFA;
 					 }
 					 //比较执行指令与预制指令是否相同
 					 for(i = 1; i < pReciveFrame->len;i++)
 					 {
-						if (CommandData[i] != pReciveFrame->pBuffer[i])
+						if (g_SynCommandMessage.commandData[i] != pReciveFrame->pBuffer[i])
 						{
 							return 0XFB;
 						}
@@ -362,7 +358,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 					 lastRatio = 0;
 					 for(i = 0; i < count; i++)
 					 {
-						 phase= (CommandData[1]>>(2*i))&(0x03);
+						 phase= (g_SynCommandMessage.commandData[1]>>(2*i))&(0x03);
 
 						 //phase 位于1-3之间
 						 if ((phase <= 3) && (phase >= 1))
@@ -373,7 +369,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 						 {
 							 return 0xF1;
 						 }
-						 g_PhaseActionRad[i].actionRad =  CommandData[2*i + 2] + (((uint16_t)CommandData[2*i + 3])<<8);
+						 g_PhaseActionRad[i].actionRad =  g_SynCommandMessage.commandData[2*i + 2] + (((uint16_t)g_SynCommandMessage.commandData[2*i + 3])<<8);
 						 g_PhaseActionRad[i].enable = 0xFF;
 
 						 g_PhaseActionRad[i].realRatio =  (float)g_PhaseActionRad[i].actionRad / 65536   ;//累加计算绝对比率
@@ -393,12 +389,12 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 					 {
 						 g_PhaseActionRad[i].enable = 0;
 					 }
-					 g_PhaseActionRad[0].loopByte = CommandData[1];
+					 g_PhaseActionRad[0].loopByte = g_SynCommandMessage.commandData[1];
 					 memcpy(ActionSendFrame.pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 					 ActionSendFrame.pBuffer[0] = id| 0x80;
 					 ActionSendFrame.len = pReciveFrame->len;
-					 g_SynAcctionFlag = SYN_HE_ACTION;//置同步合闸动作标志
-					 g_SynAcctionFlag = SYN_HE_ACTION;//置同步合闸动作标志
+					 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
+					 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
 					 pSendFrame->len = 0;//取消底层发送
 					 return 0;
 
@@ -407,7 +403,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 			 }
 			 else
 			 {
-				 g_SynAcctionFlag = 0;
+				 g_SynCommandMessage.synActionFlag = 0;
 			 }
 		}
 	}
@@ -438,6 +434,81 @@ void SynActionAck(uint8_t state)
 
 }
 
+/**
+ * 同步合闸等待应答状态
+ * 判断是否为从站节点应答，判断是否是正常合闸预制应答，若是则置为相应的合闸预制状态，检测全部预制相是否齐全,
+ * 如齐全设置时间等待预制时间T2。
+ *
+ * @param  pID  11bitID标识
+ * @param  pbuff 缓冲数据
+ * @param  len 数据长度
+ *
+ * @retrun 0--未进行处理，  非0--符合要求进行处理
+ */
+uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
+{
+	uint8_t i = 0, mac = 0;
+	//是否为预制状态
+	if ( g_SynCommandMessage.synActionFlag != SYN_HE_READY )
+	{
+		return 0;
+	}
+	ServiceDog();
+	//是否超时
+	if (IsOverTime(g_SynCommandMessage.closeWaitAckTime.startTime,
+					g_SynCommandMessage.closeWaitAckTime.delayTime))
+	{
+		//复位
+		g_SynCommandMessage.synActionFlag = 0;
+		g_PhaseActionRad[0].readyFlag = 0;
+		g_PhaseActionRad[1].readyFlag = 0;
+		g_PhaseActionRad[2].readyFlag = 0;
+		return 0;
+	}
+	if( ((*pID) & 0x03C0) != 0x03C0)  //GROUP1_POLL_STATUS_CYCLER_ACK
+	{
+		return 0;
+	}
+	ServiceDog();
+	mac = GET_GROUP1_MAC(*pID);
+	for( i = 0; i < g_PhaseActionRad[0].count; i++)
+	{
+		//地址是否来自A,B,C相
+		if (g_MacList[g_PhaseActionRad[i].phase + 1] == mac)
+		{
+			if (len < 2)
+			{
+				return 0xff;
+			}
+			if (pbuff[0] == (0x05 | 0x80))//从站 同步合闸预制返回指令
+			{
+				g_PhaseActionRad[i].readyFlag = 0xff;
+
+				//检测是否全部置为预制状态
+				for(i = 0; i < g_PhaseActionRad[0].count; i++)
+				{
+					//有未准备相，返回
+					if (g_PhaseActionRad[i].readyFlag == 0)
+					{
+						return 0xff;
+					}
+				}
+				//全部项，已经就绪
+				g_SynCommandMessage.synActionFlag = SYN_HE_WAIT_ACTION;
+				g_SynCommandMessage.closeWaitActionTime.delayTime = CpuTimer0.InterruptCount;
+				return  0xff;
+			}
+		}
+	}
+	return 0xff;
+
+
+
+
+
+
+
+}
 
 /**
  * 发送帧数据
@@ -498,5 +569,8 @@ void SendMultiFrame(struct DefFrameData* pSendFrame)
 	}
 
 
-
 }
+
+
+
+
