@@ -316,6 +316,43 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 				}
 			}
 
+			//设置同步合闸参数
+			 count = (pReciveFrame->len - 2)/2;
+			 lastRatio = 0;
+			 for(i = 0; i < count; i++)
+			 {
+				 phase= (pReciveFrame->pBuffer[1]>>(2*i))&(0x03);
+
+				 //phase 位于1-3之间
+				 if ((phase <= 3) && (phase >= 1))
+				 {
+					 g_PhaseActionRad[i].phase = phase - 1; //减1作为索引
+				 }
+				 else
+				 {
+					 return 0xF1;
+				 }
+				 g_PhaseActionRad[i].actionRad =  pReciveFrame->pBuffer[2*i + 2] + (((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8);
+
+
+				 g_PhaseActionRad[i].realRatio =  (float)g_PhaseActionRad[i].actionRad / 65536   ;//累加计算绝对比率
+
+				 //判断后一个相角不小于前一个
+				 if (g_PhaseActionRad[i].realRatio < lastRatio)
+				 {
+					return 0xFC;
+				 }
+				 g_PhaseActionRad[i].realDiffRatio =   g_PhaseActionRad[i].realRatio  - lastRatio;//相对上一级比率
+				 lastRatio = g_PhaseActionRad[i].realRatio;
+
+				 g_PhaseActionRad[i].count = count;//回路数量
+			 }
+			 //均是禁止，在同步执行状态下开启
+			 for (i = count; i < 3; i++)
+			 {
+				 g_PhaseActionRad[i].enable = 0;
+			 }
+
 			memcpy(g_SynCommandMessage.commandData, pReciveFrame->pBuffer, pReciveFrame->len );//暂存指令
 			g_SynCommandMessage.lastLen = pReciveFrame->len;
 			g_SynCommandMessage.synActionFlag = SYN_HE_READY;//暂存指令标志
@@ -333,7 +370,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 			 //判断是否超时
 			 if (!IsOverTime(g_SynCommandMessage.closeWaitAckTime.startTime, g_SynCommandMessage.closeWaitAckTime.delayTime))
 			 {
-				 if (g_SynCommandMessage.synActionFlag == SYN_HE_READY)//是否已经预制
+				 if (g_SynCommandMessage.synActionFlag == SYN_HE_WAIT_ACTION)//是否已经预制
 				 {
 					 g_SynCommandMessage.synActionFlag = 0; //清空预制
 					 if (pReciveFrame->len != g_SynCommandMessage.lastLen)
@@ -355,40 +392,16 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 					 }
 					 //设置同步合闸参数
 					 count = (pReciveFrame->len - 2)/2;
-					 lastRatio = 0;
 					 for(i = 0; i < count; i++)
 					 {
-						 phase= (g_SynCommandMessage.commandData[1]>>(2*i))&(0x03);
-
-						 //phase 位于1-3之间
-						 if ((phase <= 3) && (phase >= 1))
-						 {
-							 g_PhaseActionRad[i].phase = phase - 1; //减1作为索引
-						 }
-						 else
-						 {
-							 return 0xF1;
-						 }
-						 g_PhaseActionRad[i].actionRad =  g_SynCommandMessage.commandData[2*i + 2] + (((uint16_t)g_SynCommandMessage.commandData[2*i + 3])<<8);
 						 g_PhaseActionRad[i].enable = 0xFF;
-
-						 g_PhaseActionRad[i].realRatio =  (float)g_PhaseActionRad[i].actionRad / 65536   ;//累加计算绝对比率
-
-						 //判断后一个相角不小于前一个
-						 if (g_PhaseActionRad[i].realRatio < lastRatio)
-						 {
-							return 0xFC;
-						 }
-						 g_PhaseActionRad[i].realDiffRatio =   g_PhaseActionRad[i].realRatio  - lastRatio;//相对上一级比率
-						 lastRatio = g_PhaseActionRad[i].realRatio;
-
-						 g_PhaseActionRad[i].count = count;//回路数量
 					 }
 					 //禁止合闸动作相角
 					 for (i = count; i < 3; i++)
 					 {
 						 g_PhaseActionRad[i].enable = 0;
 					 }
+
 					 g_PhaseActionRad[0].loopByte = g_SynCommandMessage.commandData[1];
 					 memcpy(ActionSendFrame.pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 					 ActionSendFrame.pBuffer[0] = id| 0x80;
@@ -404,6 +417,10 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 			 else
 			 {
 				 g_SynCommandMessage.synActionFlag = 0;
+				 for (i = count; i < 3; i++)
+				 {
+					 g_PhaseActionRad[i].enable = 0;
+				 }
 			 }
 		}
 	}
@@ -495,7 +512,7 @@ uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 				}
 				//全部项，已经就绪
 				g_SynCommandMessage.synActionFlag = SYN_HE_WAIT_ACTION;
-				g_SynCommandMessage.closeWaitActionTime.delayTime = CpuTimer0.InterruptCount;
+				g_SynCommandMessage.closeWaitActionTime.startTime = CpuTimer0.InterruptCount;
 				return  0xff;
 			}
 		}

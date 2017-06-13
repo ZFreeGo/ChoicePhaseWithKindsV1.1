@@ -605,6 +605,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[0].startTime = 0;
 	 g_PhaseActionRad[0].realTime = 0;
 	 g_PhaseActionRad[0].readyFlag = 0;
+	 g_PhaseActionRad[0].count = 0;
 
 	 g_PhaseActionRad[1].phase = PHASE_B;
 	 g_PhaseActionRad[1].actionRad = 0;
@@ -613,6 +614,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[1].startTime = 0;
 	 g_PhaseActionRad[1].realTime = 0;
 	 g_PhaseActionRad[1].readyFlag = 0;
+	 g_PhaseActionRad[1].count = 0;
 
 	 g_PhaseActionRad[2].phase = PHASE_C;
 	 g_PhaseActionRad[2].actionRad = 0;
@@ -621,6 +623,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[2].startTime = 0;
 	 g_PhaseActionRad[2].realTime = 0;
 	 g_PhaseActionRad[2].readyFlag = 0;
+	 g_PhaseActionRad[2].count = 0;
 
 
 	 //系统参数上下限
