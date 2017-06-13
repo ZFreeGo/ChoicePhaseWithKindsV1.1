@@ -1241,7 +1241,44 @@ uint8_t CheckVoltageStatus(void)
 
 
 }
+/**
+ *@return 0 -- 无效   0xff--有效
+ *
+ * @brif 检测指定相的系统电压是否符合要求
+ */
+uint8_t CheckPhaseVoltageStatus(uint8_t phase)
+{
+	float voltage = 0;
+	switch(phase)
+	{
+	case  PHASE_A:
+		{
+			voltage = g_SystemVoltageParameter.voltageA;
 
+			break;
+		}
+	case  PHASE_B:
+		{
+			voltage = g_SystemVoltageParameter.voltageB;
+			break;
+		}
+	case  PHASE_C:
+		{
+			voltage = g_SystemVoltageParameter.voltageC;
+			break;
+		}
+	default:
+		{
+			return 0;
+		}
+	}
+	if ((voltage >= g_SystemLimit.inportVoltage.min) &&
+			(voltage <= g_SystemLimit.inportVoltage.max))
+	{
+		return 0xff;
+	}
+	return 0;
+}
 /**
  * @brif 检测系统频率状态
  */

@@ -27,6 +27,9 @@
 #define WOKE_NORMAL 0x55
 
 
+
+#define CAL_FACTOR 0.2098083496094 //理论计算系数
+
 //频率合集
 typedef struct RagFreqCollect
 {
@@ -178,6 +181,7 @@ extern uint8_t UpdateSystemSetData(void);
 
 extern struct DefFrameData  g_NetSendFrame;
 extern uint8_t CheckVoltageStatus(void);
+extern uint8_t CheckPhaseVoltageStatus(uint8_t phase);
 extern uint8_t CheckFrequencyStatus(void);
 
 

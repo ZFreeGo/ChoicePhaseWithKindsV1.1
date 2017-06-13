@@ -264,6 +264,14 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 	float lastRatio = 0; //上一次比率
 	uint8_t phase = 0;
 	ServiceDog();
+
+	//检测电压是否在范围内
+	if(!CheckPhaseVoltageStatus(PHASE_A))
+	{
+		return 1;
+	}
+
+
 	id = pReciveFrame->pBuffer[0];
 	switch (id)
 	{
