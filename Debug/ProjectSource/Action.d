@@ -48,6 +48,7 @@ ProjectSource/Action.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/fpu.h
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/C28x_FPU_FastRTS.h
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h
+ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ConfigADC.h
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/MonitorCalculate.h
 ProjectSource/Action.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h
@@ -106,6 +107,7 @@ D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/strin
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/fpu.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/C28x_FPU_FastRTS.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ConfigADC.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/MonitorCalculate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h: 

@@ -43,11 +43,11 @@ ProjectSource/MonitorCalculate.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/comp
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/fpu.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/C28x_FPU_FastRTS.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h
+ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ConfigADC.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/MonitorCalculate.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SampleProcess.h
-ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/RefParameter.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/StdType.h
 ProjectSource/MonitorCalculate.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceNet.h
@@ -104,11 +104,11 @@ D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/strin
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/fpu.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/C28x_FPU_FastRTS.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ConfigADC.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/MonitorCalculate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SampleProcess.h: 
-J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/RefParameter.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/StdType.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceNet.h: 

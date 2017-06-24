@@ -41,6 +41,24 @@ ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1
 ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/BasicModule.h
 ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/RefParameter.h
 ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h
+ProjectSource/DeviceNet.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/math.h
+ProjectSource/DeviceNet.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/linkage.h
+ProjectSource/DeviceNet.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/_defs.h
+ProjectSource/DeviceNet.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdio.h
+ProjectSource/DeviceNet.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdarg.h
+ProjectSource/DeviceNet.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/string.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/fpu.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/C28x_FPU_FastRTS.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ConfigADC.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/MonitorCalculate.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SampleProcess.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h
+ProjectSource/DeviceNet.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h
 
 ../ProjectSource/DeviceNet.c: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceNet.h: 
@@ -83,3 +101,21 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/BasicModule.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/RefParameter.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/math.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/linkage.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/_defs.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdio.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdarg.h: 
+D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/string.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/fpu.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/C28x_FPU_FastRTS.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ConfigADC.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/MonitorCalculate.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SampleProcess.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h: 

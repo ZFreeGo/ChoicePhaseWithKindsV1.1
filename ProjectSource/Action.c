@@ -44,7 +44,7 @@ void ActionInit(void)
 
 }
 
-static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
+static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 
 /**
  * 引用帧服务
@@ -58,21 +58,11 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 {
 	uint8_t id = 0;
-
-
-	//uint8_t count = 0;
-	uint8_t i = 0;
-
-	//uint8_t ph[3] = {0};//三相选择
-	//uint16_t rad[3] = {0};//弧度归一化值
 	uint8_t tempData[8] = {0};
 	PointUint8 point;
 	uint8_t result = 0;
 	uint8_t codeStart = 0;
 	uint8_t codeEnd = 0;
-
-	//uint8_t remain = 0;
-	//uint16_t temp = 0;
 	ServiceDog();
 	//最小长度必须大于0,且小于8对于单帧
 	if ((pReciveFrame->len == 0) || (pReciveFrame->len > 8))
@@ -89,7 +79,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	switch (id)
 	{
 
-		case 0x11: //主站参数设置
+		case MasterParameterSetOne: //主站参数设置
 		{
 			ServiceDog();
 			if (pReciveFrame->len >= 2) //ID+配置号+属性值 至少3字节
@@ -110,7 +100,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			}
 			break;
 		}
-		case 0x12:// 参数读取顺序结构
+		case MasterParameterRead:// 参数读取顺序结构
 		{
 			ServiceDog();
 			if (pReciveFrame->len == 3) //ID+配置号1+配置号1  为3个字节
@@ -145,33 +135,8 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			break;
 		}
 		
-		case 0x13://参数读取非顺序结构
-		{
-			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
-			{
-				for( i = 1; i < pReciveFrame->len; i++)
-				{
-					ServiceDog();
-					point.pData  = tempData;
-					point.len = 8;
-					result = ReadParamValue(pReciveFrame->pBuffer[i], &point); //一次只获取1个属性
-					if(result)
-					{
-						return 0xE4;
-					}
-					pSendFrame->pBuffer[0] = id| 0x80;
-					pSendFrame->pBuffer[1] = pReciveFrame->pBuffer[i];//赋值功能码
-					memcpy(pSendFrame->pBuffer + 2, point.pData, point.len );
-					pSendFrame->len = point.len + 2;
-					PacktIOMessage(pSendFrame);
-				}
-				pSendFrame->len = 0; //让底层禁止发送
-				return 0;
-			}
 
-			break;
-		}
-		case 0x15:// 配置模式
+		case ConfigMode:// 配置模式
 		{
 			ServiceDog();
 			if (pReciveFrame->len == 4) //ID+配置号 至少2字节
@@ -213,7 +178,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			}
 			break;
 		}
-		case 0x1B://超过一帧数据读取结构
+		case MutltiFrame://超过一帧数据读取结构
 		{
 			ServiceDog();
 			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
@@ -233,10 +198,10 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 
 		}
-		case 0x30: //同步合闸预制
-		case 0x31: //同步合闸执行
+		case SyncOrchestratorReadyClose: //同步合闸预制
+		case SyncOrchestratorCloseAction: //同步合闸执行
 		{
-			return SynHezha(pReciveFrame, pSendFrame);
+			return SynCloseReadyAction(pReciveFrame, pSendFrame);
 		}
 
 	}
@@ -254,7 +219,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
  * @retrun 错误代码
  * @bref   对完整帧进行提取判断
  */
-static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
+static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
 {
 	uint8_t id = 0;
 	uint8_t count = 0;
@@ -275,7 +240,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 	id = pReciveFrame->pBuffer[0];
 	switch (id)
 	{
-		case 0x30://同步合闸预制
+		case SyncOrchestratorReadyClose://同步合闸预制
 		{
 			ServiceDog();
 			//必须不小于4
@@ -372,7 +337,7 @@ static uint8_t SynHezha(struct DefFrameData* pReciveFrame, struct DefFrameData* 
 
 
 		}
-		case 0x31://同步合闸执行
+		case SyncOrchestratorCloseAction://同步合闸执行
 		{
 			ServiceDog();
 			 //判断是否超时
@@ -447,8 +412,8 @@ void SynActionAck(uint8_t state)
 	ServiceDog();
 	if (state != 0)
 	{
-		ActionSendFrame.pBuffer[0] = 0x14;
-		ActionSendFrame.pBuffer[1] = 0x31;//同步执行
+		ActionSendFrame.pBuffer[0] = ErrorACK;
+		ActionSendFrame.pBuffer[1] = SyncOrchestratorCloseAction;//同步执行
 		ActionSendFrame.pBuffer[2] = state;
 		ActionSendFrame.pBuffer[3] = 0xFF;
 		ActionSendFrame.len = 4;
@@ -505,7 +470,7 @@ uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 			{
 				return 0xff;
 			}
-			if (pbuff[0] == (0x05 | 0x80))//从站 同步合闸预制返回指令
+			if (pbuff[0] == (SyncReadyClose | 0x80))//从站 同步合闸预制返回指令
 			{
 				g_PhaseActionRad[i].readyFlag = 0xff;
 

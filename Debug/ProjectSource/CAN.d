@@ -13,6 +13,7 @@ ProjectSource/CAN.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/fpu.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/C28x_FPU_FastRTS.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h
+ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ConfigADC.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/MonitorCalculate.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Examples.h
@@ -48,7 +49,6 @@ ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/inc
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_DefaultISR.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SampleProcess.h
-ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/RefParameter.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceNet.h
 ProjectSource/CAN.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h
@@ -72,6 +72,7 @@ D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/strin
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/fpu.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/C28x_FPU_FastRTS.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceIO.h: 
+J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ConfigADC.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/MonitorCalculate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Examples.h: 
@@ -107,7 +108,6 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_Cla_defines
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/F2806x_DefaultISR.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/AlgorithmInclude/FrequrncyCaluate.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SampleProcess.h: 
-J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Header.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/RefParameter.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceNet.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h: 

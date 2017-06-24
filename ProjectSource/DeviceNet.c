@@ -579,9 +579,6 @@ static void AckCycleInquireMsgService(void)
 	DeviceNetReciveFrame.complteFlag = 0;
 	ServiceDog();
 	PacktIOMessage(&DeviceNetSendFrame);
-	//DeviceNetSendFrame.ID =  MAKE_GROUP1_ID(GROUP1_POLL_STATUS_CYCLER_ACK, DeviceNetObj.MACID);
-
-	//SendData(&DeviceNetSendFrame);
 }
 /**
  * 对发送IO数据进行打包，使用轮询
