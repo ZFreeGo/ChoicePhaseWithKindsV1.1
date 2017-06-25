@@ -108,6 +108,28 @@ RefSynCommandMessage;
     };
 
 
+#define ERROR_LEN 			 0x11
+#define ERROR_UNIDENTIFIED_ID      0x12
+#define ERROR_SET_VALUE      0x13
+#define ERROR_INDEX          0x14
+#define ERROR_LOCAL_MAC 0x15
+#define ERROR_MASTER_MAC 0x16
+#define ERROR_FUNCTION 0x17
+#define ERROR_VOLTAGE 0x18
+#define ERROR_REPEAT_CHOICE 0x19
+#define ERROR_RAD_ASCEND 0x20
+#define ERROR_PHASE_SCOPE 0x21
+#define ERROR_MATCHED_ID 0x22
+#define ERROR_MATCHED_CMD 0x23
+#define ERROR_OVERTIME 0x24
+#define ERROR_OPERATE_SEQUENCE 0x25
+
+
+#define ENTER_CONFIG  0xAA
+#define EXIT_CONFIG   0x55
+#define MULTI_FRAME_FUNCTION 0xAA
+
+
 #define SYN_HE_READY 0xAA     //Ô¤ÖÆ×´Ì¬--µÈ´ýÓ¦´ð
 #define SYN_HE_WAIT_ACTION 0xA5 //Ô¤ÖÆ×´Ì¬--µÈ´ýÖ´ÐÐÃüÁî
 #define SYN_HE_ACTION 0x55

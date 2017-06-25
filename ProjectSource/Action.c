@@ -67,13 +67,13 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 	//最小长度必须大于0,且小于8对于单帧
 	if ((pReciveFrame->len == 0) || (pReciveFrame->len > 8))
 	{
-		return 0XF1;
+		return ERROR_LEN ;
 	}
 	//接收帧ID必须大于等于0x30 --表示DSP控制指令
 	id = pReciveFrame->pBuffer[0];
 	if(id < 0x10)
 	{
-		return 0XF2;
+		return ERROR_UNIDENTIFIED_ID;
 	}
 	ServiceDog();
 	switch (id)
@@ -89,7 +89,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				result = SetParamValue(pReciveFrame->pBuffer[1], &point);
 				if(result)
 				{
-					return 0xE1;
+					return ERROR_SET_VALUE;
 				}
 				pSendFrame->pBuffer[0] = id| 0x80;
 				pSendFrame->len = pReciveFrame->len;
@@ -109,7 +109,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				codeEnd = pReciveFrame->pBuffer[2];
 				if (codeEnd < codeStart) //结束值不小于开始值
 				{
-					return 0xE2;
+					return ERROR_INDEX;
 				}
 
 				for( ; codeStart <= codeEnd; codeStart++)
@@ -143,13 +143,13 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			{
 				if (pReciveFrame->pBuffer[1] != g_MacList[0])
 				{
-					return 0xB0;
+					return ERROR_LOCAL_MAC;
 				}
 				if (pReciveFrame->pBuffer[2] != DeviceNetObj.assign_info.master_MACID)
 				{
-					return 0xB1;
+					return ERROR_MASTER_MAC;
 				}
-				if (pReciveFrame->pBuffer[3] == 0x55)//离开配置模式
+				if (pReciveFrame->pBuffer[3] == EXIT_CONFIG)//离开配置模式
 				{
 
 					result = UpdateSystemSetData();
@@ -158,13 +158,13 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 					pSendFrame->pBuffer[0] = id| 0x80;
 					pSendFrame->pBuffer[1] = g_MacList[0];
 					pSendFrame->pBuffer[2] = DeviceNetObj.assign_info.master_MACID;
-					pSendFrame->pBuffer[3] = 0x55;
+					pSendFrame->pBuffer[3] = EXIT_CONFIG;
 		 			pSendFrame->pBuffer[4] = result;
 					pSendFrame->len = 5;
 					return 0;
 
 				}
-				else if (pReciveFrame->pBuffer[3] == 0xAA)//进入配置模式
+				else if (pReciveFrame->pBuffer[3] == ENTER_CONFIG)//进入配置模式
 				{
 					g_WorkMode = pReciveFrame->pBuffer[3];
 					//应答回复
@@ -184,9 +184,9 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 			if (pReciveFrame->len >= 2) //ID+配置号 至少2字节
 			{
 				ServiceDog();
-				if (pReciveFrame->pBuffer[1] != 0xAA)
+				if (pReciveFrame->pBuffer[1] != MULTI_FRAME_FUNCTION)
 				{
-					return 0xE5;
+					return ERROR_FUNCTION;
 				}
 				SendMultiFrame(pSendFrame);
 
@@ -233,7 +233,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 	//检测电压是否在范围内
 	if(!CheckPhaseVoltageStatus(PHASE_A))
 	{
-		return 1;
+		return ERROR_VOLTAGE;
 	}
 
 
@@ -246,12 +246,12 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 			//必须不小于4
 			if (pReciveFrame->len < 4)
 			{
-				return 0XF3;
+				return ERROR_LEN;
 			}
 			//必须为2的偶数倍
 			if (pReciveFrame->len % 2 != 0)
 			{
-				return 0XF4;
+				return ERROR_LEN;
 			}
 			//计算容纳的路数
 			count = (pReciveFrame->len - 2)/2;
@@ -266,13 +266,13 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 				//相选择不能相同
 				if ((ph[0] == ph[1]) || (ph[2] == ph[1]) || (ph[2] == ph[0]))
 				{
-					return 0XF5;
+					return ERROR_REPEAT_CHOICE;
 				}
 
-				//弧度必须以此增大
+				//弧度必须依次增大
 				if(!((rad[2] >= rad[1] )&&(rad[1] >= rad[0] )))
 				{
-					return 0XF6;
+					return ERROR_RAD_ASCEND;
 				}
 
 			}
@@ -280,12 +280,12 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 			{
 				if (ph[0] == ph[1])
 				{
-					return 0XF7;
+					return ERROR_REPEAT_CHOICE;
 
 				}
 				if(!(rad[1] >= rad[0] ))
 				{
-					return 0XF8;
+					return ERROR_RAD_ASCEND;
 				}
 			}
 
@@ -303,7 +303,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 				 }
 				 else
 				 {
-					 return 0xF1;
+					 return ERROR_PHASE_SCOPE;
 				 }
 				 g_PhaseActionRad[i].actionRad =  pReciveFrame->pBuffer[2*i + 2] + (((uint16_t)pReciveFrame->pBuffer[2*i + 3])<<8);
 
@@ -313,7 +313,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 				 //判断后一个相角不小于前一个
 				 if (g_PhaseActionRad[i].realRatio < lastRatio)
 				 {
-					return 0xFC;
+					return ERROR_RAD_ASCEND;
 				 }
 				 g_PhaseActionRad[i].realDiffRatio =   g_PhaseActionRad[i].realRatio  - lastRatio;//相对上一级比率
 				 lastRatio = g_PhaseActionRad[i].realRatio;
@@ -348,19 +348,19 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 					 g_SynCommandMessage.synActionFlag = 0; //清空预制
 					 if (pReciveFrame->len != g_SynCommandMessage.lastLen)
 					 {
-						 return 0XF9;
+						 return ERROR_LEN;
 					 }
 					 //上一条指令是否为合闸预制
 					 if (g_SynCommandMessage.commandData[i] != 0x30)
 					 {
-						 return 0XFA;
+						 return ERROR_MATCHED_ID ;
 					 }
 					 //比较执行指令与预制指令是否相同
 					 for(i = 1; i < pReciveFrame->len;i++)
 					 {
 						if (g_SynCommandMessage.commandData[i] != pReciveFrame->pBuffer[i])
 						{
-							return 0XFB;
+							return  ERROR_MATCHED_CMD;
 						}
 					 }
 					 //设置同步合闸参数
@@ -385,6 +385,10 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 					 return 0;
 
 				 }
+				 else
+				 {
+					 return ERROR_OPERATE_SEQUENCE;
+				 }
 
 			 }
 			 else
@@ -394,6 +398,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 				 {
 					 g_PhaseActionRad[i].enable = 0;
 				 }
+				 return ERROR_OVERTIME;
 			 }
 		}
 	}
