@@ -330,9 +330,15 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 			g_SynCommandMessage.lastLen = pReciveFrame->len;
 			g_SynCommandMessage.synActionFlag = SYN_HE_READY;//暂存指令标志
 			g_SynCommandMessage.closeWaitAckTime.startTime = CpuTimer0.InterruptCount;
-			memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
-			pSendFrame->pBuffer[0] = id| 0x80;
-			pSendFrame->len = pReciveFrame->len;
+			//memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
+			//pSendFrame->pBuffer[0] = id| 0x80;
+
+			memcpy(ActionSendFrame.pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
+			ActionSendFrame.pBuffer[0] = id| 0x80;
+			ActionSendFrame.len = pReciveFrame->len;
+
+			//pSendFrame->len = pReciveFrame->len;
+			pSendFrame->len = 0;
 			return 0;
 
 
@@ -424,11 +430,29 @@ void SynActionAck(uint8_t state)
 		ActionSendFrame.len = 4;
 	}
 	PacktIOMessage( &ActionSendFrame);
-
-
-
 }
 
+
+/**
+ * 同步执行应答
+ *
+ * @param  应答状态 0-正常，回复正常应答， 非0--一次代号
+ *
+ * @retrun null
+ */
+void ErrorAck(uint8_t id,uint8_t state)
+{
+	ServiceDog();
+	if (state != 0)
+	{
+		ActionSendFrame.pBuffer[0] = ErrorACK;
+		ActionSendFrame.pBuffer[1] = id;//同步执行
+		ActionSendFrame.pBuffer[2] = state;
+		ActionSendFrame.pBuffer[3] = 0xFF;
+		ActionSendFrame.len = 4;
+	}
+
+}
 /**
  * 同步合闸等待应答状态
  * 判断是否为从站节点应答，判断是否是正常合闸预制应答，若是则置为相应的合闸预制状态，检测全部预制相是否齐全,
@@ -491,6 +515,7 @@ uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 				//全部项，已经就绪
 				g_SynCommandMessage.synActionFlag = SYN_HE_WAIT_ACTION;
 				g_SynCommandMessage.closeWaitActionTime.startTime = CpuTimer0.InterruptCount;
+				PacktIOMessage( &ActionSendFrame);//发送应答
 				return  0xff;
 			}
 		}

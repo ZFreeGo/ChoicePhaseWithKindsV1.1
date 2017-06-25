@@ -273,7 +273,7 @@ void SynchronizTrigger(float* pData)
 		test_result = CalculateDelayTime(g_PhaseActionRad, phase);
 		if (test_result != 0)
 		{
-			SynActionAck(0xA1);
+			SynActionAck(ERROR_CAL_DELAY);
 			return;
 		}
 
@@ -281,7 +281,7 @@ void SynchronizTrigger(float* pData)
 		test_result = CalculateDelayTime(g_PhaseActionRad + 1, phase);
 		if (test_result != 0)
 		{
-			SynActionAck(0xA1);
+			SynActionAck(ERROR_CAL_DELAY);
 			return;
 		}
 
@@ -289,7 +289,7 @@ void SynchronizTrigger(float* pData)
 		test_result = CalculateDelayTime(g_PhaseActionRad + 2, phase);
 		if (test_result != 0)
 		{
-			SynActionAck(0xA1);
+			SynActionAck(ERROR_CAL_DELAY);
 			return;
 		}
 		ServiceDog();
@@ -297,7 +297,7 @@ void SynchronizTrigger(float* pData)
 		//Ëã´íÎó±¨´í
 		if (test_result != 0)
 		{
-			SynActionAck(0xA1);
+			SynActionAck( ERROR_ACTION_TIME);
 			return;
 		}
 		ServiceDog();
@@ -309,7 +309,7 @@ void SynchronizTrigger(float* pData)
 			diffA = fabsf(calTimeB - calTimeA - (g_PhaseActionRad[1].realTime  - g_PhaseActionRad[0].realTime));
 			if (diffA > 3)
 			{
-				SynActionAck(0xA2);
+				SynActionAck(ERROR_OVER_TOLERANCE);
 				return;//Ð£Ñé´íÎó
 			}
 		}
@@ -317,7 +317,7 @@ void SynchronizTrigger(float* pData)
 		test_result = PulseOutTrigger(g_PhaseActionRad);
 		if (test_result!=0)
 		{
-			SynActionAck(0xA3);
+			SynActionAck(ERROR_OUT_PULSE);
 		}
 		ServiceDog();
 		SendMultiFrame(&g_NetSendFrame);

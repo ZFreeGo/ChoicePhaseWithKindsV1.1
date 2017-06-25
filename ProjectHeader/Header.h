@@ -41,8 +41,8 @@
 
 //单独模式--单独的永磁控制器与独立的永磁同步控制器
 //
-//#define ALONG_MODE  0xAAAA
-#define INTEG_MODE  0x5555
+
+//#define INTEG_MODE  0x5555
 
 #include <math.h>
 #include <stdio.h>

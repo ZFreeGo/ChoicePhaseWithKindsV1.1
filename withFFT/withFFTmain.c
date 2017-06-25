@@ -62,7 +62,9 @@ int main(void)
 	PieVectTable.EPWM3_INT = &epwm3_timer_isr;
 	PieVectTable.EPWM4_INT = &epwm4_timer_isr;
 	PieVectTable.ECAN0INTA = &Can0Recive_ISR;
+#ifdef INTEG_MODE
 	PieVectTable.ECAP2_INT = &ecap2_isr;
+#endif
 	EDIS;
 	// This is needed to disable write to EALLOW protected registers
 

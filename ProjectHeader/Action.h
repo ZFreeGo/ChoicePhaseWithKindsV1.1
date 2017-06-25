@@ -108,21 +108,25 @@ RefSynCommandMessage;
     };
 
 
-#define ERROR_LEN 			 0x11
-#define ERROR_UNIDENTIFIED_ID      0x12
-#define ERROR_SET_VALUE      0x13
-#define ERROR_INDEX          0x14
-#define ERROR_LOCAL_MAC 0x15
-#define ERROR_MASTER_MAC 0x16
-#define ERROR_FUNCTION 0x17
-#define ERROR_VOLTAGE 0x18
-#define ERROR_REPEAT_CHOICE 0x19
-#define ERROR_RAD_ASCEND 0x20
-#define ERROR_PHASE_SCOPE 0x21
-#define ERROR_MATCHED_ID 0x22
-#define ERROR_MATCHED_CMD 0x23
-#define ERROR_OVERTIME 0x24
-#define ERROR_OPERATE_SEQUENCE 0x25
+#define ERROR_LEN 					1
+#define ERROR_UNIDENTIFIED_ID       2
+#define ERROR_SET_VALUE      		3
+#define ERROR_INDEX          		4
+#define ERROR_LOCAL_MAC 			5
+#define ERROR_MASTER_MAC 			6
+#define ERROR_FUNCTION 				7
+#define ERROR_VOLTAGE 				8
+#define ERROR_REPEAT_CHOICE 		9
+#define ERROR_RAD_ASCEND 			10
+#define ERROR_PHASE_SCOPE 			11
+#define ERROR_MATCHED_ID 			12
+#define ERROR_MATCHED_CMD 		 	13
+#define ERROR_OVERTIME 				14
+#define ERROR_OPERATE_SEQUENCE 		15
+#define ERROR_CAL_DELAY 			16
+#define ERROR_ACTION_TIME 			17
+#define ERROR_OVER_TOLERANCE 		28
+#define ERROR_OUT_PULSE 			19
 
 
 #define ENTER_CONFIG  0xAA
@@ -138,6 +142,7 @@ extern void ActionInit(void);
 extern uint8_t  FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 extern void  SendMultiFrame(struct DefFrameData* pSendFrame);
 extern void SynActionAck(uint8_t state);
+extern void ErrorAck(uint8_t id,uint8_t state);
 extern uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len);
 //全局变量
 extern RefSynCommandMessage g_SynCommandMessage;

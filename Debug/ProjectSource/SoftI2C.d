@@ -55,7 +55,6 @@ ProjectSource/SoftI2C.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3
 ProjectSource/SoftI2C.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h
 ProjectSource/SoftI2C.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h
 ProjectSource/SoftI2C.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h
-ProjectSource/SoftI2C.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h
 ProjectSource/SoftI2C.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h
 
 ../ProjectSource/SoftI2C.c: 
@@ -113,5 +112,4 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h: 
-J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h: 
