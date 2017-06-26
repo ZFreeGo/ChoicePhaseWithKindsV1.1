@@ -771,7 +771,7 @@ void AckMsgService(void)
 		if(IsOverTime(LoopStatusSend.startTime, LoopStatusSend.delayTime) )
 		{
 
-			DeviceNetSendFrame.pBuffer[0] = 0x1A | 0x80;
+			DeviceNetSendFrame.pBuffer[0] = SubstationStatuesChange | 0x80;
 			DeviceNetSendFrame.pBuffer[1] = g_WorkMode;  //工作模式
 			DeviceNetSendFrame.pBuffer[2] = CheckVoltageStatus();//电压越限制检测
 			DeviceNetSendFrame.pBuffer[3] = CheckFrequencyStatus();

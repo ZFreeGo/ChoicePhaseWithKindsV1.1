@@ -312,30 +312,40 @@ __interrupt void epwm1_timer_isr(void)
 
 __interrupt void epwm2_timer_isr(void)
 {
-   EPwm2TimerIntCount++;
-
-	if (EPwm2TimerIntCount == 1) //首次进入改输出周期时间为100us
+	if (EPwm2TimerIntCount == 0) //首次进入改输出周期时间为100us
 	{
 		EPwm2TimerInit(100, TIME_BASE_2US);
-		EPwm2TimerIntCount = 1;
-	}
 
-	if (EPwm2TimerIntCount % 2 == 1)
-	{
-		SET_OUTB1_H;
 	}
 	else
 	{
-		SET_OUTB1_L;
+		if (EPwm2TimerIntCount % 2 == 1)
+		{
+#ifdef INTEG_MODE
+			SET_OUTB1_H;
+#else
+		    SET_OUTA1_H
+#endif
+		}
+		else
+		{
+#ifdef INTEG_MODE
+			SET_OUTB1_L;
+#else
+		    SET_OUTA1_L
+#endif
+		}
+		if (EPwm2TimerIntCount >= 10)
+		{
+			EPwm2Regs.TBCTL.bit.CTRMODE = 3; //停止
+#ifdef INTEG_MODE
+			SET_OUTB1_L;
+#else
+		    SET_OUTA1_L
+#endif
+		}
 	}
-
-	if (EPwm2TimerIntCount >= 9)
-	{
-		EPwm2Regs.TBCTL.bit.CTRMODE = 3; //停止
-		EPwm2TimerIntCount = 0;
-		SET_OUTB1_L;
-	}
-
+	EPwm2TimerIntCount++;
    // Clear INT flag for this timer
    EPwm2Regs.ETCLR.bit.INT = 1;
 
@@ -345,28 +355,29 @@ __interrupt void epwm2_timer_isr(void)
 
 __interrupt void epwm3_timer_isr(void)
 {
-   EPwm3TimerIntCount++;
-   	if (EPwm3TimerIntCount == 1) //首次进入改输出周期时间为100us
-   	{
-   		EPwm3TimerInit(100, TIME_BASE_2US);
-   		EPwm3TimerIntCount = 1;
-   	}
 
-   	if (EPwm3TimerIntCount % 2 == 1)
-   	{
-   		SET_OUTB2_H;
-   	}
-   	else
-   	{
-   		SET_OUTB2_L;
-   	}
+	if (EPwm3TimerIntCount == 0) //首次进入改输出周期时间为100us
+	{
+		EPwm3TimerInit(100, TIME_BASE_2US);
 
-     if (EPwm3TimerIntCount >= 9)
-     {
-		  EPwm3Regs.TBCTL.bit.CTRMODE = 3; //停止
-		  EPwm3TimerIntCount = 0;
-		  SET_OUTB2_L;
-     }
+	}
+	else
+	{
+		if (EPwm3TimerIntCount % 2 == 1)
+		{
+			SET_OUTB3_H;
+		}
+		else
+		{
+			SET_OUTB3_L;
+		}
+		if (EPwm3TimerIntCount >= 10)
+		{
+			EPwm3Regs.TBCTL.bit.CTRMODE = 3; //停止
+			SET_OUTB3_L;
+		}
+	}
+	EPwm3TimerIntCount++;
 
    // Clear INT flag for this timer
    EPwm3Regs.ETCLR.bit.INT = 1;
@@ -376,28 +387,28 @@ __interrupt void epwm3_timer_isr(void)
 
 __interrupt void epwm4_timer_isr(void) //40M
 {
-   EPwm4TimerIntCount++;
-   if (EPwm4TimerIntCount == 1) //首次进入改输出周期时间为100us
-   {
-	   EPwm4TimerInit(100, TIME_BASE_2US);
-	   EPwm4TimerIntCount = 1;
-   }
+	if (EPwm4TimerIntCount == 0) //首次进入改输出周期时间为100us
+	{
+		EPwm4TimerInit(100, TIME_BASE_2US);
 
-   if (EPwm4TimerIntCount % 2 == 1)
-   {
-	   SET_OUTB3_H;
-   }
-   else
-   {
-	   SET_OUTB3_L;
-   }
-
-   if (EPwm4TimerIntCount >= 9)
-   {
-	   EPwm4Regs.TBCTL.bit.CTRMODE = 3; //停止
-	   EPwm4TimerIntCount = 0;
-	   SET_OUTB3_L;
-   }
+	}
+	else
+	{
+		if (EPwm4TimerIntCount % 2 == 1)
+		{
+			SET_OUTB4_H;
+		}
+		else
+		{
+			SET_OUTB4_L;
+		}
+		if (EPwm4TimerIntCount >= 10)
+		{
+			EPwm2Regs.TBCTL.bit.CTRMODE = 3; //停止
+			SET_OUTB4_L;
+		}
+	}
+	EPwm4TimerIntCount++;
 
    // Clear INT flag for this timer
    EPwm4Regs.ETCLR.bit.INT = 1;
