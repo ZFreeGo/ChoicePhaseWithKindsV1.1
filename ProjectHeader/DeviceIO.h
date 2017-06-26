@@ -19,6 +19,16 @@
 
 #ifdef INTEG_MODE
 
+//DECT输出引脚
+#define SET_DECTA_H {GpioDataRegs.GPASET.bit.GPIO17 = 1;}
+#define SET_DECTA_L {GpioDataRegs.GPACLEAR.bit.GPIO17 = 1;}
+
+#define SET_DECTB_H {GpioDataRegs.GPASET.bit.GPIO8 = 1;}
+#define SET_DECTB_L {GpioDataRegs.GPACLEAR.bit.GPIO8 = 1;}
+
+#define SET_DECTC_H {GpioDataRegs.GPASET.bit.GPIO6 = 1;}
+#define SET_DECTC_L {GpioDataRegs.GPACLEAR.bit.GPIO6 = 1;}
+
 //取反操作
 #define  TOGGLE_LED1  {GpioDataRegs.GPATOGGLE.bit.GPIO9 = 1;}
 #define  TOGGLE_LED2  {GpioDataRegs.GPATOGGLE.bit.GPIO29 = 1; }
@@ -74,6 +84,16 @@
 
 #else
 
+//DECT输出引脚
+#define SET_DECTA_H {GpioDataRegs.GPASET.bit.GPIO18 = 1;}
+#define SET_DECTA_L {GpioDataRegs.GPACLEAR.bit.GPIO18 = 1;}
+
+#define SET_DECTB_H {GpioDataRegs.GPASET.bit.GPIO17 = 1;}
+#define SET_DECTB_L {GpioDataRegs.GPACLEAR.bit.GPIO17 = 1;}
+
+#define SET_DECTC_H {GpioDataRegs.GPASET.bit.GPIO8 = 1;}
+#define SET_DECTC_L {GpioDataRegs.GPACLEAR.bit.GPIO8 = 1;}
+
 
 //取反操作
 #define  TOGGLE_LED1  {GpioDataRegs.GPATOGGLE.bit.GPIO6 = 1;}
@@ -92,13 +112,13 @@
 
 
 //永磁控制 同步端口控制
-#define SET_OUTA1_H {GpioDataRegs.GPASET.bit.GPIO12 = 1;}
-#define SET_OUTA1_L {GpioDataRegs.GPACLEAR.bit.GPIO12 = 1;}
+#define SET_OUTA1_H {GpioDataRegs.GPASET.bit.GPIO12 = 1;  SET_DECTA_H}
+#define SET_OUTA1_L {GpioDataRegs.GPACLEAR.bit.GPIO12 = 1; SET_DECTA_L}
 
 #define GET_INA1  GpioDataRegs.GPADAT.bit.GPIO9
 
 
-#define SET_OUTA2_H {GpioDataRegs.GPASET.bit.GPIO39 = 1;}
+#define SET_OUTA2_H {GpioDataRegs.GPASET.bit.GPIO39 = 1; }
 #define SET_OUTA2_L {GpioDataRegs.GPACLEAR.bit.GPIO39 = 1;}
 
 #define GET_INA2  GpioDataRegs.GPADAT.bit.GPIO19
@@ -113,13 +133,13 @@
 
 #define GET_INB2  GpioDataRegs.GPADAT.bit.GPIO15
 
-#define SET_OUTB3_H {GpioDataRegs.GPASET.bit.GPIO20 = 1;}
-#define SET_OUTB3_L {GpioDataRegs.GPACLEAR.bit.GPIO20 = 1;}
+#define SET_OUTB3_H {GpioDataRegs.GPASET.bit.GPIO20 = 1; SET_DECTB_H;}
+#define SET_OUTB3_L {GpioDataRegs.GPACLEAR.bit.GPIO20 = 1; SET_DECTB_L;}
 
 #define GET_INB3  GpioDataRegs.GPADAT.bit.GPIO26
 
-#define SET_OUTB4_H {GpioDataRegs.GPASET.bit.GPIO23 = 1;}
-#define SET_OUTB4_L {GpioDataRegs.GPACLEAR.bit.GPIO23 = 1;}
+#define SET_OUTB4_H {GpioDataRegs.GPASET.bit.GPIO23 = 1; SET_DECTC_H;}
+#define SET_OUTB4_L {GpioDataRegs.GPACLEAR.bit.GPIO23 = 1; SET_DECTC_L;}
 
 #define GET_INB4  GpioDataRegs.GPADAT.bit.GPIO27
 
@@ -131,8 +151,6 @@
 
 #define SDAA_DIR_IN {GpioCtrlRegs.GPBDIR.bit.GPIO33 = 0;}
 #define SDAA_DIR_OUT {GpioCtrlRegs.GPBDIR.bit.GPIO33 = 1;}
-
-
 
 
 

@@ -100,6 +100,17 @@ void InitDeviceIO(void)
 	GpioCtrlRegs.GPADIR.bit.GPIO3 = 0;
 	GpioCtrlRegs.GPAQSEL1.bit.GPIO3 = 2;//质量控制
 
+
+	// DECTA
+	GpioCtrlRegs.GPAMUX2.bit.GPIO17 = 0;
+	GpioCtrlRegs.GPADIR.bit.GPIO17= 1;
+
+	// DECTB
+	GpioCtrlRegs.GPAMUX2.bit.GPIO8 = 0;
+	GpioCtrlRegs.GPADIR.bit.GPIO8= 1;
+	// DECTC
+	GpioCtrlRegs.GPAMUX1.bit.GPIO16 = 0;
+	GpioCtrlRegs.GPADIR.bit.GPIO16= 1;
 /******************************************************************************
 	GpioCtrlRegs.GPAQSEL1.bit.GPIO13 = 2;//质量控制  6*Sample=6* 0x80*2*t
 	GpioCtrlRegs.GPACTRL.bit.QUALPRD0 = 0x80;
@@ -121,6 +132,9 @@ void InitDeviceIO(void)
 	OFF_LED3;
 
 
+	SET_DECTA_L;
+	SET_DECTB_L;
+	SET_DECTC_L;
 
 }
 
@@ -215,6 +229,19 @@ void InitDeviceIO(void)
 	GpioCtrlRegs.GPADIR.bit.GPIO3 = 0;
 	GpioCtrlRegs.GPAQSEL1.bit.GPIO3 = 2;//质量控制
 
+
+	 // DECTA
+	GpioCtrlRegs.GPAMUX2.bit.GPIO18 = 0;
+	GpioCtrlRegs.GPADIR.bit.GPIO18= 1;
+
+	// DECTB
+	GpioCtrlRegs.GPAMUX2.bit.GPIO17 = 0;
+	GpioCtrlRegs.GPADIR.bit.GPIO17= 1;
+	// DECTC
+	GpioCtrlRegs.GPAMUX1.bit.GPIO8 = 0;
+	GpioCtrlRegs.GPADIR.bit.GPIO8= 1;
+	//GpioDataRegs.GPATOGGLE.bit.GPIO18
+
 /******************************************************************************
 	GpioCtrlRegs.GPAQSEL1.bit.GPIO13 = 2;//质量控制  6*Sample=6* 0x80*2*t
 	GpioCtrlRegs.GPACTRL.bit.QUALPRD0 = 0x80;
@@ -234,6 +261,11 @@ void InitDeviceIO(void)
 	OFF_LED1;
 	OFF_LED2;
 	OFF_LED3;
+
+	SET_DECTA_L;
+	SET_DECTB_L;
+	SET_DECTC_L;
+
 }
 
 

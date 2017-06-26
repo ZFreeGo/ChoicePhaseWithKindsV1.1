@@ -322,7 +322,9 @@ void SynchronizTrigger(float* pData)
 		ServiceDog();
 		SendMultiFrame(&g_NetSendFrame);
 		ServiceDog();
+		SET_DECTA_L;
 		SynActionAck(0);
+
 		ServiceDog();
 }
 

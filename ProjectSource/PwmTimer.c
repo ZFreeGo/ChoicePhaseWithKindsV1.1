@@ -15,6 +15,7 @@
 #include "DSP28x_Project.h"
 #include "PwmTimer.h"
 #include "DeviceIO.h"
+#include "refParameter.h"
 
 uint32_t  EPwm2TimerIntCount;
 uint32_t  EPwm3TimerIntCount;
@@ -319,32 +320,37 @@ __interrupt void epwm2_timer_isr(void)
 	}
 	else
 	{
+#ifdef INTEG_MODE
 		if (EPwm2TimerIntCount % 2 == 1)
 		{
-#ifdef INTEG_MODE
 			SET_OUTB1_H;
-#else
-		    SET_OUTA1_H
-#endif
 		}
 		else
 		{
-#ifdef INTEG_MODE
 			SET_OUTB1_L;
-#else
-		    SET_OUTA1_L
-#endif
+
 		}
-		if (EPwm2TimerIntCount >= 10)
+		if (EPwm2TimerIntCount >= PULSE_COUNT)
 		{
 			EPwm2Regs.TBCTL.bit.CTRMODE = 3; //ֹͣ
-#ifdef INTEG_MODE
 			SET_OUTB1_L;
+		}
 #else
+		if (EPwm2TimerIntCount % 2 == 1)
+		{
+		    SET_OUTA1_H;
+		}
+		else
+		{
 		    SET_OUTA1_L
-#endif
+		}
+		if (EPwm2TimerIntCount >=  PULSE_COUNT)
+		{
+			EPwm2Regs.TBCTL.bit.CTRMODE = 3; //ֹͣ
+		    SET_OUTA1_L;
 		}
 	}
+#endif
 	EPwm2TimerIntCount++;
    // Clear INT flag for this timer
    EPwm2Regs.ETCLR.bit.INT = 1;
@@ -371,7 +377,7 @@ __interrupt void epwm3_timer_isr(void)
 		{
 			SET_OUTB3_L;
 		}
-		if (EPwm3TimerIntCount >= 10)
+		if (EPwm3TimerIntCount >=  PULSE_COUNT)
 		{
 			EPwm3Regs.TBCTL.bit.CTRMODE = 3; //ֹͣ
 			SET_OUTB3_L;
@@ -402,7 +408,7 @@ __interrupt void epwm4_timer_isr(void) //40M
 		{
 			SET_OUTB4_L;
 		}
-		if (EPwm4TimerIntCount >= 10)
+		if (EPwm4TimerIntCount >=  PULSE_COUNT)
 		{
 			EPwm2Regs.TBCTL.bit.CTRMODE = 3; //ֹͣ
 			SET_OUTB4_L;
