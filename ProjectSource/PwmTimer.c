@@ -349,8 +349,9 @@ __interrupt void epwm2_timer_isr(void)
 			EPwm2Regs.TBCTL.bit.CTRMODE = 3; //ֹͣ
 		    SET_OUTA1_L;
 		}
-	}
 #endif
+	}
+
 	EPwm2TimerIntCount++;
    // Clear INT flag for this timer
    EPwm2Regs.ETCLR.bit.INT = 1;

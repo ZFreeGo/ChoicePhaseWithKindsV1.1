@@ -106,10 +106,10 @@ void InitDeviceIO(void)
 	GpioCtrlRegs.GPADIR.bit.GPIO17= 1;
 
 	// DECTB
-	GpioCtrlRegs.GPAMUX2.bit.GPIO8 = 0;
+	GpioCtrlRegs.GPAMUX1.bit.GPIO8 = 0;
 	GpioCtrlRegs.GPADIR.bit.GPIO8= 1;
 	// DECTC
-	GpioCtrlRegs.GPAMUX1.bit.GPIO16 = 0;
+	GpioCtrlRegs.GPAMUX2.bit.GPIO16 = 0;
 	GpioCtrlRegs.GPADIR.bit.GPIO16= 1;
 /******************************************************************************
 	GpioCtrlRegs.GPAQSEL1.bit.GPIO13 = 2;//÷ ¡øøÿ÷∆  6*Sample=6* 0x80*2*t

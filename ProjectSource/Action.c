@@ -490,6 +490,20 @@ uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 	}
 	ServiceDog();
 	mac = GET_GROUP1_MAC(*pID);
+
+#ifdef INTEG_MODE
+	if (pbuff[0] == (SyncReadyClose | 0x80))//从站 同步合闸预制返回指令
+	{
+		if(pbuff[1] == g_PhaseActionRad[0].loopByte)
+		{
+			g_SynCommandMessage.synActionFlag = SYN_HE_WAIT_ACTION;
+			g_SynCommandMessage.closeWaitActionTime.startTime = CpuTimer0.InterruptCount;
+			PacktIOMessage( &ActionSendFrame);//发送应答
+			return  0xff;
+		}
+	}
+
+#else
 	for( i = 0; i < g_PhaseActionRad[0].count; i++)
 	{
 		//地址是否来自A,B,C相
@@ -520,6 +534,7 @@ uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 			}
 		}
 	}
+#endif
 	return 0xff;
 
 
