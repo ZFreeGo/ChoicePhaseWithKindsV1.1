@@ -50,8 +50,8 @@ ORDERED_OBJS += \
 "../lib/rts2800_fpu32_fast_supplement.lib" \
 $(GEN_CMDS__FLAG) \
 -lrts2800_fpu32.lib \
--l"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/lib/rts2800_fpu32_fast_supplement.lib" \
--l"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/lib/C28x_FPU_Lib.lib" \
+-l"F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/lib/rts2800_fpu32_fast_supplement.lib" \
+-l"F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/lib/C28x_FPU_Lib.lib" \
 
 -include ../makefile.init
 
@@ -187,7 +187,7 @@ all: ChoicePhaseWithKindsV1.3.out
 ChoicePhaseWithKindsV1.3.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: C2000 Linker'
-	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla0 --vcu_support=vcu0 --float_support=fpu32 -O0 --opt_for_speed=1 --advice:performance=all -g --c99 --relaxed_ansi --display_error_number --diag_warning=225 -z -m"ChoicePhaseWithKindsV1.3.map" --stack_size=0x400 --warn_sections -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/lib" -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/lib" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectSource" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/source" -i"J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include" --priority --reread_libs --display_error_number --xml_link_info="ChoicePhaseWithKindsV1.3_linkInfo.xml" --rom_model -o "ChoicePhaseWithKindsV1.3.out" $(ORDERED_OBJS)
+	"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla0 --vcu_support=vcu0 --float_support=fpu32 -O0 --opt_for_speed=1 --advice:performance=all -g --c99 --relaxed_ansi --display_error_number --diag_warning=225 -z -m"ChoicePhaseWithKindsV1.3.map" --stack_size=0x400 --warn_sections -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/lib" -i"D:/Program Files (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include" -i"F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/lib" -i"F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectSource" -i"F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader" -i"F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/source" -i"F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/include" --priority --reread_libs --display_error_number --xml_link_info="ChoicePhaseWithKindsV1.3_linkInfo.xml" --rom_model -o "ChoicePhaseWithKindsV1.3.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

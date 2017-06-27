@@ -315,17 +315,19 @@ void SynchronizTrigger(float* pData)
 		}
 		ServiceDog();
 		test_result = PulseOutTrigger(g_PhaseActionRad);
+		SET_DECTA_L;
 		if (test_result!=0)
 		{
 			SynActionAck(ERROR_OUT_PULSE);
 		}
 		ServiceDog();
-		SendMultiFrame(&g_NetSendFrame);
+		g_SynCommandMessage.synActionFlag = SYN_HE_SUCESS;//4成功标志位
+		//SendMultiFrame(&g_NetSendFrame);
 		ServiceDog();
-		SET_DECTA_L;
-		SynActionAck(0);
+		StopSample();
+		//SynActionAck(0);
 
-		ServiceDog();
+
 }
 
 /**
@@ -355,9 +357,8 @@ static uint8_t CalculateDelayTime(ActionRad* pActionRad, float phase)
 		return 0xF1;
 	}
 	//TODO:暂定内部延时为88us
-	g_ProcessDelayTime[selectPhase].innerDelay = 88;
 	selectPhase = pActionRad->phase;
-
+	g_ProcessDelayTime[selectPhase].innerDelay = 88;
 	//计算开始时间
 	pActionRad->startTime = g_SystemVoltageParameter.period * phase * D2PI;
 	//此处相乘，为了保证使用最新的周期

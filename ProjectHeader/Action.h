@@ -137,6 +137,7 @@ RefSynCommandMessage;
 #define SYN_HE_READY 0xAA     //预制状态--等待应答
 #define SYN_HE_WAIT_ACTION 0xA5 //预制状态--等待执行命令
 #define SYN_HE_ACTION 0x55
+#define SYN_HE_SUCESS 0x1A
 
 extern void ActionInit(void);
 extern uint8_t  FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);

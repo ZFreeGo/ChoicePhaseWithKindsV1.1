@@ -749,6 +749,15 @@ void AckMsgService(void)
 		}
 		return;
 	}
+	if(g_SynCommandMessage.synActionFlag == SYN_HE_SUCESS)
+	{
+		//成功应答
+		SendMultiFrame(&g_NetSendFrame);//发送采样数据
+		SynActionAck(0);
+		StartSample();//重新开始采样
+		g_SynCommandMessage.synActionFlag = 0;
+	}
+
 	//有错误
 	if (  g_CANErrorStatus != 0)
 	{
