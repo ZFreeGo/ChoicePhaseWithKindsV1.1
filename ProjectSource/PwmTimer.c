@@ -335,6 +335,7 @@ __interrupt void epwm2_timer_isr(void)
 		{
 			EPwm2Regs.TBCTL.bit.CTRMODE = 3; //ֹͣ
 			SET_OUTB1_L;
+			SET_DECTC_L;
 		}
 #else
 		if (EPwm2TimerIntCount % 2 == 1)

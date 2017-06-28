@@ -55,7 +55,6 @@ ProjectSource/Timer.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/P
 ProjectSource/Timer.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h
 ProjectSource/Timer.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h
 ProjectSource/Timer.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h
-ProjectSource/Timer.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h
 ProjectSource/Timer.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h
 
 ../ProjectSource/Timer.c: 
@@ -113,5 +112,4 @@ F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceNet.h:
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h: 
-F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h: 

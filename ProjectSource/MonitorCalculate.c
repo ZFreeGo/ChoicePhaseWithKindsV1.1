@@ -319,7 +319,7 @@ void SynchronizTrigger(float* pData)
 		}
 		ServiceDog();
 		test_result = PulseOutTrigger(g_PhaseActionRad);
-		SET_DECTA_L;
+
 		if (test_result!=0)
 		{
 			SynActionAck(ERROR_OUT_PULSE);

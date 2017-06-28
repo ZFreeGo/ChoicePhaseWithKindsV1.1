@@ -392,6 +392,9 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 					 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
 					 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
 					 pSendFrame->len = 0;//取消底层发送
+#ifdef INTEG_MODE
+					 SET_DECTC_H;
+#endif
 					 return 0;
 
 				 }

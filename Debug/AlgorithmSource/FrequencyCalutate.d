@@ -54,7 +54,6 @@ AlgorithmSource/FrequencyCalutate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseW
 AlgorithmSource/FrequencyCalutate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h
 AlgorithmSource/FrequencyCalutate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h
 AlgorithmSource/FrequencyCalutate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h
-AlgorithmSource/FrequencyCalutate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h
 AlgorithmSource/FrequencyCalutate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h
 
 ../AlgorithmSource/FrequencyCalutate.c: 
@@ -111,5 +110,4 @@ F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h:
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h: 
-F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h: 

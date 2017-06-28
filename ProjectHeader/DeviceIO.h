@@ -26,8 +26,8 @@
 #define SET_DECTB_H {GpioDataRegs.GPASET.bit.GPIO8 = 1;}
 #define SET_DECTB_L {GpioDataRegs.GPACLEAR.bit.GPIO8 = 1;}
 
-#define SET_DECTC_H {GpioDataRegs.GPASET.bit.GPIO6 = 1;}
-#define SET_DECTC_L {GpioDataRegs.GPACLEAR.bit.GPIO6 = 1;}
+#define SET_DECTC_H {GpioDataRegs.GPASET.bit.GPIO16 = 1;}
+#define SET_DECTC_L {GpioDataRegs.GPACLEAR.bit.GPIO16 = 1;}
 
 //È¡·´²Ù×÷
 #define  TOGGLE_LED1  {GpioDataRegs.GPATOGGLE.bit.GPIO9 = 1;}

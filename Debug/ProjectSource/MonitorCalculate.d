@@ -55,7 +55,6 @@ ProjectSource/MonitorCalculate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWith
 ProjectSource/MonitorCalculate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h
 ProjectSource/MonitorCalculate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h
 ProjectSource/MonitorCalculate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h
-ProjectSource/MonitorCalculate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h
 ProjectSource/MonitorCalculate.obj: F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h
 ProjectSource/MonitorCalculate.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/math.h
 ProjectSource/MonitorCalculate.obj: D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdlib.h
@@ -116,7 +115,6 @@ F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h:
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h: 
-F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h: 
 F:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h: 
 D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/math.h: 
 D:/Program\ Files\ (x86)/TI/ccsv6/tools/compiler/c2000_15.12.3.LTS/include/stdlib.h: 

@@ -608,31 +608,7 @@ void PacktIOMessageStatus( struct DefFrameData* pSendFrame)
 	pSendFrame->ID =  MAKE_GROUP1_ID(GROUP1_STATUS_CYCLE_ACK, DeviceNetObj.MACID);
 	SendData(pSendFrame);
 }
-/*******************************************************************************
-** 函数名:	void DeviceMonitorPluse(void)
-** 功能描述:	设备监测脉冲函数
-** 形参:	无
-** 返回值:      无
-********************************************************************************/
-void DeviceMonitorPluse(void)
-{
-//	if(query_time_event(2))
-//	{
-//		start_time(160);
-//		//发送检测脉冲
-//		pSendFrame->pBuffer[0] = 0x80 | DeviceNetObj.MACID;
-//		pSendFrame->pBuffer[1] = 0x60;
-//		pSendFrame->pBuffer[2] = DeviceNetObj.assign_info.master_MACID;
-//		pSendFrame->pBuffer[3]= 0x80 | SVC_MONITOR_PLUSE;
-//		pSendFrame->pBuffer[4] = 0x01;		//标识符对象ID=1
-//		pSendFrame->pBuffer[5] = 0x00;
-//		*(send_buf + 6) = IdentifierObj.device_state;
-//		*(send_buf + 7) = 0;
-//		*(send_buf + 8) = 0;
-//		*(send_buf + 9) = 0;
-//		SendData(10, send_buf);
-//	}
-}
+
 
 
 /*******************************************************************************
