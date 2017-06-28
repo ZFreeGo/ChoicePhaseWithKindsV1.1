@@ -385,6 +385,10 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 					 memcpy(ActionSendFrame.pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 					 ActionSendFrame.pBuffer[0] = id| 0x80;
 					 ActionSendFrame.len = pReciveFrame->len;
+					 //停止,再开启采样
+					 StopSample();
+					 StartSample();
+
 					 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
 					 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
 					 pSendFrame->len = 0;//取消底层发送
@@ -482,6 +486,8 @@ uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 		g_PhaseActionRad[0].readyFlag = 0;
 		g_PhaseActionRad[1].readyFlag = 0;
 		g_PhaseActionRad[2].readyFlag = 0;
+		ErrorAck(SyncOrchestratorReadyClose, ERROR_OVERTIME);
+		g_SynCommandMessage.synActionFlag = 0;
 		return 0;
 	}
 	if( ((*pID) & 0x03C0) != 0x03C0)  //GROUP1_POLL_STATUS_CYCLER_ACK
@@ -494,7 +500,7 @@ uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 #ifdef INTEG_MODE
 	if (pbuff[0] == (SyncReadyClose | 0x80))//从站 同步合闸预制返回指令
 	{
-		if(pbuff[1] == g_PhaseActionRad[0].loopByte)
+		//if(pbuff[1] == g_PhaseActionRad[0].loopByte)
 		{
 			g_SynCommandMessage.synActionFlag = SYN_HE_WAIT_ACTION;
 			g_SynCommandMessage.closeWaitActionTime.startTime = CpuTimer0.InterruptCount;

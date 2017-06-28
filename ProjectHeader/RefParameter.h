@@ -53,7 +53,7 @@ typedef struct TagProcessDelayTime
 	uint16_t transmitDelay;//传输延时 us
 	uint16_t actionDelay;//动作延时--合闸 us
 	float sumDelay;   //总延时= sampleDelay + innerDelay + transmitDelay + actionDelay  + pulseDelay
-	int16_t compensationTime;// 补偿时间 us
+	float compensationTime;// 补偿时间 us
 
 
 }RefProcessTime;
@@ -162,6 +162,12 @@ typedef struct TagConfigData
     void (*fGetValue)(PointUint8*, struct TagConfigData* )  ;
 }ConfigData;
 
+
+typedef union TagShortFloat
+{
+	float Float;
+	uint32_t Data;
+}ShortFloat;
 
 /**
  * 供外部调用的全局变量

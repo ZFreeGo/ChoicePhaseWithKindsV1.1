@@ -40,7 +40,8 @@
  */
 static void SetValueFloat32(PointUint8* pPoint, ConfigData* pConfig);
 static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig);
-
+static void GetValueFloat(PointUint8* pPoint, ConfigData* pConfig);
+static void SetValueFloat(PointUint8* pPoint, ConfigData* pConfig);
 static void SetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig);
 static void GetValueFloatUint16(PointUint8* pPoint, ConfigData* pConfig);
 static void GetValueUint16(PointUint8* pPoint, ConfigData* pConfig);
@@ -428,21 +429,22 @@ static void InitSetParameterCollect(void)
 	//int16 us
 	g_SetParameterCollect[index].ID = id++;
 	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_A].compensationTime;
-	g_SetParameterCollect[index].type = 0x20;
-	g_SetParameterCollect[index].fSetValue = SetValueUint16;
-	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	g_SetParameterCollect[index].type = 0x4F;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat;
 	index ++;
 	g_SetParameterCollect[index].ID = id++;
 	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_B].compensationTime;
-	g_SetParameterCollect[index].type = 0x20;
-	g_SetParameterCollect[index].fSetValue = SetValueUint16;
-	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	g_SetParameterCollect[index].type = 0x4F;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat;
 	index ++;
 	g_SetParameterCollect[index].ID = id++;
 	g_SetParameterCollect[index].pData = &g_ProcessDelayTime[PHASE_C].compensationTime;
-	g_SetParameterCollect[index].type = 0x20;
-	g_SetParameterCollect[index].fSetValue = SetValueUint16;
-	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	g_SetParameterCollect[index].type = 0x4F;
+	g_SetParameterCollect[index].fSetValue = SetValueFloat;
+	g_SetParameterCollect[index].fGetValue = GetValueFloat;
+
 	index++;
 	//Uint16 --[0-65535]，单位ms
 	g_SetParameterCollect[index].ID = id++;
@@ -553,7 +555,7 @@ void DefaultInit(void)
 	g_ProcessDelayTime[PHASE_A].innerDelay =0 ;
 	g_ProcessDelayTime[PHASE_A].sampleDelay = 0;
 	g_ProcessDelayTime[PHASE_A].transmitDelay = 0;
-	g_ProcessDelayTime[PHASE_A].pulseDelay = 400;
+	g_ProcessDelayTime[PHASE_A].pulseDelay = 0;
 	g_ProcessDelayTime[PHASE_A].sumDelay = 0;
 	g_ProcessDelayTime[PHASE_A].calDelay = 0;
 	//B相
@@ -763,7 +765,65 @@ static void GetValueFloat32(PointUint8* pPoint, ConfigData* pConfig)
 	}
 }
 
+/**
+ * 二进制四字节传输
+ * 适用于校准系数,二次电压值
+ * <p>
+ * 以float形式存储，以4字节进行交换传输的数据
+ *
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void SetValueFloat(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >=  4)
+	{
+	    uint32_t data1 = pPoint->pData[1];
+	    uint32_t data2 = pPoint->pData[2];
+	    uint32_t data3 = pPoint->pData[3];
+	    uint32_t data = (data3 << 24) | (data2 << 16) | (data1 << 8)|pPoint->pData[0] ;
+	    ShortFloat shortFloat;
+	    shortFloat.Data = data;
+	    *(float*)pConfig->pData = shortFloat.Float;
 
+	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
+	}
+}
+
+/**
+ * 适用于校准系数,二次电压值
+ * <p>
+ * 以float形式存储，以4字节进行交换传输的数据
+ * @param   pPoint    指向数据数组
+ * @param   pConfig   指向当前配置数据
+ *
+ * @brif 用于通讯交互数据使用
+ */
+static void GetValueFloat(PointUint8* pPoint, ConfigData* pConfig)
+{
+	if (pPoint->len >= 4)
+	{
+		//Todo: 根据ID选择保留有效位数
+
+		ShortFloat shortFloat;
+		shortFloat.Float = *(float*)pConfig->pData;
+		uint32_t result = shortFloat.Data;
+		pPoint->pData[0] = (uint8_t)(result & 0x00FF);
+		pPoint->pData[1] = (uint8_t)((result >> 8)& 0x00FF);
+		pPoint->pData[2] = (uint8_t)((result >> 16)& 0x00FF);
+		pPoint->pData[3] = (uint8_t)((result >> 24)& 0x00FF);
+		pPoint->len = 4;
+	}
+	else
+	{
+		pPoint->len = 0; //置为0，以示意错误
+	}
+}
 /**
  * 设置参数[0,65.535]，默认保留3位小数
  * 适用于电压频率,工作电压，

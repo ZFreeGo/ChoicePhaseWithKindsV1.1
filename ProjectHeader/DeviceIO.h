@@ -53,8 +53,8 @@
 //永磁控制 同步端口控制
 
 
-#define SET_OUTB1_H {GpioDataRegs.GPASET.bit.GPIO4 = 1;}
-#define SET_OUTB1_L {GpioDataRegs.GPACLEAR.bit.GPIO4 = 1;}
+#define SET_OUTB1_H {GpioDataRegs.GPASET.bit.GPIO4 = 1; SET_DECTA_H}
+#define SET_OUTB1_L {GpioDataRegs.GPACLEAR.bit.GPIO4 = 1; SET_DECTA_L}
 
 #define GET_INB1  GpioDataRegs.GPADAT.bit.GPIO5
 

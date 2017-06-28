@@ -315,6 +315,7 @@ __interrupt void epwm2_timer_isr(void)
 {
 	if (EPwm2TimerIntCount == 0) //首次进入改输出周期时间为100us
 	{
+		SET_DECTA_H;
 		EPwm2TimerInit(100, TIME_BASE_2US);
 
 	}

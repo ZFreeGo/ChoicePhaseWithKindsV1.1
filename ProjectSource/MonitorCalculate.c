@@ -265,10 +265,14 @@ void SynchronizTrigger(float* pData)
 			}
 			case 4:
 			{
-				phase += 2*PI;
+				phase += PI2;
 			}
 		}
 
+		if (phase > PI2)
+		{
+			phase -= PI2;
+		}
 		ServiceDog();
 		test_result = CalculateDelayTime(g_PhaseActionRad, phase);
 		if (test_result != 0)
@@ -358,7 +362,7 @@ static uint8_t CalculateDelayTime(ActionRad* pActionRad, float phase)
 	}
 	//TODO:暂定内部延时为88us
 	selectPhase = pActionRad->phase;
-	g_ProcessDelayTime[selectPhase].innerDelay = 88;
+	g_ProcessDelayTime[selectPhase].innerDelay = 0;
 	//计算开始时间
 	pActionRad->startTime = g_SystemVoltageParameter.period * phase * D2PI;
 	//此处相乘，为了保证使用最新的周期
@@ -373,13 +377,13 @@ static uint8_t CalculateDelayTime(ActionRad* pActionRad, float phase)
 					+ (float)g_ProcessDelayTime[selectPhase].actionDelay
 					+ (float)g_ProcessDelayTime[selectPhase].innerDelay;
 	//总的时间和
-	time = (float)g_ProcessDelayTime[selectPhase].sumDelay + (float)pActionRad->startTime
-			- (float)pActionRad->realTime;
+	time =(float)pActionRad->realTime - (float)g_ProcessDelayTime[selectPhase].sumDelay
+					- (float)pActionRad->startTime;
 
-	count = 1;
+	count = 0;
 	do
 	{
-		difftime = count *  g_SystemVoltageParameter.period - time;
+		difftime = count *  g_SystemVoltageParameter.period + time;
 		//判断时间差是否大于0，若大于则跳出
 		if(difftime > 0)
 		{
