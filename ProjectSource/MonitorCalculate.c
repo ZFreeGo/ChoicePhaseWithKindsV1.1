@@ -266,7 +266,7 @@ void SynchronizTrigger(float* pData)
 			case 4:
 			{
 				phase += PI2;
-			}
+						}
 		}
 
 		if (phase > PI2)

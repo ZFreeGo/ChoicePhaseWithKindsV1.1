@@ -299,6 +299,23 @@ uint8_t  EPwm2TimerInit(uint32_t pulse, uint16_t base)
    return 0;
 
 }
+
+/**
+ * PwmTimer 2-4
+ *
+ */
+void EPwmTimerReset()
+{
+
+	   EPwm2Regs.TBCTR = 0;//清空计数
+	   EPwm2Regs.TBCTL.bit.CTRMODE = TB_FREEZE;
+
+	   EPwm3Regs.TBCTR = 0;//清空计数
+	   EPwm3Regs.TBCTL.bit.CTRMODE = TB_FREEZE;
+
+	   EPwm4Regs.TBCTR = 0;//清空计数
+	   EPwm4Regs.TBCTL.bit.CTRMODE = TB_FREEZE;
+}
 // Interrupt routines uses in this example:
 __interrupt void epwm1_timer_isr(void)
 {
@@ -413,7 +430,7 @@ __interrupt void epwm4_timer_isr(void) //40M
 		}
 		if (EPwm4TimerIntCount >=  PULSE_COUNT)
 		{
-			EPwm2Regs.TBCTL.bit.CTRMODE = 3; //停止
+			EPwm4Regs.TBCTL.bit.CTRMODE = 3; //停止
 			SET_OUTB4_L;
 		}
 	}

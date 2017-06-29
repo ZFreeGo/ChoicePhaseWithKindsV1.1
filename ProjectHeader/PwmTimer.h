@@ -52,4 +52,5 @@ void InitEPwmTimer(void);
 uint8_t  EPwm2TimerInit(uint32_t pulse, uint16_t base);
 uint8_t  EPwm3TimerInit(uint32_t pulse, uint16_t base);
 uint8_t  EPwm4TimerInit(uint32_t pulse, uint16_t base);
+void EPwmTimerReset();
 #endif /* PWMTIMER_H_ */
