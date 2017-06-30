@@ -54,7 +54,6 @@ ProjectSource/SampleProcess.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKin
 ProjectSource/SampleProcess.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h
 ProjectSource/SampleProcess.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceNet.h
 ProjectSource/SampleProcess.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h
-ProjectSource/SampleProcess.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h
 ProjectSource/SampleProcess.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h
 ProjectSource/SampleProcess.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/RefParameter.h
 ProjectSource/SampleProcess.obj: J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/DSP28x_Project.h
@@ -113,7 +112,6 @@ J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h:
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/DeviceNet.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h: 
-J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/ProjectHeader/RefParameter.h: 
 J:/MyCode/CCS/workspace_v6_3/ChoicePhaseWithKindsV1.3/include/DSP28x_Project.h: 

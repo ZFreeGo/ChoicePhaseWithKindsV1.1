@@ -308,9 +308,12 @@ void SynchronizTrigger(float* pData)
 		//计算时间差
 		for(i = 1; i < g_PhaseActionRad->count; i++)
 		{
-			calTimeA = g_ProcessDelayTime[0].calDelayCheck + g_ProcessDelayTime[0].sumDelay;
-			calTimeB = g_ProcessDelayTime[1].calDelayCheck + g_ProcessDelayTime[1].sumDelay;
-			diffA = fabsf(calTimeB - calTimeA - (g_PhaseActionRad[1].realTime  - g_PhaseActionRad[0].realTime));
+			uint8_t p1 = g_PhaseActionRad[i-1].phase;
+			uint8_t p2 = g_PhaseActionRad[i].phase;
+
+			calTimeA = g_ProcessDelayTime[p1].calDelayCheck + g_ProcessDelayTime[p1].sumDelay + g_PhaseActionRad[i-1].startTime;
+			calTimeB = g_ProcessDelayTime[p2].calDelayCheck + g_ProcessDelayTime[p2].sumDelay+ g_PhaseActionRad[i].startTime;
+			diffA = fabsf(calTimeB - calTimeA - (g_PhaseActionRad[i].realTime  - g_PhaseActionRad[i-1].realTime));
 			if (diffA > 3)
 			{
 				SynActionAck(ERROR_OVER_TOLERANCE);
@@ -461,9 +464,9 @@ static uint8_t CheckActionTime(ActionRad* pActionRad)
 	for ( i = maxIndex; i > 0; i--)
 	{
 		select1 = pActionRad[i-1].phase;
-		t1 = g_ProcessDelayTime[select1].sumDelay + g_ProcessDelayTime[select1].calDelayCheck ;//添加校准后的数据
+		t1 = g_ProcessDelayTime[select1].sumDelay- g_ProcessDelayTime[select1].compensationTime  + g_ProcessDelayTime[select1].calDelayCheck ;//添加校准后的数据
 		select2 = pActionRad[i].phase;
-		t2 = g_ProcessDelayTime[select2].sumDelay + g_ProcessDelayTime[select2].calDelayCheck;
+		t2 = g_ProcessDelayTime[select2].sumDelay - g_ProcessDelayTime[select2].compensationTime + g_ProcessDelayTime[select2].calDelayCheck;
 		diff_result = GetTimeDiff(t1, t2, g_SystemVoltageParameter.period, pActionRad[i].realDiffTime);
 		NOP();
 		if (diff_result != (int8_t)N_MAX)

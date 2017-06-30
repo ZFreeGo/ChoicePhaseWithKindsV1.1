@@ -125,7 +125,7 @@ RefSynCommandMessage;
 #define ERROR_OPERATE_SEQUENCE 		15
 #define ERROR_CAL_DELAY 			16
 #define ERROR_ACTION_TIME 			17
-#define ERROR_OVER_TOLERANCE 		28
+#define ERROR_OVER_TOLERANCE 		18
 #define ERROR_OUT_PULSE 			19
 
 

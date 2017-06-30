@@ -555,7 +555,7 @@ void DefaultInit(void)
 	g_ProcessDelayTime[PHASE_A].innerDelay =0 ;
 	g_ProcessDelayTime[PHASE_A].sampleDelay = 0;
 	g_ProcessDelayTime[PHASE_A].transmitDelay = 0;
-	g_ProcessDelayTime[PHASE_A].pulseDelay = 0;
+	g_ProcessDelayTime[PHASE_A].pulseDelay = 400;
 	g_ProcessDelayTime[PHASE_A].sumDelay = 0;
 	g_ProcessDelayTime[PHASE_A].calDelay = 0;
 	//Bœ‡
