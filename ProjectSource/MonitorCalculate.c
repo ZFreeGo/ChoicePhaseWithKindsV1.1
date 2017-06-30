@@ -653,11 +653,52 @@ static uint8_t GetMaxActionTime(ActionRad* pActionRad)
 /**
  * 同步输出脉冲触发
  *
- * @param pActionRad 动作参数
+ * @param pActionRad 动作参数,对单机构三级，无论哪一相都是A相发触发信号。
  *
  * @return 最大的索引，若为count（数量）表示全部相等
  * @brief 计算差值
  */
+
+#if INTEG_MODE
+static uint8_t PulseOutTrigger(ActionRad* pActionRad)
+{
+	uint8_t i = 0;
+	uint8_t count = pActionRad->count;
+	ActionRad* pAction;
+
+
+
+	for( i = 0; i < count; i++)
+	{
+		pAction = pActionRad+i;
+
+		if (g_ProcessDelayTime[PHASE_A].calDelayCheck > 200000)
+		{
+			return 0xff;
+		}
+
+		switch(pAction->phase)
+		{
+			case PHASE_A:
+			case PHASE_B:
+			case PHASE_C:
+			{
+
+				EPwm2TimerInit( g_ProcessDelayTime[PHASE_A].calDelayCheck, TIME_BASE_4US);
+				break;
+			}
+
+			default:
+			{
+				return 0xFE;
+			}
+		}
+	}
+
+	return 0;
+
+}
+#else
 static uint8_t PulseOutTrigger(ActionRad* pActionRad)
 {
 	uint8_t i = 0;
@@ -703,6 +744,11 @@ static uint8_t PulseOutTrigger(ActionRad* pActionRad)
 	return 0;
 
 }
+
+#endif
+
+
+
 #ifdef TEST_EXA_C
 
 void pass_stop()
