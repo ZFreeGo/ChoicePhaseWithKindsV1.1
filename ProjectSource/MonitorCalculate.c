@@ -312,14 +312,16 @@ void SynchronizTrigger(float* pData)
 			uint8_t p2 = g_PhaseActionRad[i].phase;
 
 			calTimeA = g_ProcessDelayTime[p1].calDelayCheck + g_ProcessDelayTime[p1].sumDelay + g_PhaseActionRad[i-1].startTime;
-			calTimeB = g_ProcessDelayTime[p2].calDelayCheck + g_ProcessDelayTime[p2].sumDelay+ g_PhaseActionRad[i].startTime;
+			calTimeB = g_ProcessDelayTime[p2].calDelayCheck + g_ProcessDelayTime[p2].sumDelay + g_PhaseActionRad[i].startTime;
+
 			diffA = fabsf(calTimeB - calTimeA - (g_PhaseActionRad[i].realTime  - g_PhaseActionRad[i-1].realTime));
-			if (diffA > 3)
+			if (diffA > 10)
 			{
-				SynActionAck(ERROR_OVER_TOLERANCE);
+				 SynActionAck(ERROR_OVER_TOLERANCE);
 				return;//校验错误
 			}
 		}
+
 		ServiceDog();
 		test_result = PulseOutTrigger(g_PhaseActionRad);
 
@@ -402,37 +404,29 @@ static uint8_t CalculateDelayTime(ActionRad* pActionRad, float phase)
 	}
 
 
-
+	//添加补偿时间
 	if (difftime > 0)
 	{
-		//若时间之和大于等于0，则正常补偿；否则添加一个周期的延时
-		time = difftime + g_ProcessDelayTime[selectPhase].compensationTime;
-		if ( time >= 0 )
+		count = 0;
+		do
 		{
-			g_ProcessDelayTime[selectPhase].calDelay =  (uint16_t)time;
-		}
-		else
-		{
-			time = g_SystemVoltageParameter.period + time;
-			if (time >= 0)
+			time = difftime + g_ProcessDelayTime[selectPhase].compensationTime
+					 +  count *  g_SystemVoltageParameter.period;
+			if ( time >= 0 )
 			{
-				g_ProcessDelayTime[selectPhase].calDelay =  (uint16_t)time;
-			}
-			else
-			{
-				g_ProcessDelayTime[selectPhase].calDelay = difftime;//超限后不进行补偿。
+				g_ProcessDelayTime[selectPhase].calDelay =  time;
+				g_ProcessDelayTime[selectPhase].calDelayCheck = g_ProcessDelayTime[selectPhase].calDelay;
+				return 0;
 			}
 
+		}while(count++ < 6);//最多7次校准
 
-		}
-		//默认赋值
-		g_ProcessDelayTime[selectPhase].calDelayCheck = g_ProcessDelayTime[selectPhase].calDelay;
-		return 0;
+		return 0xF2;
 	}
 	else
 	{
 		//异常处理
-		return 0xF2;
+		return 0xF3;
 	}
 }
 
@@ -455,7 +449,7 @@ static uint8_t CheckActionTime(ActionRad* pActionRad)
 	//获取最大索引
 	maxIndex = GetMaxActionTime(pActionRad);
 			//若相等或者count=1，表示不需要校准
-	if ((maxIndex == pActionRad->count) || ( pActionRad->count == 1) )
+	if ((maxIndex == pActionRad->count) || ( pActionRad->count == 1))
 	{
 		return 0;
 	}
@@ -493,9 +487,9 @@ static uint8_t CheckActionTime(ActionRad* pActionRad)
 	for ( i = maxIndex; i < pActionRad->count - 1; i++)
 	{
 		select1 = pActionRad[i].phase;
-		t1 = g_ProcessDelayTime[select1].sumDelay + g_ProcessDelayTime[select1].calDelayCheck ;
+		t1 = g_ProcessDelayTime[select1].sumDelay - g_ProcessDelayTime[select1].compensationTime + g_ProcessDelayTime[select1].calDelayCheck ;
 		select2 = pActionRad[i + 1].phase;
-		t2 = g_ProcessDelayTime[select2].sumDelay + g_ProcessDelayTime[select2].calDelayCheck;
+		t2 = g_ProcessDelayTime[select2].sumDelay - g_ProcessDelayTime[select2].compensationTime + g_ProcessDelayTime[select2].calDelayCheck;
 		diff_result = GetTimeDiff(t1, t2, g_SystemVoltageParameter.period, pActionRad[i + 1].realDiffTime);
 		if (diff_result != N_MAX)
 		{
