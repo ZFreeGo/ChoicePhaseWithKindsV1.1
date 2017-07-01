@@ -65,6 +65,7 @@ static int8_t GetTimeDiff(float sumTime1, float sumTime2, float period, float di
 static uint8_t PulseOutTrigger(ActionRad* pActionRad);
 static uint8_t CheckActionTime(ActionRad* pActionRad);
 static uint8_t CalculateDelayTime(ActionRad* pActionRad, float phase);
+static uint8_t CompensationTime(ActionRad* pActionRad);
 /*=============================局部函数 End=============================*/
 
 
@@ -322,12 +323,23 @@ void SynchronizTrigger(float* pData)
 			}
 		}
 
+		//添加补偿时间
+		ServiceDog();
+		test_result = CompensationTime(g_PhaseActionRad);
+		if (test_result != 0)
+		{
+			SynActionAck(ERROR_COMPENSATION);
+			return;
+		}
+
+
 		ServiceDog();
 		test_result = PulseOutTrigger(g_PhaseActionRad);
 
 		if (test_result!=0)
 		{
 			SynActionAck(ERROR_OUT_PULSE);
+			return;
 		}
 		ServiceDog();
 		g_SynCommandMessage.synActionFlag = SYN_HE_SUCESS;//4成功标志位
@@ -337,6 +349,77 @@ void SynchronizTrigger(float* pData)
 		//SynActionAck(0);
 
 
+}
+
+
+
+
+/**
+ * 计算补偿时间
+ *
+ *找出最小补偿时间。
+ *首先每个计算延时加上对应的补偿时间得到新的计算延时，然后找出最小值min。
+ *若min<0,则进行周期累计转正。求出周期数n。
+ *然后所有计算延时加n*period。结束计算。
+ *
+ * @param  pActionRad   动作弧度
+ * @param  phase	    开始相角
+ *
+ * @return 0-正常   非0-错误
+ * @brief  计算触发时刻，发布触发命令
+ */
+static uint8_t CompensationTime(ActionRad* pActionRad)
+{
+	uint8_t selectPhase = 0, count = 0;
+		float time = 0, min = 0;
+
+	if ( pActionRad->count == 1)
+	{
+		return 0;
+	}
+
+	selectPhase =  pActionRad[0].phase;
+	g_ProcessDelayTime[selectPhase].calDelayCheck +=
+			g_ProcessDelayTime[selectPhase].compensationTime;
+	min = 	g_ProcessDelayTime[selectPhase].calDelayCheck;
+	//首先补偿所有延时,并计算最小补偿值
+	for (uint8_t i = 1; i < pActionRad->count; i++)
+	{
+		selectPhase =  pActionRad[i].phase;
+		g_ProcessDelayTime[selectPhase].calDelayCheck +=
+						g_ProcessDelayTime[selectPhase].compensationTime;
+		if (g_ProcessDelayTime[selectPhase].calDelayCheck < min)
+		{
+			min = g_ProcessDelayTime[selectPhase].calDelayCheck;
+		}
+	}
+
+	//若大于等于0，结束补偿
+	if (min >= 0)
+	{
+		return 0;
+	}
+	else
+	{
+		count = 1;
+		do
+		{
+			time = min + count * g_SystemVoltageParameter.period;
+			//修正索引延时
+			if (time >= 0)
+			{
+				for (uint8_t i = 0; i < pActionRad->count; i++)
+				{
+					selectPhase =  pActionRad[i].phase;
+					g_ProcessDelayTime[selectPhase].calDelayCheck += count * g_SystemVoltageParameter.period;
+				}
+				return 0;
+			}
+		}
+		while(count++ < 7);//最大8次
+
+		return 0xE1;
+	}
 }
 
 /**
@@ -407,21 +490,9 @@ static uint8_t CalculateDelayTime(ActionRad* pActionRad, float phase)
 	//添加补偿时间
 	if (difftime > 0)
 	{
-		count = 0;
-		do
-		{
-			time = difftime + g_ProcessDelayTime[selectPhase].compensationTime
-					 +  count *  g_SystemVoltageParameter.period;
-			if ( time >= 0 )
-			{
-				g_ProcessDelayTime[selectPhase].calDelay =  time;
-				g_ProcessDelayTime[selectPhase].calDelayCheck = g_ProcessDelayTime[selectPhase].calDelay;
-				return 0;
-			}
-
-		}while(count++ < 6);//最多7次校准
-
-		return 0xF2;
+		g_ProcessDelayTime[selectPhase].calDelay =  difftime;
+		g_ProcessDelayTime[selectPhase].calDelayCheck = g_ProcessDelayTime[selectPhase].calDelay;
+		return 0;
 	}
 	else
 	{
@@ -458,12 +529,12 @@ static uint8_t CheckActionTime(ActionRad* pActionRad)
 	for ( i = maxIndex; i > 0; i--)
 	{
 		select1 = pActionRad[i-1].phase;
-		t1 = g_ProcessDelayTime[select1].sumDelay- g_ProcessDelayTime[select1].compensationTime  + g_ProcessDelayTime[select1].calDelayCheck ;//添加校准后的数据
+		t1 = g_ProcessDelayTime[select1].sumDelay  + g_ProcessDelayTime[select1].calDelayCheck ;//添加校准后的数据
 		select2 = pActionRad[i].phase;
-		t2 = g_ProcessDelayTime[select2].sumDelay - g_ProcessDelayTime[select2].compensationTime + g_ProcessDelayTime[select2].calDelayCheck;
+		t2 = g_ProcessDelayTime[select2].sumDelay  + g_ProcessDelayTime[select2].calDelayCheck;
 		diff_result = GetTimeDiff(t1, t2, g_SystemVoltageParameter.period, pActionRad[i].realDiffTime);
 		NOP();
-		if (diff_result != (int8_t)N_MAX)
+		if (diff_result < (int8_t)N_MAX)
 		{
 			if (diff_result == 0)
 			{
@@ -487,15 +558,14 @@ static uint8_t CheckActionTime(ActionRad* pActionRad)
 	for ( i = maxIndex; i < pActionRad->count - 1; i++)
 	{
 		select1 = pActionRad[i].phase;
-		t1 = g_ProcessDelayTime[select1].sumDelay - g_ProcessDelayTime[select1].compensationTime + g_ProcessDelayTime[select1].calDelayCheck ;
+		t1 = g_ProcessDelayTime[select1].sumDelay  + g_ProcessDelayTime[select1].calDelayCheck ;
 		select2 = pActionRad[i + 1].phase;
-		t2 = g_ProcessDelayTime[select2].sumDelay - g_ProcessDelayTime[select2].compensationTime + g_ProcessDelayTime[select2].calDelayCheck;
+		t2 = g_ProcessDelayTime[select2].sumDelay  + g_ProcessDelayTime[select2].calDelayCheck;
 		diff_result = GetTimeDiff(t1, t2, g_SystemVoltageParameter.period, pActionRad[i + 1].realDiffTime);
-		if (diff_result != N_MAX)
+		if (diff_result < (int8_t)N_MAX)
 		{
 			if (diff_result == 0)
 			{
-				g_ProcessDelayTime[select1].calDelayCheck = g_ProcessDelayTime[select1].calDelay;//直接赋值
 				continue;
 			}
 			else if (diff_result > 0)
@@ -634,7 +704,7 @@ static uint8_t GetMaxActionTime(ActionRad* pActionRad)
 		else if (( maxSum - sum) > ERROR_VALUE)
 		{
 			maxFlag = 0xFF;
-			maxSum = sum;
+			//maxSum = sum;
 		}
 	}
 	if (maxFlag == 0xFF)
@@ -708,7 +778,7 @@ static uint8_t PulseOutTrigger(ActionRad* pActionRad)
 	{
 		pAction = pActionRad+i;
 
-		if (g_ProcessDelayTime[PHASE_A].calDelayCheck > 200000)
+		if (g_ProcessDelayTime[PHASE_A].calDelayCheck > 300000)
 		{
 			return 0xff;
 		}

@@ -127,7 +127,7 @@ RefSynCommandMessage;
 #define ERROR_ACTION_TIME 			17
 #define ERROR_OVER_TOLERANCE 		18
 #define ERROR_OUT_PULSE 			19
-
+#define ERROR_COMPENSATION 			20
 
 #define ENTER_CONFIG  0xAA
 #define EXIT_CONFIG   0x55
