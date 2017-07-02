@@ -1,3 +1,6 @@
+2017/7/2
+1.修正EEPROM更新错误，系缓冲长度初始化有误。
+
 2017/7/1
 1.修改补偿方式，static uint8_t CompensationTime(ActionRad* pActionRad)。统一补偿。
 2.脉冲输出最大定时长度调整为200000us

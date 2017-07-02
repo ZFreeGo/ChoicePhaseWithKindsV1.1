@@ -1181,6 +1181,7 @@ static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 	for(i = startId-1; i <startId + len -1; i++)
 	{		
 	
+		tempPoint.len = 4;
 		g_SetParameterCollect[i].fGetValue(&tempPoint, g_SetParameterCollect + i);
 		if (tempPoint.len == 0) //长度为0，说明设置错误返回
 		{
