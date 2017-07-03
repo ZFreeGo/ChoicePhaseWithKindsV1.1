@@ -751,7 +751,7 @@ static uint8_t PulseOutTrigger(ActionRad* pActionRad)
 			case PHASE_C:
 			{
 
-				EPwm2TimerInit( g_ProcessDelayTime[PHASE_A].calDelayCheck, TIME_BASE_4US);
+				EPwm2TimerInit( g_ProcessDelayTime[pAction->phase].calDelayCheck, TIME_BASE_4US);
 				break;
 			}
 
