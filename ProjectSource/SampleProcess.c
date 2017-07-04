@@ -118,7 +118,7 @@ __interrupt void  ADC_INT1_ISR(void)
            //计算时间差
            if (g_SynCommandMessage.synActionFlag == SYN_HE_ACTION) //如果开始计算
            {
-        	   	SET_DECTA_H;
+
         		ConfigCpuTimer(&CpuTimer1, 80, 10000); //配置CPU在80M工作频率下，最大计时10ms
         		//停止定时器，防止打断中断，凭借优先级设置
         		CpuTimer0Regs.TCR.bit.TSS = 1;

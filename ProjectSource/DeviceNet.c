@@ -81,6 +81,8 @@ static RunTimeStamp LoopStatusSend;//循环状态发送
 static RunTimeStamp OffLine;// 处于离线状态时超时复位
 
 
+RunTimeStamp g_ReciveCanCheck;// 处于离线状态时超时复位
+
 /*******************************************************************************
 * 函数名:	void InitDeviceNet()
 * 形参  :	null
@@ -122,14 +124,20 @@ void InitDeviceNet()
     	 ON_LED3;
     	 OffLine.startTime =  CpuTimer0.InterruptCount;
     	 OffLine.delayTime = 10000;
+    	 g_ReciveCanCheck.startTime =  CpuTimer0.InterruptCount;
+    	 g_ReciveCanCheck.delayTime = 60000;//不正常上线60s
+
     }
     else
     {
     	 OFF_LED3;
     	 WorkMode = MODE_NORMAL;
     	 g_DeviceNetRequstData = 0;//请求标志清0
+    	 g_ReciveCanCheck.startTime =  CpuTimer0.InterruptCount;
+    	 g_ReciveCanCheck.delayTime = 10000;
+
     }
-    
+
 
 
 }
@@ -743,6 +751,24 @@ void AckMsgService(void)
 		OffLine.delayTime = 5000;
 
 	}
+	//有未挂起处理项目
+	if (ECanaRegs.CANRMP.all)
+	{
+		DelayMs(10);//10ms以后还没有清空
+		ECanaRegs.CANRMP.all = 0xFFFF;
+	}
+	if (ECanaRegs.CANRML.all)
+	{
+		ECanaRegs.CANRML.all = 0xFFFF;
+	}
+	//接收超时刷新
+	if (IsOverTime( g_ReciveCanCheck.startTime,  g_ReciveCanCheck.delayTime))
+	{
+		//重新重新进行初始化
+		while(1);//死循环等待看门狗
+	}
+
+
 	ServiceDog();
 	//正常通讯指示灯
 	if (flashComCn++ >200000)

@@ -373,9 +373,9 @@ static uint8_t CompensationTime(ActionRad* pActionRad)
 	uint8_t selectPhase = 0, count = 0;
 		float time = 0, min = 0;
 
-	if ( pActionRad->count == 1)
+	if ( pActionRad->count == 0)
 	{
-		return 0;
+		return 0xFF;
 	}
 
 	selectPhase =  pActionRad[0].phase;

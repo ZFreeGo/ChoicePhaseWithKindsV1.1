@@ -239,7 +239,7 @@ extern struct DefDeviceNetObj  DeviceNetObj;
 extern struct DefIdentifierObject   IdentifierObj;
 extern struct DefConnectionObj  VisibleConnectionObj;
 extern struct DefConnectionObj CycleInquireConnedctionObj;
-
+extern RunTimeStamp g_ReciveCanCheck;
 
 
 #ifdef	__cplusplus

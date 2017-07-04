@@ -192,6 +192,7 @@ uint16_t  InitStandardCAN(uint16_t id, uint16_t mask)
 //uint32_t  TestMbox2 = 0;
 uint32_t dataError = 0;
 uint8_t ReceiveData[10] = { 0 }; //应该注意被意外覆盖
+uint16_t count = 0;
 __interrupt void Can0Recive_ISR(void)
 {
 
@@ -203,7 +204,10 @@ __interrupt void Can0Recive_ISR(void)
 	{
        // TestMbox1 = ECanaMboxes.MBOX16.MDL.all;
         //TestMbox2 = ECanaMboxes.MBOX16.MDH.all;
-    	ECanaRegs.CANRMP.all = 0x00010000;
+
+
+		ECanaRegs.CANRMP.all = 0x00010000;
+
 
     	dataError = ECanaRegs.CANES.all;
     	len = ECanaMboxes.MBOX16.MSGCTRL.bit.DLC;
@@ -218,8 +222,11 @@ __interrupt void Can0Recive_ISR(void)
     	ReceiveData[6] = GET_BIT16_23( ECanaMboxes.MBOX16.MDH.all);
     	ReceiveData[7] = GET_BIT24_31( ECanaMboxes.MBOX16.MDH.all);
 
+
     	DeviceNetReciveCenter(&id, ReceiveData, len);
     	PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+
+    	g_ReciveCanCheck.startTime =  CpuTimer0.InterruptCount;//在线刷新
     	return;
 
 	}
@@ -235,6 +242,7 @@ __interrupt void Can0Recive_ISR(void)
 			DelayMs(100);
 		}
 		ECanaRegs.CANGIF0.bit.BOIF0 = 1;
+		g_CANErrorStatus = 0xFFFF;
 	}
 	if (ECanaRegs.CANGIF0.bit.RMLIF0)//Received-message-lost interrupt flag
 	{
@@ -245,6 +253,7 @@ __interrupt void Can0Recive_ISR(void)
 			DelayMs(100);
 		}
 		ECanaRegs.CANGIF0.bit.RMLIF0 = 1;
+		g_CANErrorStatus = 0xFF00;
 	}
 	if (ECanaRegs.CANGIF0.bit.EPIF0)//使能错误中断Error-passive interrupt flag
 	{
@@ -256,7 +265,9 @@ __interrupt void Can0Recive_ISR(void)
 			DelayMs(100);
 		}
 		ECanaRegs.CANGIF0.bit.EPIF0 = 1;
+
 	}
+	g_CANErrorStatus = 0xFFAA;
    // Acknowledge this interrupt to receive more interrupts from group 9
    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
 }
