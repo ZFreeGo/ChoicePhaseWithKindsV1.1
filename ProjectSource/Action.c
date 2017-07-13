@@ -386,15 +386,13 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 					 ActionSendFrame.pBuffer[0] = id| 0x80;
 					 ActionSendFrame.len = pReciveFrame->len;
 					 //停止,再开启采样
-					 StopSample();
+					 ChangeSampleMode(SYN_MODE);
 					 StartSample();
 
 					 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
 					 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
 					 pSendFrame->len = 0;//取消底层发送
-#ifdef INTEG_MODE
-					 SET_DECTC_H;
-#endif
+
 					 return 0;
 
 				 }

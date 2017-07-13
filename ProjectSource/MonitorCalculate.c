@@ -343,9 +343,11 @@ void SynchronizTrigger(float* pData)
 		}
 		ServiceDog();
 		g_SynCommandMessage.synActionFlag = SYN_HE_SUCESS;//4成功标志位
-		//SendMultiFrame(&g_NetSendFrame);
+
 		ServiceDog();
-		StopSample();
+
+		//在主循环中进行应答
+		//SendMultiFrame(&g_NetSendFrame);
 		//SynActionAck(0);
 
 
