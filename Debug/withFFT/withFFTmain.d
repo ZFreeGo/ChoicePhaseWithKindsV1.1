@@ -55,6 +55,7 @@ withFFT/withFFTmain.obj: E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/P
 withFFT/withFFTmain.obj: E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h
 withFFT/withFFTmain.obj: E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h
 withFFT/withFFTmain.obj: E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h
+withFFT/withFFTmain.obj: E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h
 withFFT/withFFTmain.obj: E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h
 
 ../withFFT/withFFTmain.c: 
@@ -112,4 +113,5 @@ E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/PwmTimer.h:
 E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Timer.h: 
 E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/CAN.h: 
 E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/SoftI2C.h: 
+E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/ECAP.h: 
 E:/MyCode/CCS/workspace_v6_2/ChoicePhaseWithKindsV1.3/ProjectHeader/Action.h: 

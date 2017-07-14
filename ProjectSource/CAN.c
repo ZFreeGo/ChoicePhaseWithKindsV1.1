@@ -236,29 +236,19 @@ __interrupt void Can0Recive_ISR(void)
 	if (ECanaRegs.CANGIF0.bit.BOIF0)//Bus off interrupt flag
 	{
 		 k = 0;
-		while(k++ < 100)
-		{
-			ON_LED3;
-			DelayMs(100);
-		}
+
 		ECanaRegs.CANGIF0.bit.BOIF0 = 1;
 		g_CANErrorStatus = 0xFFFF;
 	}
 	if (ECanaRegs.CANGIF0.bit.RMLIF0)//Received-message-lost interrupt flag
 	{
-		 k = 0;
-		while(k++ < 100)
-		{
-			ON_LED3;
-			DelayMs(100);
-		}
 		ECanaRegs.CANGIF0.bit.RMLIF0 = 1;
 		g_CANErrorStatus = 0xFF00;
 	}
 	if (ECanaRegs.CANGIF0.bit.EPIF0)//Ê¹ÄÜ´íÎóÖÐ¶ÏError-passive interrupt flag
 	{
 		g_CANErrorStatus = ECanaRegs.CANES.all;
-		 k = 0;
+
 		while(k++ < 100)
 		{
 			ON_LED3;

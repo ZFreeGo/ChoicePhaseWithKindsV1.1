@@ -538,6 +538,7 @@ static void  CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct De
 	ServiceDog();
     if(CycleInquireConnedctionObj.state != STATE_LINKED )	//轮询I/O连接没建立
 		return ;
+
     g_DeviceNetRequstData |= 0x0003; //置位请求标志
 	return ;
 
@@ -549,7 +550,6 @@ static void  CycleInquireMsgService(struct DefFrameData* pReciveFrame, struct De
  */
 static void AckCycleInquireMsgService(void)
 {
-
 	ServiceDog();
 	uint8_t result = 0;
 	//不处理完整，不接收新的帧
@@ -622,6 +622,11 @@ BOOL DeviceNetReciveCenter(uint16_t* pID, uint8_t * pbuff,uint8_t len)
    
     if (len <= 8) //最大长度限制
     {
+    	if ((g_DeviceNetRequstData & 0x0003)==0x0003)
+		{
+			return FALSE;//当前帧未处理不允许覆盖进入处理。
+		}
+
          DeviceNetReciveFrame.ID = *pID;   
          DeviceNetReciveFrame.len = len;
         for(i = 0; i< len; i++) //复制数据

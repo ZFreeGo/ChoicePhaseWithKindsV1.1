@@ -26,7 +26,7 @@
 #define WOKE_CONFIG 0xAA
 #define WOKE_NORMAL 0x55
 
-#define PULSE_COUNT 10 //脉冲计数
+#define PULSE_COUNT 20 //脉冲计数
 
 
 #define CAL_FACTOR 0.2098083496094 //理论计算系数

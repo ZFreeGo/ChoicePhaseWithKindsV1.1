@@ -14,6 +14,7 @@
 #include "RefParameter.h"
 #include "SampleProcess.h"
 #include "Action.h"
+#include "BasicModule.h"
 
 /**
  * 同步预制命令信息
@@ -25,6 +26,7 @@ RefSynCommandMessage g_SynCommandMessage;
 uint8_t  SendBufferDataAction[10];//接收缓冲数据
 struct DefFrameData  ActionSendFrame; //接收帧处理
 
+static void CheckSignal(void);
 
 /**
  * 初始化使用的数据
@@ -203,7 +205,6 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 		{
 			return SynCloseReadyAction(pReciveFrame, pSendFrame);
 		}
-
 	}
 	return 0xFF;
 
@@ -242,7 +243,11 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 	{
 		case SyncOrchestratorReadyClose://同步合闸预制
 		{
+
+
 			ServiceDog();
+			CheckSignal();
+
 			//必须不小于4
 			if (pReciveFrame->len < 4)
 			{
@@ -412,6 +417,10 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 				 return ERROR_OVERTIME;
 			 }
 		}
+		default:
+		{
+			return ERROR_UNKNOW_ID;
+		}
 	}
 	return 0xFF;
 
@@ -543,13 +552,37 @@ uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len)
 	}
 #endif
 	return 0xff;
+}
+/**
+ * 发送检测脉冲，脉宽100us
+ */
+static void CheckSignal(void)
+{
+	uint8_t cn = 0;
+	ServiceDog();
 
+	DelayMs(800);
+	ServiceDog();
+	for(cn = 0; cn < 5; cn++)
+	{
+		ServiceDog();
+#ifdef INTEG_MODE
+		SET_OUTB1_H;
+		DELAY_US(100);
+		SET_OUTB1_L;
+		DELAY_US(100);
+#else
+		SET_OUTA1_H;
+		SET_OUTB3_H;
+		SET_OUTB4_H;
+		DELAY_US(100);
+		SET_OUTA1_L;
+		SET_OUTB3_L;
+		SET_OUTB4_L;
+		DELAY_US(100);
 
-
-
-
-
-
+#endif
+	}
 }
 
 /**
