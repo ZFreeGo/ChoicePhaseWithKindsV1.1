@@ -128,8 +128,7 @@ RefSynCommandMessage;
 #define ERROR_OVER_TOLERANCE 		18
 #define ERROR_OUT_PULSE 			19
 #define ERROR_COMPENSATION 			20
-#define ERROR_UNKNOW_ID 			21
-#define ERROR_REPEAT_READY          22
+#define ERROR_REPEAT_READY          21
 
 #define ENTER_CONFIG  0xAA
 #define EXIT_CONFIG   0x55

@@ -205,6 +205,10 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 		{
 			return SynCloseReadyAction(pReciveFrame, pSendFrame);
 		}
+		default:
+		{
+			return ERROR_UNIDENTIFIED_ID;
+		}
 	}
 	return 0xFF;
 
@@ -421,10 +425,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 				 return ERROR_OVERTIME;
 			 }
 		}
-		default:
-		{
-			return ERROR_UNKNOW_ID;
-		}
+
 	}
 	return 0xFF;
 
