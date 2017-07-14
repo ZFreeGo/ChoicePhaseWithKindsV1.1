@@ -244,6 +244,10 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 		case SyncOrchestratorReadyClose://同步合闸预制
 		{
 
+			if(g_SynCommandMessage.synActionFlag != 0)
+			{
+				return ERROR_REPEAT_READY;
+			}
 
 			ServiceDog();
 			CheckSignal();
@@ -563,23 +567,23 @@ static void CheckSignal(void)
 
 	DelayMs(800);
 	ServiceDog();
-	for(cn = 0; cn < 5; cn++)
+	for(cn = 0; cn < 3; cn++)
 	{
 		ServiceDog();
 #ifdef INTEG_MODE
 		SET_OUTB1_H;
-		DELAY_US(100);
+		DELAY_US(200);
 		SET_OUTB1_L;
-		DELAY_US(100);
+		DELAY_US(200);
 #else
 		SET_OUTA1_H;
 		SET_OUTB3_H;
 		SET_OUTB4_H;
-		DELAY_US(100);
+		DELAY_US(200);
 		SET_OUTA1_L;
 		SET_OUTB3_L;
 		SET_OUTB4_L;
-		DELAY_US(100);
+		DELAY_US(200);
 
 #endif
 	}
