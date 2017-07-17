@@ -802,9 +802,4 @@ void AckMsgService(void)
 		AckCycleInquireMsgService();
 		g_DeviceNetRequstData &= 0xFFFC; //清除标志位
 	}
-
-
-
-
-
 }

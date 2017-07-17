@@ -180,11 +180,12 @@ extern LimitValue g_SystemLimit;
 extern volatile uint32_t g_CANErrorStatus;
 extern uint8_t g_MacList[4];
 extern uint8_t g_WorkMode;
-
+extern uint8_t g_TimeSequenceRun;
 extern uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint);
 extern uint8_t SetParamValue(uint8_t id, PointUint8* pPoint);
 extern void RefParameterInit(void);
 extern uint8_t UpdateSystemSetData(void);
+extern uint8_t SaveActionRad(void);
 
 extern struct DefFrameData  g_NetSendFrame;
 extern uint8_t CheckVoltageStatus(void);

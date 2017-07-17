@@ -55,6 +55,7 @@ static uint8_t EEPROMWriteData(uint8_t hightAddr, uint8_t lowAddr, PointUint8* p
 static uint8_t ReadLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum);
 static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum);
 
+static uint8_t  SetPhaseAction(void);
 /**
  * ÓÃÓÚÈıÏà¿ØÖÆµÄÑÓÊ±²ÎÊı
  */
@@ -90,19 +91,22 @@ uint8_t g_MacList[4];
  *¹¤×÷Ä£Ê½
  */
 uint8_t g_WorkMode;
+/**
+ * Í¬²½Ê±ĞòÔËĞĞÊ¹ÄÜ
+ */
 
+uint8_t g_TimeSequenceRun;
 
-
-
-
+/**
+ * Í¬²½ºÏÕ¢»¡¶È»¡¶È²ÎÊı±£´æË÷Òı
+ */
+static uint8_t RadSaveIndex = 0;
 
 
 /**
  *CAN´íÎó
  */
 volatile uint32_t g_CANErrorStatus;
-
-
 
 uint8_t  BufferData[10];//½ÓÊÕ»º³åÊı¾İ
 struct DefFrameData  g_NetSendFrame; //·¢ËÍÖ¡´¦Àí
@@ -113,7 +117,7 @@ struct DefFrameData  g_NetSendFrame; //·¢ËÍÖ¡´¦Àí
 uint16_t CumulativeSum = 0;
 
 
-#define PARAMETER_LEN 33  //ÉèÖÃ²ÎÊıÁĞ±í
+#define PARAMETER_LEN 34  //ÉèÖÃ²ÎÊıÁĞ±í
 #define READONLY_PARAMETER_LEN 15  //¶ÁÈ¡²ÎÊıÁĞ±í
 #define READONLY_START_ID 0x41
 /**
@@ -132,13 +136,11 @@ ConfigData g_ReadOnlyParameterCollect[READONLY_PARAMETER_LEN]; //²ÎÊıºÏ¼¯--Ö»¶ÁÁ
  */
 uint8_t SetParamValue(uint8_t id, PointUint8* pPoint)
 {
-
 	for(uint8_t i = 0; i < PARAMETER_LEN; i++)
 	{
 		ServiceDog();
 		if(g_SetParameterCollect[i].ID == id)
 		{
-
 			g_SetParameterCollect[i].fSetValue(pPoint, g_SetParameterCollect + i);
 			if (pPoint->len == 0)
 			{
@@ -152,7 +154,6 @@ uint8_t SetParamValue(uint8_t id, PointUint8* pPoint)
 			}
 			return 0;
 		}
-
 	}
 	return 0xFF;
 }
@@ -192,7 +193,6 @@ uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint)
 			if(g_ReadOnlyParameterCollect[i].ID == id)
 			{
 				//TODO :Ìí¼Ó´íÎó´¦Àí¡ª¡ªÃ¿Ò»¸öGetº¯ÊıÌí¼ÓÏàÓ¦µÄ´¦ÀíÄÚÈİ¡£
-
 				g_ReadOnlyParameterCollect[i].fGetValue(pPoint, g_ReadOnlyParameterCollect + i);
 				if (pPoint->len == 0)
 				{
@@ -205,7 +205,6 @@ uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint)
 		}
 		return 0xF4;
 	}
-
 	return 0xFF;
 }
 
@@ -312,16 +311,12 @@ static void InitReadonlyParameterCollect(void)
 	g_ReadOnlyParameterCollect[index].fSetValue = 0;
 	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloatUint16;
 	index++;
+
+
 	if (READONLY_PARAMETER_LEN < index)
 	{
 		while(1);
 	}
-
-
-
-
-
-
 }
 /**
  * ³õÊ¼»¯ÏµÍ³²ÎÊıºÏ¼¯
@@ -487,6 +482,8 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fSetValue = SetValueUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueUint16;
 	index++;
+	RadSaveIndex = index; //»¡¶È²ÎÊı±£´æÆğÊ¼Ë÷Òı
+
 	g_SetParameterCollect[index].ID = id++;
 	g_SetParameterCollect[index].pData = &g_PhaseActionRad[1].actionRad;
 	g_SetParameterCollect[index].type = 0x20;
@@ -536,9 +533,15 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fGetValue = GetValueUint16;
 	index++;
 
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_TimeSequenceRun;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+
 	if (PARAMETER_LEN != index)
 	{
-
 		while(1)
 		{
 			ON_LED1; //LED1³£ÁÁÖ¸Ê¾´íÎó
@@ -610,6 +613,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[0].realTime = 0;
 	 g_PhaseActionRad[0].readyFlag = 0;
 	 g_PhaseActionRad[0].count = 0;
+	 g_PhaseActionRad[0].loopByte = 0;
 
 	 g_PhaseActionRad[1].phase = PHASE_B;
 	 g_PhaseActionRad[1].actionRad = 0;
@@ -619,6 +623,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[1].realTime = 0;
 	 g_PhaseActionRad[1].readyFlag = 0;
 	 g_PhaseActionRad[1].count = 0;
+	 g_PhaseActionRad[1].loopByte = 0;
 
 	 g_PhaseActionRad[2].phase = PHASE_C;
 	 g_PhaseActionRad[2].actionRad = 0;
@@ -628,7 +633,7 @@ void DefaultInit(void)
 	 g_PhaseActionRad[2].realTime = 0;
 	 g_PhaseActionRad[2].readyFlag = 0;
 	 g_PhaseActionRad[2].count = 0;
-
+	 g_PhaseActionRad[2].loopByte = 0;
 
 	 //ÏµÍ³²ÎÊıÉÏÏÂÏŞ
 	 g_SystemLimit.frequency.max = 55.0f;
@@ -651,6 +656,7 @@ void DefaultInit(void)
 	 g_MacList[3] = 0x14;
 
 
+	 g_TimeSequenceRun = 0;//Ä¬ÈÏ½ûÖ¹
 	 //»º³åÊı¾İ·¢ËÍ
 	 g_NetSendFrame.pBuffer = BufferData;
 }
@@ -692,12 +698,70 @@ void RefParameterInit(void)
 				 DefaultInit();//ÖØĞÂÓÃÄ¬ÈÏÖµ³õÊ¼»¯
 				 NOP();
 			 }
+			 else
+			 {
+				 //¸ù¾İ±£´æÊı¾İ¸üĞÂ¶¯×÷»¡¶È²ÎÊı
+				 SetPhaseAction();
+			 }
 		 }
 	 }
 	 ServiceDog();
 
 }
+/**
+ *¸üĞÂÊı¾İ
+ *
+ * @brif ¸üĞÂÏµÍ³²ÎÊıÊı¾İ
+ */
+uint8_t resultUpdate;
+uint8_t UpdateSystemSetData(void)
+{
+	uint16_t sum = 0;
 
+	resultUpdate = UpdateLocalSaveData(1,  PARAMETER_LEN - 1, &sum);
+	NOP() ;
+	if (!resultUpdate)
+	{
+		CumulativeSum = sum;
+		resultUpdate = UpdateLocalSaveData(PARAMETER_LEN, 1, &sum);//µ¥¶À¸üĞÂĞ£ÑéºÍ
+		NOP() ;
+
+	}
+	NOP() ;
+	resultUpdate = ReadLocalSaveData(1, PARAMETER_LEN, &sum);
+	return resultUpdate;
+}
+/**
+ * ¸ù¾İ±£´æÖµÉèÖÃ¶¯×÷»¡¶È
+ */
+static uint8_t  SetPhaseAction(void)
+{
+	uint8_t i = 0, phase = 0, count = 0;
+	float lastRatio = 0;
+	for(i = 0; i < 3; i++)
+	{
+		phase= (g_PhaseActionRad[0].loopByte >>(2*i)) & (0x03);
+		if (phase == 0)
+		{
+			break;
+		}
+		count++;
+		g_PhaseActionRad[i].realRatio =  (float)g_PhaseActionRad[i].actionRad / 65536;//ÀÛ¼Ó¼ÆËã¾ø¶Ô±ÈÂÊ
+		 if (g_PhaseActionRad[i].realRatio < lastRatio)
+		 {
+			return ERROR_RAD_ASCEND;
+		 }
+		 g_PhaseActionRad[i].realDiffRatio =   g_PhaseActionRad[i].realRatio  - lastRatio;//Ïà¶ÔÉÏÒ»¼¶±ÈÂÊ
+		 lastRatio = g_PhaseActionRad[i].realRatio;
+	}
+
+	for(i = 0; i < 3; i++)
+	{
+		g_PhaseActionRad[i].count = count;//»ØÂ·ÊıÁ¿
+		g_PhaseActionRad[i].enable = 0;
+	}
+	return 0;
+}
 
 /**
  * ÉèÖÃÏµÍ³Ğ£×¼ÏµÊı[0,4294.967295]£¬Ä¬ÈÏ±£ÁôÁùÎ»Ğ¡Êı;
@@ -1206,36 +1270,8 @@ static uint8_t UpdateLocalSaveData(uint8_t startId, uint8_t len, uint16_t* pSum)
 	}
 	return 0;
 }
-/**
- *¸üĞÂÊı¾İ
- *
- *@return 0--Õı³£¸üĞÂ£¬·Ç0--´íÎó
- *
- * @brif ¸üĞÂÏµÍ³²ÎÊıÊı¾İ
- */
-uint8_t resultUpdate;
-uint8_t UpdateSystemSetData(void)
-{
-	uint16_t sum = 0;
 
-	resultUpdate = UpdateLocalSaveData(1,  PARAMETER_LEN - 1, &sum);
-	NOP() ;
-	if (!resultUpdate)
-	{
-		CumulativeSum = sum;
-		resultUpdate = UpdateLocalSaveData(PARAMETER_LEN, 1, &sum);//µ¥¶À¸üĞÂĞ£ÑéºÍ
-		NOP() ;
 
-	}
-
-	else
-	{
-		return resultUpdate;
-	}
-	NOP() ;
-	resultUpdate = ReadLocalSaveData(1, PARAMETER_LEN, &sum);
-	return resultUpdate;
-}
 
 /**
  * @brif ¼ì²âÏµÍ³µçÑ¹
@@ -1363,4 +1399,17 @@ uint8_t CheckFrequencyStatus(void)
 		statusA = NORMOL_VALUE;
 	}
 	return statusA;
+}
+
+/**
+ * ±£´æ»¡¶ÈÏà½ÇÉèÖÃ
+ */
+uint8_t SaveActionRad(void)
+{
+	uint16_t sum = 0;
+	if (0 != UpdateLocalSaveData(RadSaveIndex, 4, &sum))
+	{
+		return ERROR_SAVE_DATA;
+	}
+	return 0;
 }

@@ -27,6 +27,9 @@ uint8_t  SendBufferDataAction[10];//接收缓冲数据
 struct DefFrameData  ActionSendFrame; //接收帧处理
 
 static void CheckSignal(void);
+static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
+static uint8_t SyncTimeSequenceCommand(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
+
 
 /**
  * 初始化使用的数据
@@ -46,7 +49,6 @@ void ActionInit(void)
 
 }
 
-static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 
 /**
  * 引用帧服务
@@ -205,6 +207,10 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 		{
 			return SynCloseReadyAction(pReciveFrame, pSendFrame);
 		}
+		case SynTimeSequence:
+		{
+			 return SyncTimeSequenceCommand(pReciveFrame, pSendFrame);
+		}
 		default:
 		{
 			return ERROR_UNIDENTIFIED_ID;
@@ -234,7 +240,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 	float lastRatio = 0; //上一次比率
 	uint8_t phase = 0;
 	ServiceDog();
-
+	uint8_t error = 0;
 	//检测电压是否在范围内
 	if(!CheckPhaseVoltageStatus(PHASE_A))
 	{
@@ -268,6 +274,11 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 			}
 			//计算容纳的路数
 			count = (pReciveFrame->len - 2)/2;
+			if (count == 0)
+			{
+				return ERROR_LEN;
+			}
+
 			g_SynCommandMessage.loopByte = pReciveFrame->pBuffer[1];
 			for(i = 0; i < count; i++)
 			{
@@ -332,19 +343,27 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 				 lastRatio = g_PhaseActionRad[i].realRatio;
 
 				 g_PhaseActionRad[i].count = count;//回路数量
+
+				 //保存相角设置
+				 error = SaveActionRad();
+				 if (error != 0)
+				 {
+					 return error;
+				 }
 			 }
 			 //均是禁止，在同步执行状态下开启
-			 for (i = count; i < 3; i++)
+			 for (i = 0; i < 3; i++)
 			 {
 				 g_PhaseActionRad[i].enable = 0;
 			 }
+
+
 
 			memcpy(g_SynCommandMessage.commandData, pReciveFrame->pBuffer, pReciveFrame->len );//暂存指令
 			g_SynCommandMessage.lastLen = pReciveFrame->len;
 			g_SynCommandMessage.synActionFlag = SYN_HE_READY;//暂存指令标志
 			g_SynCommandMessage.closeWaitAckTime.startTime = CpuTimer0.InterruptCount;
-			//memcpy(pSendFrame->pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
-			//pSendFrame->pBuffer[0] = id| 0x80;
+
 
 			memcpy(ActionSendFrame.pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
 			ActionSendFrame.pBuffer[0] = id| 0x80;
@@ -359,6 +378,11 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 		case SyncOrchestratorCloseAction://同步合闸执行
 		{
 			ServiceDog();
+			if (TIME_SEQUENCE == g_TimeSequenceRun)
+			{
+				return ERROR_SEQUENCE_MODE;
+			}
+
 			 //判断是否超时
 			 if (!IsOverTime(g_SynCommandMessage.closeWaitAckTime.startTime, g_SynCommandMessage.closeWaitAckTime.delayTime))
 			 {
@@ -370,7 +394,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 						 return ERROR_LEN;
 					 }
 					 //上一条指令是否为合闸预制
-					 if (g_SynCommandMessage.commandData[i] != 0x30)
+					 if (g_SynCommandMessage.commandData[0] != SyncOrchestratorReadyClose)
 					 {
 						 return ERROR_MATCHED_ID ;
 					 }
@@ -418,7 +442,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 			 else
 			 {
 				 g_SynCommandMessage.synActionFlag = 0;
-				 for (i = count; i < 3; i++)
+				 for (i = 0; i < 3; i++)
 				 {
 					 g_PhaseActionRad[i].enable = 0;
 				 }
@@ -429,6 +453,89 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 	}
 	return 0xFF;
 
+}
+
+/**
+ * 同步时序脉冲序列，执行函数
+ */
+static uint8_t SyncTimeSequenceCommand(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame)
+{
+	uint8_t i = 0;
+	ServiceDog();
+	if(!CheckPhaseVoltageStatus(PHASE_A))
+	{
+		return ERROR_VOLTAGE;
+	}
+	if (TIME_SEQUENCE != g_TimeSequenceRun)
+	{
+		return ERROR_SEQUENCE_MODE;
+	}
+	if (pReciveFrame->len < 2)
+	{
+		return ERROR_LEN;
+	}
+	if (TIME_SEQUENCE != pReciveFrame->pBuffer[1])
+	{
+		return  ERROR_SEQUENCE_UNRADY;
+	}
+	 //判断是否超时
+	 if (!IsOverTime(g_SynCommandMessage.closeWaitAckTime.startTime, g_SynCommandMessage.closeWaitAckTime.delayTime))
+	 {
+		 if (g_SynCommandMessage.synActionFlag == SYN_HE_WAIT_ACTION)//是否已经预制
+		 {
+			 g_SynCommandMessage.synActionFlag = 0; //清空预制
+
+			 //上一条指令是否为合闸预制
+			 if (g_SynCommandMessage.commandData[i] != SyncOrchestratorReadyClose)
+			 {
+				 return ERROR_MATCHED_ID ;
+			 }
+
+			 //设置同步合闸参数
+			 uint8_t count = g_PhaseActionRad[0].count;
+			 //回路数需要位于1-3之间
+			 if ((count == 0) || (count > 3))
+			 {
+				 return ERROR_LOOP_COUNT;
+			 }
+			 for(i = 0; i < count; i++)
+			 {
+				 g_PhaseActionRad[i].enable = 0xFF;
+			 }
+			 //禁止合闸动作相角
+			 for (i = count; i < 3; i++)
+			 {
+				 g_PhaseActionRad[i].enable = 0;
+			 }
+
+			 g_PhaseActionRad[0].loopByte = g_SynCommandMessage.commandData[1];
+			 memcpy(ActionSendFrame.pBuffer, pReciveFrame->pBuffer, pReciveFrame->len );
+			 ActionSendFrame.pBuffer[0] = pReciveFrame->pBuffer[0]| 0x80;
+			 ActionSendFrame.len = pReciveFrame->len;
+			 //停止,再开启采样
+			 ChangeSampleMode(SYN_MODE);
+			 StartSample();
+
+			 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
+			 g_SynCommandMessage.synActionFlag = SYN_HE_ACTION;//置同步合闸动作标志
+			 pSendFrame->len = 0;//取消底层发送
+			 return 0;
+		 }
+		 else
+		 {
+			 return ERROR_OPERATE_SEQUENCE;
+		 }
+
+	 }
+	 else
+	 {
+		 g_SynCommandMessage.synActionFlag = 0;
+		 for (i = 0; i < 3; i++)
+		 {
+			 g_PhaseActionRad[i].enable = 0;
+		 }
+		 return ERROR_OVERTIME;
+	 }
 }
 /**
  * 同步执行应答
@@ -459,7 +566,7 @@ void SynActionAck(uint8_t state)
  *
  * @retrun null
  */
-void ErrorAck(uint8_t id,uint8_t state)
+void ErrorAck(uint8_t id, uint8_t state)
 {
 	ServiceDog();
 	if (state != 0)

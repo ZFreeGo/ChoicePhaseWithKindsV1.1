@@ -102,8 +102,8 @@ RefSynCommandMessage;
    // SyncOrchestratorReadyOpen = 0x32,
 	//SyncOrchestratorOpenAction = 0x32,
 
-	//SynSingalSelfTesting = 0x40,
 
+	 SynTimeSequence = 0x34, //时序同步脉冲信号
 
     };
 
@@ -129,6 +129,12 @@ RefSynCommandMessage;
 #define ERROR_OUT_PULSE 			19
 #define ERROR_COMPENSATION 			20
 #define ERROR_REPEAT_READY          21
+#define ERROR_SEQUENCE_UNRADY 		22
+#define ERROR_SEQUENCE_CMD 			23
+#define ERROR_SAVE_DATA      		24 //错误的存储数据EEPROM
+#define ERROR_LOOP_COUNT     	25 //错误的序列模式
+#define ERROR_SEQUENCE_MODE     	26 //错误的回路数量
+
 
 #define ENTER_CONFIG  0xAA
 #define EXIT_CONFIG   0x55
@@ -140,6 +146,13 @@ RefSynCommandMessage;
 #define SYN_HE_ACTION 0x55
 #define SYN_HE_SUCESS 0x1A
 
+ /**
+  *时序模式
+  */
+ #define TIME_SEQUENCE 0xA5
+
+
+
 extern void ActionInit(void);
 extern uint8_t  FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSendFrame);
 extern void  SendMultiFrame(struct DefFrameData* pSendFrame);
@@ -148,5 +161,7 @@ extern void ErrorAck(uint8_t id,uint8_t state);
 extern uint8_t SynCloseWaitAck(uint16_t* pID, uint8_t * pbuff,uint8_t len);
 //全局变量
 extern RefSynCommandMessage g_SynCommandMessage;
+
+
 
 #endif /* PROJECTHEADER_ACTION_H_ */
