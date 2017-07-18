@@ -88,14 +88,9 @@ LimitValue g_SystemLimit;
 uint8_t g_MacList[4];
 
 /**
- *工作模式
+ * 系统参数配置
  */
-uint8_t g_WorkMode;
-/**
- * 同步时序运行使能
- */
-
-uint8_t g_TimeSequenceRun;
+SystemConfig g_SystemConfig;
 
 /**
  * 同步合闸弧度弧度参数保存索引
@@ -117,9 +112,11 @@ struct DefFrameData  g_NetSendFrame; //发送帧处理
 uint16_t CumulativeSum = 0;
 
 
-#define PARAMETER_LEN 34  //设置参数列表
+#define PARAMETER_LEN 36  //设置参数列表
 #define READONLY_PARAMETER_LEN 15  //读取参数列表
 #define READONLY_START_ID 0x41
+
+
 /**
  *系统配置参数合集
  */
@@ -526,16 +523,30 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fSetValue = SetValueUint8;
 	g_SetParameterCollect[index].fGetValue = GetValueUint8;
 	index++;
+
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &CumulativeSum;
-	g_SetParameterCollect[index].type = 0x20;
-	g_SetParameterCollect[index].fSetValue = SetValueUint16;
-	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	g_SetParameterCollect[index].pData = &g_SystemConfig.timeSequenceRun;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
 	index++;
 
 	g_SetParameterCollect[index].ID = id++;
-	g_SetParameterCollect[index].pData = &g_TimeSequenceRun;
+	g_SetParameterCollect[index].pData = &g_SystemConfig.syncSampleSend;
 	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemConfig.sampleChanel;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
+
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &CumulativeSum;
+	g_SetParameterCollect[index].type = 0x20;
 	g_SetParameterCollect[index].fSetValue = SetValueUint16;
 	g_SetParameterCollect[index].fGetValue = GetValueUint16;
 	index++;
@@ -656,7 +667,16 @@ void DefaultInit(void)
 	 g_MacList[3] = 0x14;
 
 
-	 g_TimeSequenceRun = 0;//默认禁止
+	 g_SystemConfig.timeSequenceRun = 0;//默认禁止
+	 g_SystemConfig.syncSampleSend = 0xff;//默认禁止
+
+#if INTEG_MODE
+	 g_SystemConfig.sampleChanel 	= 0x08;    // set SOC0 channel select to ADCINB0  小选相/直流
+#else
+	 g_SystemConfig.sampleChanel 	= 0x0C;    // set SOC0 channel select to ADCINB4  大选相
+#endif
+
+
 	 //缓冲数据发送
 	 g_NetSendFrame.pBuffer = BufferData;
 }

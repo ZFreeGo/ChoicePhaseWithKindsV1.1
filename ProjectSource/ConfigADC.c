@@ -36,33 +36,7 @@ extern Uint16 SampleIndex; //采样索引 from SampleProcess.c
 void ConfigADC_Monitor(float priod)
 {
 
-#if INTEG_MODE
-    EALLOW;
-    AdcRegs.ADCCTL2.bit.ADCNONOVERLAP   = 1;	// Enable non-overlap mode
-    AdcRegs.ADCCTL1.bit.INTPULSEPOS	= 1;	// ADCINT1 trips after AdcResults latch
 
-    AdcRegs.INTSEL1N2.bit.INT1E         = 1;	// Enabled ADCINT1
-    AdcRegs.INTSEL1N2.bit.INT1CONT      = 0;	// Disable ADCINT1 Continuous mode
-    AdcRegs.INTSEL1N2.bit.INT1SEL 	= 0;    // setup EOC0 to trigger ADCINT1 to fire
-
-    //改变选择的通道
-    AdcRegs.ADCSOC0CTL.bit.CHSEL 	= 0x08;    // set SOC0 channel select to ADCINB0
-
-
-    AdcRegs.ADCSOC0CTL.bit.TRIGSEL 	= 5;    // set SOC0 start trigger on EPWM1A, due to round-robin SOC0 converts first then SOC1
-
-    AdcRegs.ADCSOC0CTL.bit.ACQPS 	= 16;	// set SOC0 S/H Window to 7 ADC Clock Cycles, (6 ACQPS plus 1)
-
-    EDIS;
-    //周期设置
-    EPwm1Regs.ETSEL.bit.SOCAEN	= 1;		// Enable SOC on A group
-    EPwm1Regs.ETSEL.bit.SOCASEL	= 4;		// Select SOC from CMPA on upcount
-    EPwm1Regs.ETPS.bit.SOCAPRD 	= 1;		// Generate pulse on 1st event
-    EPwm1Regs.CMPA.half.CMPA 	= 0;	// 20*10^3/64*80/2 = 12500  default /2
-    EPwm1Regs.TBPRD 			= priod;	// 12500  * FREQ_CALI_RATE// Set period for ePWM1   (TBPRD-CMPA)*2 宽度
-    //EPwm1Regs.TBCTL.bit.CTRMODE = 0;		// count up and start
-
-#else
     EALLOW;
 	AdcRegs.ADCCTL2.bit.ADCNONOVERLAP   = 1;	// Enable non-overlap mode
 	AdcRegs.ADCCTL1.bit.INTPULSEPOS	= 1;	// ADCINT1 trips after AdcResults latch
@@ -71,7 +45,7 @@ void ConfigADC_Monitor(float priod)
 	AdcRegs.INTSEL1N2.bit.INT1CONT      = 0;	// Disable ADCINT1 Continuous mode
 	AdcRegs.INTSEL1N2.bit.INT1SEL 	= 0;    // setup EOC0 to trigger ADCINT1 to fire
 
-	AdcRegs.ADCSOC0CTL.bit.CHSEL 	= 0x0C;    // set SOC0 channel select to ADCINB4
+	AdcRegs.ADCSOC0CTL.bit.CHSEL 	= g_SystemConfig.sampleChanel;    // set SOC0 channel select to ADCINB4  大选相
 
 
 	AdcRegs.ADCSOC0CTL.bit.TRIGSEL 	= 5;    // set SOC0 start trigger on EPWM1A, due to round-robin SOC0 converts first then SOC1
@@ -87,7 +61,7 @@ void ConfigADC_Monitor(float priod)
 	EPwm1Regs.TBPRD 			= priod;	// 12500  * FREQ_CALI_RATE// Set period for ePWM1   (TBPRD-CMPA)*2 宽度
 	//EPwm1Regs.TBCTL.bit.CTRMODE = 0;		// count up and start
 
-#endif
+
 
 
 

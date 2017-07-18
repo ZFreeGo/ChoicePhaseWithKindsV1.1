@@ -41,6 +41,7 @@ int main(void)
 	uint32_t cnTime = 0;
 	InitSysCtrl();            //20*4 = 80M
 	InitDeviceIO();
+	ServiceDog();
 
 	// Step 3. Clear all interrupts and initialize PIE vector table:
 	DINT;
@@ -53,18 +54,11 @@ int main(void)
 	// This is needed to write to EALLOW protected registers
 	PieVectTable.TINT0 = &Cpu_timer0_isr;
 	PieVectTable.ADCINT1 = &ADC_INT1_ISR;
-	//PieVectTable.ADCINT2 = &ADC_INT2_Potect_ISR;
-	//PieVectTable.SCIRXINTB = &ScibRX_ISR;
-	//PieVectTable.SCITXINTB = &ScibTX_ISR;
-	//PieVectTable.SCIRXINTA = &SciaRX_ISR;
-	//PieVectTable.SCITXINTA = &SciaTX_ISR;
 	PieVectTable.EPWM2_INT = &epwm2_timer_isr;
 	PieVectTable.EPWM3_INT = &epwm3_timer_isr;
 	PieVectTable.EPWM4_INT = &epwm4_timer_isr;
 	PieVectTable.ECAN0INTA = &Can0Recive_ISR;
-#ifdef INTEG_MODE
-	PieVectTable.ECAP2_INT = &ecap2_isr;
-#endif
+
 	EDIS;
 	// This is needed to disable write to EALLOW protected registers
 
@@ -74,20 +68,19 @@ int main(void)
 	InitFlash();
 #endif
 
+	InitMonitorCalData(); //监控数据计算初始化
+
 	//Step 4. Initialize the Device Peripheral.
 	//若为看门狗复位
 	if (SysCtrlRegs.WDCNTR & 0x80)
 	{
-		g_WorkMode = WOKE_WATCH;
+		g_SystemConfig.workMode = WOKE_WATCH;
 	}
 	else
 	{
-		g_WorkMode = WOKE_NORMAL;
+		g_SystemConfig.workMode = WOKE_NORMAL;
 	}
 	EnableatchDog();
-
-
-
 
 	InitStandardCAN(0, 0);
 	InitAdc(); //初始化ADC
@@ -104,10 +97,6 @@ int main(void)
 	PieCtrlRegs.PIEIER3.bit.INTx4 = PWM4_INT_ENABLE;
 	PieCtrlRegs.PIEIER9.bit.INTx5 = 1; //ECAN0bits
 
-#ifdef INTEG_MODE
-	PieCtrlRegs.PIEIER4.bit.INTx2 = 1; //ECAP2
-#endif
-
 	PieCtrlRegs.PIEIER3.bit.INTx2 = PWM2_INT_ENABLE;
 	PieCtrlRegs.PIEIER3.bit.INTx3 = PWM3_INT_ENABLE;
 
@@ -115,27 +104,21 @@ int main(void)
 	IER |= M_INT1;		//TIMER0 ADCINT1 ADCINT2
 	IER |= M_INT3;        // Enable CPU INT3 which is connected to EPWM1-6 INT:
 	IER |= M_INT9;
-#ifdef INTEG_MODE
-	IER |= M_INT4; //ECAP2
-#endif
+
 	EINT;
 	// Enable Global interrupt INTM
 	ERTM;
 	// Enable Global realtime interrupt DBGM
 	ServiceDog();
 	InitSampleProcessData(); //采样数据初始化
-	ServiceDog();
-	InitMonitorCalData(); //监控数据计算初始化
+
 	ServiceDog();
 	ConfigADC_Monitor(12500);  //ADC 采样初始化 设定采样周期 12500属于定时器计数长度，每周波64点
-#ifdef INTEG_MODE
-	ConfigECapFrquency();
-#endif
+
 	ServiceDog();
 	ActionInit();
 	InitDeviceNet();
 	ServiceDog();
-	//InitEPwmTimer();
 	//调试使用
 	StartSample();//用于启动采样
 

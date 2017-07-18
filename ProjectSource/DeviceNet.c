@@ -718,8 +718,12 @@ void AckMsgService(void)
 	}
 	if(g_SynCommandMessage.synActionFlag == SYN_HE_SUCESS)
 	{
+		//根据需要回传采样数据
+		if (!g_SystemConfig.syncSampleSend)
+		{
+			SendMultiFrame(&g_NetSendFrame);//发送采样数据
+		}
 		//成功应答
-		SendMultiFrame(&g_NetSendFrame);//发送采样数据
 		SynActionAck(0);
 
 		g_SynCommandMessage.synActionFlag = 0;
@@ -766,10 +770,12 @@ void AckMsgService(void)
 		{
 
 			DeviceNetSendFrame.pBuffer[0] = SubstationStatuesChange | 0x80;
-			DeviceNetSendFrame.pBuffer[1] = g_WorkMode;  //工作模式
+			DeviceNetSendFrame.pBuffer[1] = g_SystemConfig.workMode;  //工作模式
 			DeviceNetSendFrame.pBuffer[2] = CheckVoltageStatus();//电压越限制检测
-			DeviceNetSendFrame.pBuffer[3] = CheckFrequencyStatus();
-			DeviceNetSendFrame.len = 4;
+			uint16_t freq = (uint16_t)(g_SystemVoltageParameter.frequencyCollect.FreqMean * 1000);
+			DeviceNetSendFrame.pBuffer[3] = (uint8_t)(freq &0x00FF);
+			DeviceNetSendFrame.pBuffer[4] = (uint8_t)(freq>>8);
+			DeviceNetSendFrame.len = 5;
 			PacktIOMessageStatus(&DeviceNetSendFrame);
 			LoopStatusSend.startTime =  CpuTimer0.InterruptCount; //重新设置新的延时
 		}

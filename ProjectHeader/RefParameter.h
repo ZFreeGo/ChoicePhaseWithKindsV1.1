@@ -29,7 +29,11 @@
 #define PULSE_COUNT 20 //脉冲计数
 
 
-#define CAL_FACTOR 0.2098083496094 //理论计算系数
+//#define CAL_FACTOR 0.2098083496094 //理论计算系数
+//#define CAL_FACTOR 0.0953674316406 //100V输入
+#define CAL_FACTOR 0.0550270080566 //57.7V输入
+
+
 
 //频率合集
 typedef struct RagFreqCollect
@@ -149,6 +153,14 @@ typedef struct TagSyncCommand
 	uint16_t actionRadC; //C
 }SyncCommand;
 
+typedef struct TagSystemConfig
+{
+	uint8_t workMode;//工作模式
+	uint8_t timeSequenceRun;//同步时序运行使能
+	uint8_t syncSampleSend;//采样数据发送使能  0--使能, 非0禁止
+	uint8_t sampleChanel;   //采样通道
+}SystemConfig;
+
 
 /**
  * 配置数据
@@ -179,8 +191,9 @@ extern ActionRad g_PhaseActionRad[3];
 extern LimitValue g_SystemLimit;
 extern volatile uint32_t g_CANErrorStatus;
 extern uint8_t g_MacList[4];
-extern uint8_t g_WorkMode;
-extern uint8_t g_TimeSequenceRun;
+extern SystemConfig g_SystemConfig;
+
+
 extern uint8_t ReadParamValue(uint8_t id, PointUint8* pPoint);
 extern uint8_t SetParamValue(uint8_t id, PointUint8* pPoint);
 extern void RefParameterInit(void);

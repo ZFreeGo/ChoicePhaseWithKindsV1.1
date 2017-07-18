@@ -157,7 +157,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				{
 
 					result = UpdateSystemSetData();
-					g_WorkMode = pReciveFrame->pBuffer[3];
+					g_SystemConfig.workMode = pReciveFrame->pBuffer[3];
 					 //应答回复
 					pSendFrame->pBuffer[0] = id| 0x80;
 					pSendFrame->pBuffer[1] = g_MacList[0];
@@ -170,7 +170,7 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 				}
 				else if (pReciveFrame->pBuffer[3] == ENTER_CONFIG)//进入配置模式
 				{
-					g_WorkMode = pReciveFrame->pBuffer[3];
+					g_SystemConfig.workMode = pReciveFrame->pBuffer[3];
 					//应答回复
 					pSendFrame->pBuffer[0] = id| 0x80;
 					memcpy(pSendFrame->pBuffer + 1, pReciveFrame->pBuffer + 1,
@@ -240,7 +240,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 	float lastRatio = 0; //上一次比率
 	uint8_t phase = 0;
 	ServiceDog();
-	uint8_t error = 0;
+
 	//检测电压是否在范围内
 	if(!CheckPhaseVoltageStatus(PHASE_A))
 	{
@@ -345,11 +345,11 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 				 g_PhaseActionRad[i].count = count;//回路数量
 
 				 //保存相角设置
-				 error = SaveActionRad();
-				 if (error != 0)
-				 {
-					 return error;
-				 }
+				// error = SaveActionRad();
+				// if (error != 0)
+				// {
+				//	 return error;
+				 //}
 			 }
 			 //均是禁止，在同步执行状态下开启
 			 for (i = 0; i < 3; i++)
@@ -369,7 +369,8 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 			ActionSendFrame.pBuffer[0] = id| 0x80;
 			ActionSendFrame.len = pReciveFrame->len;
 
-			//pSendFrame->len = pReciveFrame->len;
+			g_SynCommandMessage.synActionFlag = SYN_HE_READY;
+
 			pSendFrame->len = 0;
 			return 0;
 
@@ -378,7 +379,7 @@ static uint8_t SynCloseReadyAction(struct DefFrameData* pReciveFrame, struct Def
 		case SyncOrchestratorCloseAction://同步合闸执行
 		{
 			ServiceDog();
-			if (TIME_SEQUENCE == g_TimeSequenceRun)
+			if (TIME_SEQUENCE == g_SystemConfig.timeSequenceRun)
 			{
 				return ERROR_SEQUENCE_MODE;
 			}
@@ -466,7 +467,7 @@ static uint8_t SyncTimeSequenceCommand(struct DefFrameData* pReciveFrame, struct
 	{
 		return ERROR_VOLTAGE;
 	}
-	if (TIME_SEQUENCE != g_TimeSequenceRun)
+	if (TIME_SEQUENCE != g_SystemConfig.timeSequenceRun)
 	{
 		return ERROR_SEQUENCE_MODE;
 	}
