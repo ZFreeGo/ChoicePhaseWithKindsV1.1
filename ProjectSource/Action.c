@@ -85,6 +85,10 @@ uint8_t FrameServer(struct DefFrameData* pReciveFrame, struct DefFrameData* pSen
 
 		case MasterParameterSetOne: //主站参数设置
 		{
+			if (g_SystemConfig.workMode != ENTER_CONFIG)
+			{
+				return  ERROR_WORK_MODE;
+			}
 			ServiceDog();
 			if (pReciveFrame->len >= 2) //ID+配置号+属性值 至少3字节
 			{

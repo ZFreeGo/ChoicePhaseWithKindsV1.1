@@ -134,7 +134,7 @@ RefSynCommandMessage;
 #define ERROR_SAVE_DATA      		24 //错误的存储数据EEPROM
 #define ERROR_LOOP_COUNT     	25 //错误的序列模式
 #define ERROR_SEQUENCE_MODE     	26 //错误的回路数量
-
+#define ERROR_WORK_MODE     	27 //错误的工作模式
 
 #define ENTER_CONFIG  0xAA
 #define EXIT_CONFIG   0x55

@@ -112,8 +112,8 @@ struct DefFrameData  g_NetSendFrame; //发送帧处理
 uint16_t CumulativeSum = 0;
 
 
-#define PARAMETER_LEN 36  //设置参数列表
-#define READONLY_PARAMETER_LEN 15  //读取参数列表
+#define PARAMETER_LEN 37  //设置参数列表
+#define READONLY_PARAMETER_LEN 16  //读取参数列表
 #define READONLY_START_ID 0x41
 
 
@@ -308,7 +308,12 @@ static void InitReadonlyParameterCollect(void)
 	g_ReadOnlyParameterCollect[index].fSetValue = 0;
 	g_ReadOnlyParameterCollect[index].fGetValue = GetValueFloatUint16;
 	index++;
-
+	g_ReadOnlyParameterCollect[index].ID = id++;
+	g_ReadOnlyParameterCollect[index].pData = &g_SystemConfig.readSuccess;
+	g_ReadOnlyParameterCollect[index].type = 0x10;
+	g_ReadOnlyParameterCollect[index].fSetValue = 0;
+	g_ReadOnlyParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
 
 	if (READONLY_PARAMETER_LEN < index)
 	{
@@ -545,6 +550,12 @@ static void InitSetParameterCollect(void)
 	index++;
 
 	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemConfig.updatePeriod;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
+	g_SetParameterCollect[index].ID = id++;
 	g_SetParameterCollect[index].pData = &CumulativeSum;
 	g_SetParameterCollect[index].type = 0x20;
 	g_SetParameterCollect[index].fSetValue = SetValueUint16;
@@ -669,7 +680,8 @@ void DefaultInit(void)
 
 	 g_SystemConfig.timeSequenceRun = 0;//默认禁止
 	 g_SystemConfig.syncSampleSend = 0xff;//默认禁止
-
+	 g_SystemConfig.readSuccess = 0xff;//默认数据
+	 g_SystemConfig.updatePeriod = 3;//更新上传周期，默认3s
 #if INTEG_MODE
 	 g_SystemConfig.sampleChanel 	= 0x08;    // set SOC0 channel select to ADCINB0  小选相/直流
 #else
@@ -720,6 +732,8 @@ void RefParameterInit(void)
 			 }
 			 else
 			 {
+				 //置成功读取标志
+				 g_SystemConfig.readSuccess = 0;
 				 //根据保存数据更新动作弧度参数
 				 SetPhaseAction();
 			 }

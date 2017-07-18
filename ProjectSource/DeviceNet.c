@@ -768,7 +768,6 @@ void AckMsgService(void)
 	{
 		if(IsOverTime(LoopStatusSend.startTime, LoopStatusSend.delayTime) )
 		{
-
 			DeviceNetSendFrame.pBuffer[0] = SubstationStatuesChange | 0x80;
 			DeviceNetSendFrame.pBuffer[1] = g_SystemConfig.workMode;  //工作模式
 			DeviceNetSendFrame.pBuffer[2] = CheckVoltageStatus();//电压越限制检测
@@ -778,6 +777,7 @@ void AckMsgService(void)
 			DeviceNetSendFrame.len = 5;
 			PacktIOMessageStatus(&DeviceNetSendFrame);
 			LoopStatusSend.startTime =  CpuTimer0.InterruptCount; //重新设置新的延时
+			LoopStatusSend.delayTime = g_SystemConfig.updatePeriod * 1000;//更新上传周期
 		}
 
 
