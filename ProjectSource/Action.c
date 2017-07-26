@@ -678,9 +678,9 @@ static void CheckSignal(void)
 	uint8_t cn = 0;
 	ServiceDog();
 
-	DelayMs(800);
+	DelayMs(g_SystemConfig.testDelay);
 	ServiceDog();
-	for(cn = 0; cn < 3; cn++)
+	for(cn = 0; cn < g_SystemConfig.testPulseCount; cn++)
 	{
 		ServiceDog();
 #ifdef INTEG_MODE

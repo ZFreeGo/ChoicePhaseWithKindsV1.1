@@ -161,6 +161,8 @@ typedef struct TagSystemConfig
 	uint8_t sampleChanel;   //采样通道
 	uint8_t readSuccess;//保存数据读取成功标志，0--成功加载数据，0xff--采用默认数据
 	uint8_t updatePeriod;//上传更新周期s
+	uint16_t testDelay;//测试延时 ms
+	uint8_t testPulseCount;//测试脉冲数量
 }SystemConfig;
 
 

@@ -112,7 +112,7 @@ struct DefFrameData  g_NetSendFrame; //发送帧处理
 uint16_t CumulativeSum = 0;
 
 
-#define PARAMETER_LEN 37  //设置参数列表
+#define PARAMETER_LEN 39  //设置参数列表
 #define READONLY_PARAMETER_LEN 16  //读取参数列表
 #define READONLY_START_ID 0x41
 
@@ -555,6 +555,21 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fSetValue = SetValueUint8;
 	g_SetParameterCollect[index].fGetValue = GetValueUint8;
 	index++;
+
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemConfig.testDelay;
+	g_SetParameterCollect[index].type = 0x20;
+	g_SetParameterCollect[index].fSetValue = SetValueUint16;
+	g_SetParameterCollect[index].fGetValue = GetValueUint16;
+	index++;
+
+	g_SetParameterCollect[index].ID = id++;
+	g_SetParameterCollect[index].pData = &g_SystemConfig.testPulseCount;
+	g_SetParameterCollect[index].type = 0x10;
+	g_SetParameterCollect[index].fSetValue = SetValueUint8;
+	g_SetParameterCollect[index].fGetValue = GetValueUint8;
+	index++;
+
 	g_SetParameterCollect[index].ID = id++;
 	g_SetParameterCollect[index].pData = &CumulativeSum;
 	g_SetParameterCollect[index].type = 0x20;
@@ -562,12 +577,9 @@ static void InitSetParameterCollect(void)
 	g_SetParameterCollect[index].fGetValue = GetValueUint16;
 	index++;
 
-	if (PARAMETER_LEN != index)
+	while(PARAMETER_LEN != index)
 	{
-		while(1)
-		{
-			ON_LED1; //LED1常亮指示错误
-		}
+		ON_LED1; //LED1常亮指示错误
 	}
 
 }
@@ -688,6 +700,8 @@ void DefaultInit(void)
 	 g_SystemConfig.sampleChanel 	= 0x0C;    // set SOC0 channel select to ADCINB4  大选相
 #endif
 
+	 g_SystemConfig.testPulseCount = 3;
+	 g_SystemConfig.testDelay = 1000;
 
 	 //缓冲数据发送
 	 g_NetSendFrame.pBuffer = BufferData;
